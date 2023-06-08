@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="partner_edi_usage_inherit_form_view" model="ir.ui.view">
+            <field name="name">partner.edi.usage.inherit.form.view</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="l10n_mx_edi_usage" attrs="{'required': [('is_company','=', True)]}" widget="selection" groups="account.group_account_invoice"/>
+                    <field name="l10n_mx_edi_payment_method_id" attrs="{'required': [('is_company','=', True)]}" widget="selection" groups="account.group_account_invoice"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
