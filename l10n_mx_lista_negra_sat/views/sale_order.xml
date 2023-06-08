@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//form/sheet/group/group[2]/field[@name='payment_term_id']" position="after">
+                     <field name="is_vat" invisible="1"/>
+                 </xpath>
+                 <xpath expr="//form/header/button[@name='action_confirm'][1]" position="attributes">
+                     <attribute name="attrs">{'invisible': ['|',('is_vat', '=', True),('state', 'not in', ['sent'])]}</attribute>
+                 </xpath>
+                 <xpath expr="//form/header/button[@name='action_confirm'][2]" position="attributes">
+                     <attribute name="attrs">{'invisible': ['|',('is_vat', '=', True),('state', 'not in', ['draft'])]}</attribute>
+                 </xpath>
+                 <xpath expr="//form/header/button[@name='action_confirm'][1]" position="after">
+                     <button name="action_confirm_custom" 
+                            string="Confirmar" class="btn-primary" id="action_confirm_lista" 
+                            type="object" 
+                            attrs="{'invisible': ['|',('is_vat', '=',False),('state', 'not in',['sent'])]}" confirm="El cliente aparece en la lista negra. ¿Quieres continuar?"/>
+                 </xpath>
+                 <xpath expr="//form/header/button[@name='action_confirm'][2]" position="after">
+                     <button name="action_confirm_custom" 
+                            string="Confirmar" 
+                            type="object" 
+                            attrs="{'invisible': ['|',('is_vat', '=',False),('state', 'not in',['draft'])]}" confirm="El cliente aparece en la lista negra. ¿Quieres continuar?"/>
+                 </xpath>
+        </field>
+    </record>
+</odoo>

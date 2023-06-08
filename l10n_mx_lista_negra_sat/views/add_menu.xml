@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--TREE VIEW FOR CUSTOMER INVOICES-->
+	<record id="invoice_tree_lista_negra_sat" model="ir.ui.view">
+        <field name="name">account.move.tree.lista.negra.sat</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'draft'" decoration-muted="state == 'cancel'" string="Invoice">
+                <field name="partner_id" groups="base.group_user" string="Cliente"/>
+                <field name="invoice_date"/>
+                <field name="name"/>
+                <!--<field name="commercial_partner_id" invisible="1"/>-->
+                <!--<field name="invoice_payment_ref" invisible="1"/>-->
+                <field name="journal_id" invisible="1"/>
+                <field name="amount_total_signed" string="Total" sum="Total"/>
+                <field name="state"/>
+                <field name="move_type" invisible="context.get('move_type',True)"/>
+            </tree>
+        </field>
+    </record>
+    <!--END TREE VIEW FOR CUSTOMER INVOICES-->
+
+    <!--TREE VIEW FOR SUPPLIER INVOICES-->
+    <record id="supplier_invoice_tree_lista_negra_sat" model="ir.ui.view">
+        <field name="name">account.move.tree.lista.negra.sat</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'draft'" decoration-muted="state == 'cancel'" string="Invoice">
+                <field name="partner_id" groups="base.group_user" string="Vendedor"/>
+                <field name="invoice_date"/>
+                <field name="name"/>
+                <!--<field name="commercial_partner_id" invisible="1"/>-->
+                <!--<field name="invoice_payment_ref" invisible="1"/>-->
+                <field name="journal_id" invisible="1"/>
+                <field name="amount_total_signed" string="Total" sum="Total"/>
+                <field name="state"/>
+                <field name="move_type" invisible="context.get('move_type',True)"/>
+            </tree>
+        </field>
+    </record>
+    <!--END TREE VIEW FOR SUPPLIER INVOICES-->
+
+    <!--VIEWS FOR CUSTOMER INVOICES-->
+    <record id="action_lista_negra_menu_customers" model="ir.actions.act_window">
+        <field name="name">Lista Negra</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+        <field name='view_id' ref='invoice_tree_lista_negra_sat' />
+        <field name="domain">[('partner_id.lista_negra_en_sat', '=', 'True'),('move_type', 'in', ['out_invoice','out_refund'])]</field>
+        <field name='context'>{'move_type':'out_invoice', 'journal_type': 'sale'}</field>
+    </record>
+
+    <!--CALL TREE VIEW-->
+    <record id="action_invoice_tree_view1_lista_negra" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="invoice_tree_lista_negra_sat"/>
+        <field name="act_window_id" ref="action_lista_negra_menu_customers"/>
+    </record>
+
+    <!--CALL FORM VIEW-->
+    <record id="action_invoice_form_view2_lista_negra" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="account.view_move_form"/>
+        <field name="act_window_id" ref="action_lista_negra_menu_customers"/>
+    </record>
+
+    <!--VIEWS FOR SUPPLIER INVOICES-->
+    <record id="action_lista_negra_menu_vendors" model="ir.actions.act_window">
+        <field name="name">Lista Negra</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+        <field name='view_id' ref='supplier_invoice_tree_lista_negra_sat' />
+        <field name="domain">[('partner_id.lista_negra_en_sat', '=', 'True'),('move_type', 'in', ['in_invoice', 'in_refund'])]</field>
+        <field name='context'>{'default_move_type': 'in_invoice', 'move_type': 'in_invoice', 'journal_type': 'purchase'}</field>
+    </record>
+
+    <!--CALL TREE VIEW-->
+	<record id="action_supplier_invoice_tree_view1_lista_negra" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="supplier_invoice_tree_lista_negra_sat"/>
+        <field name="act_window_id" ref="action_lista_negra_menu_vendors"/>
+    </record>
+
+    <!--CALL FOORM VIEW-->
+    <record id="action_supplier_invoice_tree_view2_lista_negra" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="account.view_move_form"/>
+        <field name="act_window_id" ref="action_lista_negra_menu_vendors"/>
+    </record>
+
+	<!-- add field in res.partner -->
+	<record id="res_partner_form_inherits_ext" model="ir.ui.view">
+           <field name="name">res.partner inherits </field>
+           <field name="model">res.partner</field>
+           <field name="inherit_id" ref="base.view_partner_form"/>
+           <field name="arch" type="xml">
+               <xpath expr="//field[@name='vat']" position="after">
+                   <field name="lista_negra_en_sat"/>
+               </xpath>
+	       </field>
+    </record>
+
+    <!--ADD MENU ITEMS-->
+    <menuitem id="lista_negra_menu_vendors"  action="action_lista_negra_menu_vendors" name="Lista negra" parent="account.menu_finance_payables" sequence="201"/>
+    <menuitem id="lista_negra_menu_customers" action="action_lista_negra_menu_customers" name="Lista negra" parent="account.menu_finance_receivables" sequence="111"/>
+
+</odoo>

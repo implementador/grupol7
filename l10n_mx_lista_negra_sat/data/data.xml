@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+	<record model="ir.config_parameter" id="minlength">
+        <field name="key">list_negra_url</field>
+        <field name="value">http://omawww.sat.gob.mx/cifras_sat/Documents/Listado_Completo_69-B.csv</field>
+    </record>
+</odoo>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_invoice_form" model="ir.ui.view">
+        <field name="name">account.move.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='invoice_cash_rounding_id']" position="after">
+                     <field name="is_vat" invisible="1"/>
+                 </xpath>
+                 <xpath expr="//form/header/button[@name='action_post']" position="attributes">
+                     <attribute name="attrs">{'invisible':['|',('is_vat', '=',True),('state', 'not in',['draft'])]}</attribute>
+                     <attribute name="states"/>
+                 </xpath>
+
+                 <xpath expr="//form/header/button[@name='action_post']" position="replace">
+                     <button name="action_confirm_custom" type="object" string="Confirmar" class="oe_highlight o_invoice_validate" groups="account.group_account_invoice" attrs="{'invisible': ['|',('is_vat', '=',False),('state', 'not in',['draft'])]}" confirm="El cliente seleccionado está en la lista negra. ¿Quieres seguir?"/>
+                 </xpath>
+
+                 <xpath expr="//form/header/button[@name='action_post']" position="attributes">
+                     <attribute name="attrs">{'invisible':['|',('is_vat', '=',True),('state', 'not in',['draft'])]}</attribute>
+                     <attribute name="states"/>
+                 </xpath>
+            </field>
+    </record>
+</odoo>

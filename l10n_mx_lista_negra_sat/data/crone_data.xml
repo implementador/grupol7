@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+	
+	 <record id="ir_cron_automatic_download_lista_negra_csv_file" model="ir.cron">
+        <field name="name">Automatic Download lista negra sat csv file.</field>
+        <field name="model_id" ref="model_lista_negra_sat"/>
+        <field name="state">code</field>
+        <field name="code">model.download_list_negra_sat_file()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="numbercall">1</field>
+        <field name="doall" eval="False"/>
+        <field name="active" eval="False"/>
+    </record>
+    
+	 <record id="ir_cron_automatic_lista_negra_en_sat_true" model="ir.cron">
+        <field name="name">Automatic Customer lista negra en SAT</field>
+        <field name="model_id" ref="model_res_partner"/>
+        <field name="state">code</field>
+        <field name="code">model.automatic_lista_negra_en_sat_true()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">1</field>
+        <field name="doall" eval="False"/>
+    </record>
+</odoo>

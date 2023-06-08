@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_lista_negra_info_form" model="ir.ui.view">
+        <field name="name">lista.negra.at form</field>
+        <field name="model">lista.negra.sat</field>
+        <field name="arch" type="xml">
+            <form>
+                <group string="información Lista Negra">
+                    <group>
+                        <field name="vat"/>
+                        <field name="name"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_lista_negra_info_tree" model="ir.ui.view">
+        <field name="name"> lista.negra.at.tree</field>
+        <field name="model">lista.negra.sat</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="vat" />
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_lista_negra_info">
+        <field name="name">Menu Lista negra</field>
+        <field name="res_model">lista.negra.sat</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="lista_negra_menu"  name="Lista negra" parent="account.menu_finance_configuration" sequence="11"/>
+    <menuitem id="lista_negra_menu_sub"  action="action_lista_negra_info" name="Lista negra" parent="lista_negra_menu" sequence="1" />
+</odoo>
