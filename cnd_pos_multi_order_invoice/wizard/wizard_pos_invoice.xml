@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="wizard_mass_invoice_pos_order" model="ir.ui.view">
+            <field name="name">Wizard Mass Invoice</field>
+            <field name="model">wizard.mass.invoice</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="customer_id"/>
+                        </group>
+                        <group>
+                            <group col="2">
+                                <field name="l10n_mx_edi_is_global_invoice"/>
+                                <field name="l10n_mx_edi_usage"/>
+                            </group>
+                            <group col="2">
+                                <field name="l10n_mx_edi_payment_method_id"/>
+                                <field name="journal_id" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="invoice_date"/>
+                            </group>
+                        </group>
+                        <field name="pos_order_ids">
+                            <tree>
+                                <field name="name" optional="show"/>
+                                <field name="date_order"/>
+                                <field name="pos_reference"/>
+                                <field name="partner_id"/>
+                                <field string="Cashier" name="user_id"/>
+                                <field name="state" invisible="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="amount_total" widget="monetary"/>
+                            </tree>
+                        </field>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="invoice_total">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_total" class="oe_subtotal_footer_separator"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="create_invoice" type="object" string="Create and view invoice" class="oe_highlight"/>
+                        <button special="cancel" type="object" string="Cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="wizard_mass_invoice_pos_order_action" model="ir.actions.act_window">
+            <field name="name">POS Invoice</field>
+            <field name="res_model">wizard.mass.invoice</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem name="POS Invoice" id="menu_wizard_mass_invoice_pos_order"
+                  parent="point_of_sale.menu_point_of_sale"
+                  action="wizard_mass_invoice_pos_order_action" sequence="3"/>
+
+        <record id="action_server_invoice_from_multi_pos" model="ir.actions.server">
+            <field name="name">Create Multi Order Invoice</field>
+            <field name="model_id" ref="point_of_sale.model_pos_order"/>
+            <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = model.action_create_multi_order_invoice()
+            </field>
+        </record>
+    </data>
+</odoo>

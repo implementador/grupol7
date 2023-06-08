@@ -1,0 +1,755 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cnd_pos_multi_order_invoice
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-10 00:12+0000\n"
+"PO-Revision-Date: 2022-11-10 00:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__g01
+msgid "Acquisition of merchandise"
+msgstr "Adquisición de mercancías"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:product.product,uom_name:cnd_pos_multi_order_invoice.product_product_sell
+#: model:product.template,uom_name:cnd_pos_multi_order_invoice.product_product_sell_product_template
+#: model:uom.uom,name:cnd_pos_multi_order_invoice.product_uom_activity
+msgid "Activity"
+msgstr "Actividad"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__res_company__l10n_mx_edi_periodicity__05
+msgid "Bimonthly"
+msgstr "Bimestral"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.wizard_mass_invoice_pos_order
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.wizard_mass_invoice_pos_order
+msgid "Cashier"
+msgstr "Cajero"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.cnd_pos_order_multi_invoce_filter_view
+msgid "Closed Session"
+msgstr "Sesión Cerrada"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_res_company
+msgid "Companies"
+msgstr "Empresas"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__i04
+msgid "Computer equipment and accessories"
+msgstr "Equipo de cómputo y accesorios"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__i01
+msgid "Constructions"
+msgstr "Construcciones"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:res.groups,name:cnd_pos_multi_order_invoice.group_pos_global_invoice
+msgid "Create Global invoices in POS"
+msgstr "Crear Facturas Globales en PdV"
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: model:ir.actions.server,name:cnd_pos_multi_order_invoice.action_server_invoice_from_multi_pos
+#, python-format
+msgid "Create Multi Order Invoice"
+msgstr "Crear Factura Global"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.wizard_mass_invoice_pos_order
+msgid "Create and view invoice"
+msgstr "Crear y ver factura"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_company__create_out_refund_as_payment
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_config_settings__create_out_refund_as_payment
+msgid "Create credit note as payment"
+msgstr "Crear nota de crédito como pago"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__currency_id
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__customer_id
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__res_company__l10n_mx_edi_periodicity__01
+msgid "Daily"
+msgstr "Diario"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d09
+msgid "Deposits in savings accounts, premiums based on pension plans."
+msgstr ""
+"Depósitos en cuentas para el ahorro, primas que tengan como base planes de "
+"pensiones."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__i05
+msgid "Dices, dies, molds, matrices and tooling"
+msgstr "Dados, troqueles, moldes, matrices y herramental"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__display_name
+msgid "Display Name"
+msgstr "Nombre mostrado"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d04
+msgid "Donations"
+msgstr "Donativos"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_account_edi_format
+msgid "EDI format"
+msgstr "Formato EDI"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_company__bridge_expense_account_id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_config_settings__bridge_expense_account_id
+msgid "Expense Account"
+msgstr "Cuenta de gasto"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__res_company__l10n_mx_edi_periodicity__03
+msgid "Fortnight"
+msgstr "Quincenal"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d03
+msgid "Funeral expenses"
+msgstr "Gastos funerales"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__g03
+msgid "General expenses"
+msgstr "Gastos en general"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__invoice_date
+msgid "Global Invoice date"
+msgstr "Fecha de Factura Global"
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/wizard/wizard_pos_invoice.py:0
+#, python-format
+msgid "Global Invoice date must be 72 hours before now or more recent."
+msgstr "La fecha de la factura global debe ser 72 horas antes de ahora o más reciente."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_edi_format__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_invoice_report__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move_line__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_order__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_payment_method__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_session__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_product_template__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_company__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_config_settings__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_partner__id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__id
+msgid "ID"
+msgstr "Identificación"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move_line__l10n_mx_edi_identification_number
+msgid "Identification #"
+msgstr "No. Identificación"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_res_company__use_bridge_accounts
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_res_config_settings__use_bridge_accounts
+msgid ""
+"If marked, the journal items of the global invoice will be create with the "
+"following bridge accounts instead the default invoice accounts."
+msgstr ""
+"Si se marca, los artículos de diario de la factura global se crearán con las "
+"siguientes cuentas puente en lugar de las cuentas de factura predeterminadas."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_res_company__create_out_refund_as_payment
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_res_config_settings__create_out_refund_as_payment
+msgid ""
+"If marked, the multi pos order invoice will be paid with a new credit note."
+msgstr ""
+"Si se marca, la factura global de PdV se pagará con una nueva nota de "
+"crédito."
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.res_pos_invoice_types
+msgid ""
+"If market, the multi pos order invoice will be paid with a new Credit Note"
+msgstr ""
+"Si se marca, la factura global de PdV se pagará con una nueva nota de "
+"crédito."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_bank_statement_line__l10n_mx_edi_payment_sign_required
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_move__l10n_mx_edi_payment_sign_required
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_payment__l10n_mx_edi_payment_sign_required
+msgid ""
+"If this field is active, the CFDI payment will be generated for this invoice"
+" payments."
+msgstr ""
+"Si este campo está activo, se generará el pago de CFDI para los pagos de "
+"esta factura."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_bank_statement_line__l10n_mx_edi_sign_required
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_move__l10n_mx_edi_sign_required
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_payment__l10n_mx_edi_sign_required
+msgid "If this field is active, the CFDI will be generated for this invoice."
+msgstr "Si este campo está activo, se generará el CFDI para esta factura."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_res_partner__l10n_mx_edi_sign_required
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_res_users__l10n_mx_edi_sign_required
+msgid ""
+"If this field is active, the invoices for this customer by default will be "
+"signed."
+msgstr ""
+"Si este campo está activo, se firmarán las facturas para este cliente de "
+"forma predeterminada."
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/account_move.py:0
+#, python-format
+msgid ""
+"If you want to use \"Off-Balance Sheet\" accounts, all the accounts of the "
+"journal entry must be of this type"
+msgstr ""
+"Si desea usar cuentas \"fuera de balance\", todas las cuentas del asiento "
+"contable deben de ser de este tipo."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_move_line__l10n_mx_edi_identification_number
+msgid ""
+"In this field, the folio or transaction number of the transaction vouchers "
+"with the general public must be recorded."
+msgstr ""
+"En este campo se debe registrar el número de folio o de operación de los "
+"comprobantes de operación con el público en general."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_product_product__pos_global_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_product_template__pos_global_invoice
+msgid "Include in POS Global Invoice"
+msgstr "Incluir en la factura global de PdV"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_company__bridge_income_account_id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_config_settings__bridge_income_account_id
+msgid "Income Account"
+msgstr "Cuenta de ingresos"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__l10n_mx_edi_payment_method_id
+msgid ""
+"Indicates the way the invoice was/will be paid, where the options could be: "
+"Cash, Nominal Check, Credit Card, etc. Leave empty if unknown and the XML "
+"will show \"Unidentified\"."
+msgstr ""
+"Indica la forma en que se pagó o se pagará la factura, donde las opciones "
+"podrían ser: Efectivo, Cheque nominal, Tarjeta de crédito, etc. Déjelo en "
+"blanco si no lo conoce y el XML mostrará \"No identificado\"."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_pos_payment_method__l10n_mx_edi_payment_method_id
+msgid ""
+"Indicates the way the invoice was/will be paid, where the options could be: "
+"Cash, Nominal Check, Credit Card, etc. Leave empty if unkown and the XML "
+"will show \"Unidentified\"."
+msgstr ""
+"Indica la forma en que se pagó o se pagará la factura, donde las opciones "
+"podrían ser: Efectivo, Cheque nominal, Tarjeta de crédito, etc. Déjelo en "
+"blanco si no lo conoce y el XML mostrará \"No identificado\"."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_company__pos_invoice_type
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_config_settings__pos_invoice_type
+msgid "Invoice Type"
+msgstr "Tipo de Factura"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_account_invoice_report
+msgid "Invoices Statistics"
+msgstr "Estadísticas de facturas"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.cnd_pos_order_multi_invoce_account_move_filter_view
+msgid "Is Multi POS Order Invoice"
+msgstr "Es Factura Global de PdV"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_bank_statement_line__is_multi_pos_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_invoice_report__is_multi_pos_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move__is_multi_pos_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_payment__is_multi_pos_order_invoice
+msgid "Is Multi Pos Order Invoice"
+msgstr "Es Factura Global de PdV"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__l10n_mx_edi_is_global_invoice
+msgid "Is global invoice?"
+msgstr "¿Es Factura Global?"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__journal_id
+msgid "Journal"
+msgstr "Diario"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento de diario"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte de diario"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_edi_format____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_invoice_report____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move_line____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_order____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_payment_method____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_session____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_product_template____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_company____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_config_settings____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_partner____last_update
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.cnd_pos_order_multi_invoce_filter_view
+msgid "Last Week"
+msgstr "Última Semana"
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/account_move.py:0
+#, python-format
+msgid "Lines from \"Off-Balance Sheet\" accounts cannot be reconciled"
+msgstr "Las líneas de las cuentas \"fuera de balance\" no se pueden conciliar"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_order__main_payment_method_id
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.cnd_pos_order_multi_invoce_filter_view
+msgid "Main Payment Method"
+msgstr "Método de pago principal"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d08
+msgid "Mandatory School Transportation Expenses"
+msgstr "Gastos de transportación escolar obligatoria."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__res_company__pos_invoice_type__mass
+msgid "Mass"
+msgstr "Masiva"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_wizard_mass_invoice
+msgid "Mass Invoice Wizard"
+msgstr "Asistente de Factura Global"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d02
+msgid "Medical expenses for disability"
+msgstr "Gastos médicos por incapacidad o discapacidad"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d07
+msgid "Medical insurance premiums"
+msgstr "Primas por seguros de gastos médicos"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d01
+msgid "Medical, dental and hospital expenses."
+msgstr "Honorarios médicos, dentales y gastos hospitalarios."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__res_company__l10n_mx_edi_periodicity__04
+msgid "Monthly"
+msgstr "Mensual"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__account_move__l10n_mx_edi_usage__s01
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__s01
+msgid "No tax effects"
+msgstr "Sin efectos fiscales"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.cnd_pos_order_multi_invoce_filter_view
+msgid "Not Invoiced"
+msgstr "No Facturado"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.cnd_pos_order_multi_invoce_account_move_filter_view
+msgid "Not is Multi POS Order Invoice"
+msgstr "No es Factura Global"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__i02
+msgid "Office furniture and equipment investment"
+msgstr "Mobilario y equipo de oficina por inversiones"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:res.groups,comment:cnd_pos_multi_order_invoice.group_pos_global_invoice
+msgid "Only this group can create global invoices in POS"
+msgstr "Solamente este grupo puede crear Facturas Globales en PdV"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.cnd_pos_order_multi_invoce_filter_view
+msgid "Opened Session"
+msgstr "Sesión Abierta"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__i08
+msgid "Other machinery and equipment"
+msgstr "Otra maquinaria y equipo"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.actions.act_window,name:cnd_pos_multi_order_invoice.wizard_mass_invoice_pos_order_action
+#: model:ir.ui.menu,name:cnd_pos_multi_order_invoice.menu_wizard_mass_invoice_pos_order
+msgid "POS Invoice"
+msgstr "Factura de PdV"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.res_pos_invoice_types
+msgid "POS Multi Order Invoice"
+msgstr "Factura Global de PdV"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__pos_order_ids
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.cnd_pos_order_multi_invoce_filter_view
+msgid "POS Orders"
+msgstr "Pedidos de PdV"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__payment_method_id
+msgid "Payment Method"
+msgstr "Método de Pago"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_payment_method__l10n_mx_edi_payment_method_id
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__l10n_mx_edi_payment_method_id
+msgid "Payment Way"
+msgstr "Forma de Pago"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d10
+msgid "Payments for educational services (Colegiatura)"
+msgstr "Pagos por servicios educativos (colegiaturas)"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_bank_statement_line__l10n_mx_edi_periodicity
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move__l10n_mx_edi_periodicity
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_payment__l10n_mx_edi_periodicity
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_company__l10n_mx_edi_periodicity
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_config_settings__l10n_mx_edi_periodicity
+msgid "Periodicity"
+msgstr "Periodicidad"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "Pedidos del punto de venta"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_pos_payment_method
+msgid "Point of Sale Payment Methods"
+msgstr "Métodos de pago de Punto de venta"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Sesión del punto de venta"
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#, python-format
+msgid "Pos multi order invoice: "
+msgstr "Factura Global: "
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model,name:cnd_pos_multi_order_invoice.model_product_template
+msgid "Product Template"
+msgstr "Plantilla de producto"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d05
+msgid "Real interest effectively paid for mortgage loans (room house)"
+msgstr ""
+"Intereses reales efectivamente pagados por créditos hipotecarios (casa "
+"habitación)"
+
+#. module: cnd_pos_multi_order_invoice
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.cnd_pos_order_multi_invoce_filter_view
+msgid "Refunds"
+msgstr "Reembolsos"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__g02
+msgid "Returns, discounts or bonuses"
+msgstr "Devoluciones, descuentos o bonificaciones"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_order__reverse_move
+msgid "Reverse Move"
+msgstr "Nota de Crédito"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__i07
+msgid "Satellite communications"
+msgstr "Comunicaciones satelitales"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_res_company__pos_invoice_type
+msgid ""
+"Select \"Mass\" for create one invoice of several POS orders, select "
+"\"Single\" for create one invoice for each POS order."
+msgstr ""
+"Seleccione \"Masiva\" para crear una factura de varios pedidos de PdV, "
+"seleccione \"Única\" para crear una factura para cada pedido de PdV."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:product.product,name:cnd_pos_multi_order_invoice.product_product_sell
+#: model:product.template,name:cnd_pos_multi_order_invoice.product_product_sell_product_template
+msgid "Sell"
+msgstr "Venta"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_pos_order__session_state
+msgid "Session Status"
+msgstr "Estado de Sesión"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_bank_statement_line__l10n_mx_edi_payment_sign_required
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move__l10n_mx_edi_payment_sign_required
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_payment__l10n_mx_edi_payment_sign_required
+msgid "Sign CFDI Payment?"
+msgstr "¿Timbrar Pago CFDI?"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_bank_statement_line__l10n_mx_edi_sign_required
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move__l10n_mx_edi_sign_required
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_payment__l10n_mx_edi_sign_required
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_partner__l10n_mx_edi_sign_required
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_users__l10n_mx_edi_sign_required
+msgid "Sign CFDI?"
+msgstr "¿Timbrar Factura?"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__res_company__pos_invoice_type__single
+msgid "Single"
+msgstr "Única"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__i06
+msgid "Telephone communications"
+msgstr "Comunicaciones telefónicas"
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/wizard/wizard_pos_invoice.py:0
+#, python-format
+msgid "The currency of all POS orders selected must be the same."
+msgstr ""
+"La moneda de todos los pedidos de PdV seleccionados debe ser la misma."
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/wizard/wizard_pos_invoice.py:0
+#, python-format
+msgid ""
+"The session state must be closed, because at least one product of the pos "
+"orders is not billable."
+msgstr ""
+"El estado de sesión debe ser cerrado, porque al menos un producto de los "
+"pedidos de PdV no es facturable."
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/wizard/wizard_pos_invoice.py:0
+#, python-format
+msgid ""
+"The session state of all POS orders selected must be the same, all closed or"
+" all opened."
+msgstr ""
+"El estado de sesión de todos los pedidos de PdV seleccionados debe ser el "
+"mismo, todos cerrados o todos abiertos."
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/wizard/wizard_pos_invoice.py:0
+#, python-format
+msgid "The state of all POS orders selected must be paid or done."
+msgstr ""
+"El estado de todos los pedidos de PdV seleccionados debe ser pagado o "
+"realizado."
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#: code:addons/cnd_pos_multi_order_invoice/wizard/wizard_pos_invoice.py:0
+#: code:addons/cnd_pos_multi_order_invoice/wizard/wizard_pos_invoice.py:0
+#, python-format
+msgid "The type of all POS orders selected must be the same (sale or refund)."
+msgstr ""
+"El tipo de todos los pedidos de PdV seleccionados debe ser el mismo (venta o"
+" reembolso)."
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/pos_order.py:0
+#, python-format
+msgid ""
+"This invoice has been created from the point of sale multi order invoice"
+msgstr ""
+"Esta factura se ha creado a partir de la factura de pedido múltiple del "
+"punto de venta"
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/__init__.py:0
+#, python-format
+msgid "This module support Odoo series 15.0, found %s."
+msgstr ""
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__p01
+msgid "To define"
+msgstr "Por definir"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__amount_total
+msgid "Total"
+msgstr ""
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__i03
+msgid "Transportation equipment"
+msgstr "Equipo de transporte"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_bank_statement_line__l10n_mx_edi_usage
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_move__l10n_mx_edi_usage
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_payment__l10n_mx_edi_usage
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__l10n_mx_edi_usage
+msgid "Usage"
+msgstr "Uso"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_company__use_bridge_accounts
+#: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_config_settings__use_bridge_accounts
+msgid "Use Bridge Accounts"
+msgstr "Usar cuentas puente fuera de balance"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_bank_statement_line__l10n_mx_edi_usage
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_move__l10n_mx_edi_usage
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_payment__l10n_mx_edi_usage
+msgid ""
+"Used in CFDI 3.3 to express the key to the usage that will gives the receiver to this invoice. This value is defined by the customer.\n"
+"Note: It is not cause for cancellation if the key set is not the usage that will give the receiver of the document."
+msgstr ""
+"Usado en CFDI 3.3 para expresar la clave del uso que le dará el receptor a esta factura. Este valor lo define el cliente.\n"
+"Nota: No es motivo de cancelación si la clave no es el uso que le dará al destinatario del documento."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_wizard_mass_invoice__l10n_mx_edi_usage
+msgid ""
+"Used in CFDI to express the key to the usage that will gives the receiver to this invoice. This value is defined by the customer. \n"
+"Note: It is not cause for cancellation if the key set is not the usage that will give the receiver of the document."
+msgstr ""
+"Usado en CFDI para expresar la clave del uso que le dará el receptor a esta factura. Este valor lo define el cliente. \n"
+"Nota: No es motivo de cancelación si el conjunto de claves no es el uso que le dará al receptor del documento."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_bank_statement_line__l10n_mx_edi_periodicity
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_move__l10n_mx_edi_periodicity
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_account_payment__l10n_mx_edi_periodicity
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_res_company__l10n_mx_edi_periodicity
+#: model:ir.model.fields,help:cnd_pos_multi_order_invoice.field_res_config_settings__l10n_mx_edi_periodicity
+#: model_terms:ir.ui.view,arch_db:cnd_pos_multi_order_invoice.res_pos_invoice_types
+msgid "Used on every global invoice on Global Information Node."
+msgstr ""
+"Se utiliza en todas las facturas globales en el Nodo de información global."
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__wizard_mass_invoice__l10n_mx_edi_usage__d06
+msgid "Voluntary contributions to SAR"
+msgstr "Aportaciones voluntarias al SAR"
+
+#. module: cnd_pos_multi_order_invoice
+#: model:ir.model.fields.selection,name:cnd_pos_multi_order_invoice.selection__res_company__l10n_mx_edi_periodicity__02
+msgid "Weekly"
+msgstr "Semanal"
+
+#. module: cnd_pos_multi_order_invoice
+#: code:addons/cnd_pos_multi_order_invoice/models/account_move.py:0
+#, python-format
+msgid "You cannot use taxes on lines with an Off-Balance account"
+msgstr "No puede utilizar impuestos en líneas con una cuenta fuera de balance"
