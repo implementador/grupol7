@@ -1,0 +1,25 @@
+.paymentmethods-container{
+    margin-bottom: auto;
+}
+.pos .button.partial .pay-circle {
+    display: block;
+    font-size: 32px;
+    line-height: var(--btn-height-size);
+    padding-top: 6px;
+    background: #212529;
+    color: white;
+    width: 60px;
+    text-align: center;
+    border-radius: 30px;
+    margin-bottom: 10px;
+}
+
+.screen .button.next.partial {
+    font-size: 20px;
+    text-align: center;
+    position: sticky;
+    margin-top: 280px;
+    height: auto;
+    padding: 1rem 0;
+}
+
