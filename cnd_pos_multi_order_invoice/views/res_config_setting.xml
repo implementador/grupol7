@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+       <record id="cnd_multi_order_invoce_res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">cnd.multi.order.invoce.res.config.settings.view.form</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@data-key='point_of_sale']" position="inside">
+                    <h2>POS Multi Order Invoice</h2>
+                    <div class="row mt16 o_settings_container" id="o_settings_use_payment_terminals">
+                        <div class="col-12 col-lg-6 o_setting_box" title="">
+                            <div class="o_setting_left_pane">
+                                <field name="create_out_refund_as_payment"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="create_out_refund_as_payment"/>
+                                <div class="text-muted">
+                                    If market, the multi pos order invoice will be paid with a new Credit Note
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" title="">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="l10n_mx_edi_periodicity"/>
+                                <field name="l10n_mx_edi_periodicity"/>
+                                <div class="text-muted">
+                                    Used on every global invoice on Global Information Node.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box" title="">
+                            <div class="o_setting_left_pane">
+                                <field name="use_bridge_accounts"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="use_bridge_accounts"/>
+                                <div class="text-muted">
+                                </div>
+                                <div class="mt8" attrs="{'invisible': [('use_bridge_accounts', '!=', True)]}">
+                                    <label for="bridge_income_account_id" class="o_light_label"/><field name="bridge_income_account_id" class="o_light_label" attrs="{'required': [('use_bridge_accounts', '=', True)]}"/>
+                                    <label for="bridge_expense_account_id" class="o_light_label"/><field name="bridge_expense_account_id" class="o_light_label" attrs="{'required': [('use_bridge_accounts', '=', True)]}"/>
+                                    <label for="bridge_expense_payment_account_id" class="o_light_label"/><field name="bridge_expense_payment_account_id" class="o_light_label" attrs="{'required': [('use_bridge_accounts', '=', True)]}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <record id="cnd_pos_order_multi_invoce_tree_view" model="ir.ui.view">
+            <field name="name">cnd.pos.order.multi.invoce.tree.view</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="account_move" optional="show"/>
+                    <field name="state" optional="show"/>
+                    <field name="main_payment_method_id" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="cnd_pos_order_multi_invoce_form_view" model="ir.ui.view">
+            <field name="name">cnd.pos.order.multi.invoce.form.view</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='fiscal_position_id']" position="after">
+                    <field name="main_payment_method_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="cnd_pos_order_multi_invoce_filter_view" model="ir.ui.view">
+            <field name="name">cnd.pos.order.multi.invoce.filter.view</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_order_filter"/>
+            <field name="arch" type="xml"><field name="pos_reference"/>
+                <xpath expr="//field[@name='pos_reference']" position="after">
+                    <field name="account_move"/>
+                </xpath>
+                <xpath expr="//filter[@name='invoiced']" position="after">
+                    <filter string="Not Invoiced" name="not_invoiced" domain="[('state', '!=', 'invoiced')]"/>
+                </xpath>
+                <xpath expr="//filter[@name='posted']" position="after">
+                    <separator/>
+                    <filter string="POS Orders" name="orders" domain="[('amount_total', '&gt;=', 0.00)]"/>
+                    <filter string="Refunds" name="refunds" domain="[('amount_total', '&lt;', 0.00)]"/>
+                    <separator/>
+                    <filter string="Closed Session" name="closed_session" domain="[('session_state', '=', 'closed')]"/>
+                    <filter string="Opened Session" name="opened_session" domain="[('session_state', '!=', 'closed')]"/>
+                </xpath>
+                <xpath expr="//filter[@name='order_date']" position="after">
+                    <filter name="last_week" string="Last Week" domain="[('date_order','&lt;=',(context_today() - relativedelta(days=((context_today().weekday() + 1) % 7))).strftime('%Y-%m-%d 23:59:59')), ('date_order','&gt;=',(context_today() - relativedelta(days=((context_today().weekday() + 1) % 7)+7)).strftime('%Y-%m-%d 23:59:59'))]"/>
+                </xpath>
+                <xpath expr="//filter[@name='session']" position="after">
+                    <filter string="Main Payment Method" name="main_payment_method_id" domain="[]" context="{'group_by': 'main_payment_method_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

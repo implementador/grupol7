@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_form" model="ir.ui.view">
+        <field name="name">account.account.form</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account_accountant.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='reconcile']" position="attributes">
+                <attribute name="attrs"/>
+            </xpath>
+            <xpath expr="//page[@name='accounting']/group/group[2]/div" position="attributes">
+                <attribute name="attrs"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
