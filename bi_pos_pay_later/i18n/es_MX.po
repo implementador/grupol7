@@ -22,12 +22,12 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:290
 #, python-format
 msgid "% discount"
-msgstr ""
+msgstr "% descuento"
 
 #. module: bi_pos_pay_later
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_config__allow_partical_payment
 msgid "Allow Partial Payment"
-msgstr ""
+msgstr "Permitir apartados"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -43,35 +43,35 @@ msgstr "Importe adeudado"
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:338
 #, python-format
 msgid "Amount Due:"
-msgstr ""
+msgstr "Importe adeudado"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/js/pos.js:349
 #, python-format
 msgid "Are you sure,You want to Cancel this payment?"
-msgstr ""
+msgstr "¿Seguro que deseas cancelar este pago?"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:78
 #, python-format
 msgid "Back"
-msgstr ""
+msgstr "Atras"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:17
 #, python-format
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/js/pos.js:348
 #, python-format
 msgid "Cancel Payment ?"
-msgstr ""
+msgstr "¡Cancelar pago?"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -79,14 +79,14 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:360
 #, python-format
 msgid "Change:"
-msgstr ""
+msgstr "Cambiar:"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/js/pos.js:271
 #, python-format
 msgid "Configure Product"
-msgstr ""
+msgstr "Configurar producto"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -94,7 +94,7 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:317
 #, python-format
 msgid "Discount:"
-msgstr ""
+msgstr "Descuento:"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -109,51 +109,51 @@ msgstr "Apartados"
 #: code:addons/bi_pos_pay_later/static/src/js/pos.js:409
 #, python-format
 msgid "Empty Order"
-msgstr ""
+msgstr "Orden vacía"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:24
 #, python-format
 msgid "Invoiced"
-msgstr ""
+msgstr "Facturado"
 
 #. module: bi_pos_pay_later
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order__is_partial
 msgid "Is Partial Payment"
-msgstr ""
+msgstr "Pago parcial"
 
 #. module: bi_pos_pay_later
 #: code:addons/bi_pos_pay_later/models/pos_order.py:135
 #, python-format
 msgid "No cash statement found for this session. Unable to record returned cash."
-msgstr ""
+msgstr "No hay registro de caja en efectivo. No es posible procesar la devolución."
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/js/pos.js:333
 #, python-format
 msgid "Not Allowed"
-msgstr ""
+msgstr "No permitido"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:22
 #, python-format
 msgid "Paid"
-msgstr ""
+msgstr "Pagado"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:83
 #, python-format
 msgid "Partial Payment"
-msgstr "Pago Parcial"
+msgstr "Registrar apartado"
 
 #. module: bi_pos_pay_later
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_config__partial_product_id
 msgid "Partial Payment Product"
-msgstr ""
+msgstr "Producto de apartado"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -161,14 +161,14 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:64
 #, python-format
 msgid "Pay"
-msgstr ""
+msgstr "Pagar"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:81
 #, python-format
 msgid "Payment"
-msgstr ""
+msgstr "Pago"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -176,50 +176,50 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:271
 #, python-format
 msgid "Phone:"
-msgstr ""
+msgstr "Teléfono"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/js/pos.js:272
 #, python-format
 msgid "Please configure partial product."
-msgstr ""
+msgstr "Favor de configurar producto de apartado, disponible en PDV"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:107
 #, python-format
 msgid "Please select a payment method."
-msgstr ""
+msgstr "Selecciona un método de pago"
 
 #. module: bi_pos_pay_later
 #: model:ir.model,name:bi_pos_pay_later.model_pos_config
 msgid "Point of Sale Configuration"
-msgstr "Configuración del TPV"
+msgstr "Configuración del PDV"
 
 #. module: bi_pos_pay_later
 #: model:ir.model,name:bi_pos_pay_later.model_pos_order
 msgid "Point of Sale Orders"
-msgstr "Pedidos del TPV"
+msgstr "Pedidos del PDV"
 
 #. module: bi_pos_pay_later
 #: model:ir.model,name:bi_pos_pay_later.model_pos_session
 msgid "Point of Sale Session"
-msgstr "Sesión TPV"
+msgstr "Sesión PDV"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:23
 #, python-format
 msgid "Posted"
-msgstr ""
+msgstr "Publicado"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:32
 #, python-format
 msgid "Search Orders"
-msgstr ""
+msgstr "Buscar ordenes"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -231,7 +231,7 @@ msgstr "Selecciona un cliente primero"
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.inherit_view_pos_config_reports
 msgid "Set Product for partial payment calculation."
-msgstr ""
+msgstr "Agrega un producto de apartado primero"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -239,14 +239,14 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:305
 #, python-format
 msgid "Subtotal:"
-msgstr ""
+msgstr "Subtotal"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:311
 #, python-format
 msgid "Tax:"
-msgstr ""
+msgstr "Impuesto:"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -254,7 +254,7 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/js/pos.js:410
 #, python-format
 msgid "There must be at least one product in your order before it can be validated."
-msgstr ""
+msgstr "Agrega algún producto primero."
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -262,7 +262,7 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:332
 #, python-format
 msgid "Total Paid Amount:"
-msgstr ""
+msgstr "Cantidad total pagada:"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -270,7 +270,7 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:323
 #, python-format
 msgid "Total:"
-msgstr ""
+msgstr "Total"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -285,7 +285,7 @@ msgstr "Cliente desconocido"
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:21
 #, python-format
 msgid "Unpaid"
-msgstr ""
+msgstr "Sin pago"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -293,14 +293,14 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:274
 #, python-format
 msgid "User:"
-msgstr ""
+msgstr "Usuario:"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:88
 #, python-format
 msgid "Validate"
-msgstr ""
+msgstr "Validar"
 
 #. module: bi_pos_pay_later
 #. openerp-web
@@ -309,31 +309,31 @@ msgstr ""
 #: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:289
 #, python-format
 msgid "With a"
-msgstr ""
+msgstr "Con"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/js/pos.js:334
 #, python-format
 msgid "You cannot change customer of draft order"
-msgstr ""
+msgstr "No es posible cambiar el cliente de una orden"
 
 #. module: bi_pos_pay_later
 #. openerp-web
 #: code:addons/bi_pos_pay_later/static/src/js/pos.js:366
 #, python-format
 msgid "You cannot perform partial payment. Select customer first."
-msgstr ""
+msgstr "Selecciona primero un cliente"
 
 #. module: bi_pos_pay_later
 #: code:addons/bi_pos_pay_later/models/pos_session.py:33
 #, python-format
 msgid "You have to set a Sale Journal for the POS:%s"
-msgstr ""
+msgstr "Selecciona un diario para el munto de venta:%s"
 
 #. module: bi_pos_pay_later
 #: code:addons/bi_pos_pay_later/models/pos_order.py:140
 #, python-format
 msgid "return"
-msgstr ""
+msgstr "Devolver"
 
