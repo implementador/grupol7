@@ -2,7 +2,7 @@
 # Part of BrowseInfo. See LICENSE file for full copyright and licensing details.
 
 {
-	"name" : "All pos orders list in Odoo ",
+	"name" : "Lista de ordenes del PDV ",
 	"version" : "16.0.0.1",
 	"category" : "Point of Sale",
 	"depends" : ['base','sale_management','point_of_sale'],

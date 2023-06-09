@@ -2,7 +2,7 @@
 # Part of BrowseInfo. See LICENSE file for full copyright and licensing details.
 
 {
-    "name" : "POS Orders Reprint and POS ReOrder in Odoo",
+    "name" : "Imprimir tickets",
     "version" : "16.0.0.0",
     "category" : "Point of Sale",
     "depends" : ['base','sale','point_of_sale','pos_orders_list'],
