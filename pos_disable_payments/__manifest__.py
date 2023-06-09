@@ -3,7 +3,7 @@
 
 
 {
-    "name": "Allow/Disable POS Features Point of Sales Access rights POS Restrict User staff permissions",
+    "name": "Bloquear botones del PDV",
     "version": "16.0.0.1",
     "category": "Point of Sale",
     'summary': 'POS hide Features POS Access rights pos Disable Payment disable Qty pos Discount pos disable price pos restric pos Limitations pos Disable pos enabled POS deny pos hide features pos permissions pos user pos extra',
