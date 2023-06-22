@@ -288,6 +288,9 @@ class website_self_invoice_web(models.Model):
                     l10n_mx_edi_payment_method = self.env['l10n_mx_edi.payment.method'].sudo().search(
                         [('code', '=', payment_method_code)])
                     vals.update({'l10n_mx_edi_payment_method_id': l10n_mx_edi_payment_method.id})
+                if not invoice_br.invoice_payment_term_id:
+                    payment_term_immediate = self.env.ref('account.account_payment_term_immediate', raise_if_not_found=False)
+                    vals.update({'invoice_payment_term_id': payment_term_immediate.id})
                 invoice_br.write(vals)
                 if invoice_br.state == 'draft':
                     invoice_br.sudo().action_post()

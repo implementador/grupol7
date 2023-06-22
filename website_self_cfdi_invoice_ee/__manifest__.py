@@ -17,7 +17,7 @@ Permite al Cliente poder generar su Factura mediante la Parte Web.
     'author': "Lava Studio",
     'website': "www.lava.mx",
     'category': 'Facturacion Electronica',
-    'version': '16.01',
+    'version': '16.02',
     'depends': [
         'website_sale_stock',
         'website_crm',
