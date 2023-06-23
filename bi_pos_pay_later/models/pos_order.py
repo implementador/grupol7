@@ -131,7 +131,7 @@ class PosOrderInherit(models.Model):
 			# do not hide transactional errors, the order(s) won't be saved!
 			raise
 		except Exception as e:
-			_logger.error('Could not fully process the POS Order: %s', tools.ustr(e))
+			_logger.error('No se pudo procesar la orden: %s', tools.ustr(e))
 
 		if pos_order.is_partial == False and is_paying_partial == False:
 			pos_order._create_order_picking()
@@ -175,7 +175,7 @@ class PosOrderInherit(models.Model):
 		if not draft and not float_is_zero(pos_order['amount_return'], prec_acc):
 			cash_payment_method = pos_session.payment_method_ids.filtered('is_cash_count')[:1]
 			if not cash_payment_method:
-				raise UserError(_("No cash statement found for this session. Unable to record returned cash."))
+				raise UserError(_("No es posible devolver efectivo debido a que no hay registro de efectivo para esta sesión."))
 			return_payment_vals = {
 				'name': _('return'),
 				'pos_order_id': order.id,
