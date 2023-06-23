@@ -77,9 +77,9 @@ class PosSessionInherit(models.Model):
 		for session in self:
 			orders = session.order_ids.filtered(lambda order: order.is_partial == False)
 			if any(order.state == 'draft' for order in orders):
-				raise UserError(_("No es posible cerar el PDV cuando aun hay ordenes en borrador."))
+				raise UserError(_("You cannot close the POS when orders are still in draft"))
 			if session.state == 'closed':
-				raise UserError(_('Esta sesión ya está cerrada.'))
+				raise UserError(_('This session is already closed.'))
 			session.write({'state': 'closing_control', 'stop_at': fields.Datetime.now()})
 			if not session.config_id.cash_control:
 				return session.action_pos_session_close(balancing_account, amount_to_balance, bank_payment_method_diffs)
@@ -177,9 +177,9 @@ class PosSessionInherit(models.Model):
 		bank_payment_method_diffs = bank_payment_method_diffs or {}
 		orders = self.order_ids.filtered(lambda order: order.is_partial == False)
 		if any(order.state == 'draft' for order in orders):
-			return {'successful': False, 'message': _("No es posible cerrar el PDV cuando aun hay ordenes en borrador."), 'redirect': False}
+			return {'successful': False, 'message': _("You cannot close the POS when orders are still in draft"), 'redirect': False}
 		if self.state == 'closed':
-			return {'successful': False, 'message': _("Esta sesión ya fue cerrada."), 'redirect': True}
+			return {'successful': False, 'message': _("This session is already closed."), 'redirect': True}
 		if bank_payment_method_diffs:
 			no_loss_account = self.env['account.journal']
 			no_profit_account = self.env['account.journal']
