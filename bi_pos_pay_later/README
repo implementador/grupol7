@@ -9,3 +9,6 @@ Version 16.0.0.3 : (29-03-2023)
 
 Version 16.0.0.4 : (03-04-2023)	
 		- In receipt, the screen does not show the customer note fixed this issue.
+
+Version 16.0.0.5 : (22-06-2023)
+		-- If we first create draft order and then in the new order I add product and then from the order list screen I try for the payment of the old draft it will be combine both order and done payment for that fixed that issue.

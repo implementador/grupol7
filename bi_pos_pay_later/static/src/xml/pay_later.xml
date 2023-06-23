@@ -8,6 +8,33 @@
 			</span>
 		</t>
 
+
+		<t t-name="PosOrdersDetailRestric" owl="1">
+		<div role="dialog" class="modal-dialog">
+			<Draggable>
+				<div class="popup popup-error">
+					<header class="title drag-handle">
+						Order Details
+					</header>
+
+					<p class="body">
+	                    Please complete current order or discard the changes
+	                </p>
+					<footer class="footer">
+						<div class="button cancel" t-on-click="cancel">
+							Close
+						</div>
+
+						<div class="button add_division" t-on-click="discard_order">
+                            Discard
+                        </div>
+					</footer>
+				</div>
+			</Draggable>
+		</div>
+	</t>
+
+
 		<t t-name="PayPOSOrdersScreen" t-inherit="pos_orders_list.POSOrdersScreen" t-inherit-mode="extension" owl="1">
 			<xpath expr="//th[hasclass('order_state')]" position="after">
 				<t t-if="env.pos.config.allow_partical_payment">

@@ -2,11 +2,11 @@
 # Part of BrowseInfo. See LICENSE file for full copyright and licensing details.
 
 {
-    "name": "Apartados",
-    "version": "16.0.0.4",
+    "name": "POS Pay Later in Odoo",
+    "version": "16.0.0.5",
     "category": "Point of Sale",
     "depends": ['base', 'sale', 'point_of_sale', 'account', 'bi_pos_reprint_reorder'],
-    "author": "Lava Studio",
+    "author": "BrowseInfo",
     'summary': 'Using app point of sales pay later feature pos later pos pay later Pay Later in POS  pos after pay pos afterpay pos Multiple and partial payments pos later pay point of sales pay later after pay in pos payment methods POS payments point of sales payment',
     "description": """
 	This module allows you to generate partially paid order, you can  also create draft order from POS.
@@ -104,7 +104,7 @@ List all POS order on POS screen Show order on POS view all orders on POS Displa
 
 
 	""",
-    "website": "https://lava.mx",
+    "website": "https://www.browseinfo.in",
     "price": 14,
     "currency": "EUR",
     "data": [
@@ -117,12 +117,15 @@ List all POS order on POS screen Show order on POS view all orders on POS Displa
             "bi_pos_pay_later/static/src/js/Screens/PayPOSOrdersScreen.js",
             "bi_pos_pay_later/static/src/js/Screens/CreateDraftPOS.js",
             "bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js",
+            "bi_pos_pay_later/static/src/js/Screens/BiSeePOSOrdersButton.js",
+            "bi_pos_pay_later/static/src/js/PosOrdersDetailRestric.js",
             'bi_pos_pay_later/static/src/xml/pay_later.xml',
         ],
     },
     "auto_install": False,
     "installable": True,
     "images": ['static/description/Banner.gif'],
+    "live_test_url": 'https://youtu.be/IUT-18ZyABY',
     'license': 'OPL-1',
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
