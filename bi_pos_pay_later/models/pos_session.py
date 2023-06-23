@@ -77,9 +77,9 @@ class PosSessionInherit(models.Model):
 		for session in self:
 			orders = session.order_ids.filtered(lambda order: order.is_partial == False)
 			if any(order.state == 'draft' for order in orders):
-				raise UserError(_("You cannot close the POS when orders are still in draft"))
+				raise UserError(_("No puedes cerrar el PDV cuando aun hay ordenes en borrador"))
 			if session.state == 'closed':
-				raise UserError(_('This session is already closed.'))
+				raise UserError(_('Está sesión se encuentra cerrada.'))
 			session.write({'state': 'closing_control', 'stop_at': fields.Datetime.now()})
 			if not session.config_id.cash_control:
 				return session.action_pos_session_close(balancing_account, amount_to_balance, bank_payment_method_diffs)
@@ -162,8 +162,8 @@ class PosSessionInherit(models.Model):
 				do.append(i.name)
 		if do:
 			raise UserError(_(
-				'There are still orders in draft state in the session. '
-				'Pay or cancel the following orders to validate the session:\n%s'
+				'Aun hay ordenes en  borrador en esta sesión. '
+				'Paga o cancela las siguientes ordenes para validar la sesión:\n%s'
 			) % ', '.join(do)
 							)
 		return True
