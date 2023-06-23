@@ -15,7 +15,7 @@ odoo.define('website_self_cfdi_invoice_ee', function(require) {
             mode: 'test',
             steps: [
                 {
-                    title:          "RFC Cliente",
+                    title:          "RFC Cliente - Mayúsculas",
                     element:        "input[name=rfc_partner]",
                     sampleText:     "PODG890615269",
                 },
