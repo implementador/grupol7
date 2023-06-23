@@ -18,7 +18,7 @@
 					</header>
 
 					<p class="body">
-	                    Please complete current order or discard the changes
+	                    Debes completar la orden actual o descartarla
 	                </p>
 					<footer class="footer">
 						<div class="button cancel" t-on-click="cancel">
