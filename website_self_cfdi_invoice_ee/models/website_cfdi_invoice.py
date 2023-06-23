@@ -2,9 +2,11 @@
 
 from odoo import models, fields, api, SUPERUSER_ID
 import base64
+import time
 import logging
 _logger = logging.getLogger(__name__)
 from datetime import date, timedelta
+import datetime
 
 class website_self_invoice_web(models.Model):
     _name = 'website.self.invoice.web'
@@ -263,7 +265,7 @@ class website_self_invoice_web(models.Model):
                         # considering partner's sale pricelist's currency
                         'currency_id': pos_br.pricelist_id.currency_id.id,
                         'invoice_user_id': pos_br.user_id.id,
-                        'invoice_date': date.today() + timedelta(hours=6),
+                        'invoice_date': (datetime.datetime.now() - timedelta(hours=6)).date(),
                         'fiscal_position_id': pos_br.fiscal_position_id.id,
                         'invoice_line_ids': [(0, None, pos_br._prepare_invoice_line(line)) for line in pos_br.lines],
                     }

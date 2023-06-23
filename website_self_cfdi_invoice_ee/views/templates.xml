@@ -28,7 +28,7 @@
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                        
                         <div class="form-group form-field">
-                            <label class="col-md-3 col-sm-4 control-label" for="rfc_partner">Introduce tu RFC en Mayúsculas *</label>
+                            <label class="col-md-3 col-sm-4 control-label" for="rfc_partner">Introduce tu RFC en Mayúsculas*</label>
                             <div class="col-md-4 col-sm-6">
                                 <input type="text" id="rfc_val" class="form-control o_website_self_cfdi_invoice_input" name="rfc_partner" t-att-value="request.params.get('rfc_partner', '')" required=""/>
                             </div>
