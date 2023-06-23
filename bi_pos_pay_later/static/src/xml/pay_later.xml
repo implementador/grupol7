@@ -4,7 +4,7 @@
 		<t t-name="CreateDraftPOS" owl="1">
 			<span class="control-button pos_bag odoo-theme-color">
 				<i class="fa fa-file"></i>
-				<span>Draft Order </span>
+				<span>Orden borrador</span>
 			</span>
 		</t>
 
@@ -14,7 +14,7 @@
 			<Draggable>
 				<div class="popup popup-error">
 					<header class="title drag-handle">
-						Order Details
+						Alerta
 					</header>
 
 					<p class="body">
