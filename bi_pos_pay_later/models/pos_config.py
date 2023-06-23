@@ -9,8 +9,8 @@ from odoo.exceptions import RedirectWarning, UserError, ValidationError
 class POSConfigInherit(models.Model):
 	_inherit = 'pos.config'
 	
-	allow_partical_payment = fields.Boolean('Allow Partial Payment')
-	partial_product_id = fields.Many2one("product.product",string="Partial Payment Product", domain = [('type', '=', 'service'),('available_in_pos', '=', True)])
+	allow_partical_payment = fields.Boolean('Permitir pagos parciales')
+	partial_product_id = fields.Many2one("product.product",string="Producto para pago parcial", domain = [('type', '=', 'service'),('available_in_pos', '=', True)])
 
 
 class ResConfigSettings(models.TransientModel):
@@ -28,10 +28,10 @@ class ResConfigSettings(models.TransientModel):
 
 		if vals.get('allow_partical_payment',False) and product:
 			if product.available_in_pos != True:
-				raise ValidationError(_('Please enable available in POS for the Partial Payment Product'))
+				raise ValidationError(_('Habilita disponible en punto de venta para el producto de pago parcial'))
 
 			if product.taxes_id:
-				raise ValidationError(_('You are not allowed to add Customer Taxes in the Partial Payment Product'))
+				raise ValidationError(_('No estás autorizado a agregar impuestos de cliente en el producto de pago parcial'))
 
 		return res
 
@@ -41,10 +41,10 @@ class ResConfigSettings(models.TransientModel):
 
 		if self.allow_partical_payment:
 			if self.partial_product_id.available_in_pos != True:
-				raise ValidationError(_('Please enable available in POS for the Partial Payment Product'))
+				raise ValidationError(_('Habilita disponible en punto de venta para el producto de pago parcial'))
 
 			if self.partial_product_id.taxes_id:
-				raise ValidationError(_('You are not allowed to add Customer Taxes in the Partial Payment Product'))
+				raise ValidationError(_('No estás autorizado a agregar impuestos de cliente en el producto de pago parcial'))
 
 		return res
 
