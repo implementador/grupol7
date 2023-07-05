@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_order_form_discounts" model="ir.ui.view">
+         <field name="name">purchase.order.inherit</field>
+         <field name="model">purchase.order</field>
+         <field name="inherit_id" ref="purchase.purchase_order_form"/>
+         <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/tree/field[@name='taxes_id']" position="after">
+                <field name="discount" groups="purchase_discount_app.group_show_purchase_discounts"/>
+            </xpath> 	
+         </field>
+     </record>
+
+     <template id="portal_my_purchase_order_dis" inherit_id="purchase.report_purchaseorder_document">
+        <xpath expr="//table/thead/tr" position="inside">
+            <th class="text-right"><strong>Discount</strong></th>
+        </xpath>
+        <xpath expr="//table/tbody/t/tr" position="inside">
+            <td class="text-right"><span t-field="line.discount"/></td>
+        </xpath>
+     </template>
+
+ </odoo>

@@ -19,4 +19,5 @@
            'views/add_menu.xml',
 
         ],
+    'license': 'OPL-1',
 }
