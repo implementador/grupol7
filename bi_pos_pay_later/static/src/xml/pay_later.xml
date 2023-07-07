@@ -4,7 +4,7 @@
 		<t t-name="CreateDraftPOS" owl="1">
 			<span class="control-button pos_bag odoo-theme-color">
 				<i class="fa fa-file"></i>
-				<span>Orden borrador</span>
+				<span>Orden en borrador</span>
 			</span>
 		</t>
 
@@ -14,19 +14,19 @@
 			<Draggable>
 				<div class="popup popup-error">
 					<header class="title drag-handle">
-						Alerta
+						Detalles de orden
 					</header>
 
 					<p class="body">
-	                    Debes completar la orden actual o descartarla
+	                    Favor de completar la orden actual o descartarla.
 	                </p>
 					<footer class="footer">
 						<div class="button cancel" t-on-click="cancel">
-							Close
+							Cerrar
 						</div>
 
 						<div class="button add_division" t-on-click="discard_order">
-                            Discard
+                            Descartar
                         </div>
 					</footer>
 				</div>
@@ -38,15 +38,15 @@
 		<t t-name="PayPOSOrdersScreen" t-inherit="pos_orders_list.POSOrdersScreen" t-inherit-mode="extension" owl="1">
 			<xpath expr="//th[hasclass('order_state')]" position="after">
 				<t t-if="env.pos.config.allow_partical_payment">
-					<th>Amount Due</th>
-					<th>Pay</th>
+					<th>Por pagar</th>
+					<th>Pagar</th>
 				</t>
 			</xpath> 
 
 			<xpath expr="//div[hasclass('top-content')]" position="replace">
 				<div class="top-content">
 					<div class="button back odoo-theme-color" t-on-click="back">
-						<t t-if="!env.isMobile">Discard</t>
+						<t t-if="!env.isMobile">Descartar</t>
 						<t t-else="">
 							<i class="fa fa-undo"></i>
 						</t>
@@ -55,19 +55,19 @@
 						<i class='fa fa-refresh'></i>
 					</div>
 					<div class="button draft odoo-theme-color" t-on-click="draftFilter">
-						<i class='fa fa-file'></i> Unpaid
+						<i class='fa fa-file'></i> Pago pendiente
 					</div>
 					<div class="button paid odoo-theme-color" t-on-click="paidFilter">
-						<i class='fa fa-credit-card'></i> Paid
+						<i class='fa fa-credit-card'></i> Pagada
 					</div>
 					<div class="button draft  odoo-theme-color" t-on-click="doneFilter">
-						<i class='fa fa-check'></i> Posted
+						<i class='fa fa-check'></i> Publicada
 					</div>
 					<div class="button draft odoo-theme-color" t-on-click="invoicedFilter">
-						<i class='fa fa-dollar'></i> Invoiced
+						<i class='fa fa-dollar'></i> Facturada
 					</div>
 					<div class="button" t-if="state.filter_state">
-						<span id="filter_order">Filtered By: </span>
+						<span id="filter_order">Filtrar por: </span>
 						<span id="filter_state" t-esc="state.filter_state"/>
 					</div>
 					<div class="search-bar-container sb-partner">
@@ -109,7 +109,7 @@
 				<t t-if="env.pos.config.allow_partical_payment">
 					<div t-if="!env.isMobile" class="button next partial highlight" t-att-class="{ highlight: !currentOrder.is_paid()}"
                         t-on-click="clickPayLater" style="margin: 0;">
-                        <span class="next_text">Partial Payment</span>
+                        <span class="next_text">Apartado</span>
                     </div>
 				</t>
 			</xpath> 
@@ -117,7 +117,7 @@
 				<div class="button back"
 					t-on-click="click_back">
 					<i class="fa fa-angle-double-left fa-fw"></i>
-					<span class="back_text">Back</span>
+					<span class="back_text">Atrás</span>
 				</div>
 			</xpath>
 		</t>
@@ -156,7 +156,7 @@
 								</t>
 								<t t-if="line.discount !== 0">
 									<div class="pos-receipt-left-padding">
-										Discount: <t t-esc="line.discount" />%
+										Descuento: <t t-esc="line.discount" />%
 									</div>
 								</t>
 								<div class="pos-receipt-left-padding">
@@ -180,7 +180,7 @@
 				                    <ul>
 				                        <t t-foreach="line.pack_lot_lines" t-as="lot" t-key="lot.cid">
 				                            <li>
-				                                SN <t t-esc="lot.lot_name"/>
+				                                NS <t t-esc="lot.lot_name"/>
 				                            </li>
 				                        </t>
 				                    </ul>
@@ -207,7 +207,7 @@
 				<t t-if="props.order.is_partial || props.order.is_draft_order ">
 					<table style="width: 100%;">
 						<tr>
-							<td>Total Paid Amount:</td>
+							<td>Total pagado:</td>
 							<td style="text-align: right;">
 								<t t-if="(props.order.is_paying_partial == false) or (props.order.get_total_with_tax() == props.order.get_total_paid())">
 									<t t-esc="env.pos.format_currency(props.order.get_total_paid())"/>
@@ -218,7 +218,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Amount Due:</td>
+							<td>Por pagar:</td>
 							<td style="text-align: right;">	
 								<t t-esc="env.pos.format_currency(props.order.get_partial_due())"/>	
 							</td>
@@ -233,13 +233,13 @@
 				<t t-if="props.order.state == 'draft' ">
 					<table style="width: 100%;">
 						<tr>
-							<td>Total Paid Amount:</td>
+							<td>Total Pagado:</td>
 							<td style="text-align: right;">
 								<t t-esc="env.pos.format_currency(props.order.amount_paid)"/>
 							</td>
 						</tr>
 						<tr>
-							<td>Amount Due:</td>
+							<td>Por pagar:</td>
 							<td style="text-align: right;">
 								<t t-esc="env.pos.format_currency(props.order.amount_total - props.order.amount_paid)"/>
 							</td>
