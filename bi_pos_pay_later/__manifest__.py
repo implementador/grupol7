@@ -9,7 +9,7 @@
     "author": "BrowseInfo",
     'summary': 'Using app point of sales pay later feature pos later pos pay later Pay Later in POS  pos after pay pos afterpay pos Multiple and partial payments pos later pay point of sales pay later after pay in pos payment methods POS payments point of sales payment',
     "description": """
-	This module allows you to generate partially paid order, you can  also create draft order from POS.
+	This module  allows you to generate partially paid order, you can  also create draft order from POS.
 	odoo POS Pay From Customer Credit pos later payment options Pos Quick Payment
 	odoo later pay pos in odoo POS Partial Payment
 	odoo pay later Pay Later in POS pos Pay Later Account
