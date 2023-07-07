@@ -109,8 +109,8 @@ odoo.define('bi_pos_pay_later.PayPOSOrdersScreen', function (require) {
 						let prd = self.env.pos.db.get_product_by_id(product_for_due[0]);
 						if(prd == undefined){
 							self.showPopup('ErrorPopup', {
-								title: self.env._t('Configure Product'),
-								body: self.env._t('Maybe the product is not loaded properly or restricted the product category.'),
+								title: self.env._t('Configurar Producto'),
+								body: self.env._t('Parece haber algún error en la carga del producto, verifica que su categoría no esté restringida.'),
 							});
 						}else{
 							old_order.add_product(prd,{
@@ -122,8 +122,8 @@ odoo.define('bi_pos_pay_later.PayPOSOrdersScreen', function (require) {
 					}
 					else{
 						return self.showPopup('ErrorPopup', {
-							title: self.env._t('Configure Product'),
-							body: self.env._t('Please configure partial product.'),
+							title: self.env._t('Configurar producto'),
+							body: self.env._t('Por favor selecciona un producto para los apartados.'),
 						});
 					}
 				}

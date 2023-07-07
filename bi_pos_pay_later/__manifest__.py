@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# Part of Lava Studio. See LICENSE file for full copyright and licensing details.
+# Part of BrowseInfo. See LICENSE file for full copyright and licensing details.
 
 {
-    "name": "Apartados",
-    "version": "16.0.0.5",
+    "name": "POS Pay Later in Odoo",
+    "version": "16.0.0.6",
     "category": "Point of Sale",
     "depends": ['base', 'sale', 'point_of_sale', 'account', 'bi_pos_reprint_reorder'],
-    "author": "Lava Studio",
+    "author": "BrowseInfo",
     'summary': 'Using app point of sales pay later feature pos later pos pay later Pay Later in POS  pos after pay pos afterpay pos Multiple and partial payments pos later pay point of sales pay later after pay in pos payment methods POS payments point of sales payment',
     "description": """
 	This module allows you to generate partially paid order, you can  also create draft order from POS.
@@ -104,7 +104,7 @@ List all POS order on POS screen Show order on POS view all orders on POS Displa
 
 
 	""",
-    "website": "https://www.lava.mx",
+    "website": "https://www.browseinfo.in",
     "price": 14,
     "currency": "EUR",
     "data": [
