@@ -6,7 +6,7 @@
     "version": "16.0.0.6",
     "category": "Point of Sale",
     "depends": ['base', 'sale', 'point_of_sale', 'account', 'bi_pos_reprint_reorder'],
-    "author": "LavaStudio",
+    "author": "Lava Studio",
     'summary': 'Using app point of sales pay later feature pos later pos pay later Pay Later in POS  pos after pay pos afterpay pos Multiple and partial payments pos later pay point of sales pay later after pay in pos payment methods POS payments point of sales payment',
     "description": """
 	This module  allows you to generate partially paid order, you can  also create draft order from POS.
