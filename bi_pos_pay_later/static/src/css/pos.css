@@ -23,3 +23,12 @@
     padding: 1rem 0;
 }
 
+.receipt-screen .default-view .pos-receipt-container {
+  flex: 0 1 555px;
+  overflow: auto;
+}
+
+.pos .pos-receipt-container > div {
+    width: 423px !important;
+}
+

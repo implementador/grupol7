@@ -14,8 +14,8 @@ odoo.define('bi_pos_pay_later.PaymentScreen', function(require) {
 				let self = this;
 				if (this.currentOrder.is_paying_partial){
 					return self.showPopup('ErrorPopup', {
-						title: self.env._t('No permitido'),
-						body: self.env._t('No es posible cambiar el cliente de una orden.'),
+						title: self.env._t('Not Allowed'),
+						body: self.env._t('You cannot change customer of draft order.'),
 					});
 				} else {
 					super.selectPartner();
@@ -39,8 +39,8 @@ odoo.define('bi_pos_pay_later.PaymentScreen', function(require) {
 				let self = this;
 				if(this.currentOrder.is_paying_partial){
 					const { confirmed } = await this.showPopup('ConfirmPopup', {
-						title: self.env._t('¿Cancelar pago?'),
-						body: self.env._t('¿Seguro que quieres cancelar este pago?'),
+						title: self.env._t('Cancel Payment ?'),
+						body: self.env._t('Are you sure,You want to Cancel this payment?'),
 					});
 					if (confirmed) {
 						self.remove_current_orderlines();
@@ -59,14 +59,14 @@ odoo.define('bi_pos_pay_later.PaymentScreen', function(require) {
 				let partner_id = order.get_partner();
 				if (!partner_id){
 					return self.showPopup('ErrorPopup', {
-						title: self.env._t('Cliente desconocido'),
-						body: self.env._t('Selecciona un cliente primero.'),
+						title: self.env._t('Unknown customer'),
+						body: self.env._t('You cannot perform partial payment.Select customer first.'),
 					});
 				}
 				else if(orderlines.length === 0){
 					return self.showPopup('ErrorPopup', {
-						title: self.env._t('Orden vacía'),
-						body: self.env._t('Agrega al menos un producto.'),
+						title: self.env._t('Empty Order'),
+						body: self.env._t('There must be at least one product in your order.'),
 					});
 				}
 				else{

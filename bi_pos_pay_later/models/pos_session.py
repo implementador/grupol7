@@ -14,6 +14,13 @@ from odoo.tools import float_is_zero
 class PosSessionInherit(models.Model):
 	_inherit = 'pos.session'
 
+
+	def _loader_params_product_product(self):
+		result = super()._loader_params_product_product()
+		result['search_params']['fields'].extend(['qty_available'])
+		return result
+
+
 	def _pos_ui_models_to_load(self):
 		result = super()._pos_ui_models_to_load()
 		new_model = 'pos.order'

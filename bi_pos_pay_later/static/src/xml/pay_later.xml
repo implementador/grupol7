@@ -4,49 +4,50 @@
 		<t t-name="CreateDraftPOS" owl="1">
 			<span class="control-button pos_bag odoo-theme-color">
 				<i class="fa fa-file"></i>
-				<span>Orden en borrador</span>
+				<span>Draft Order </span>
 			</span>
 		</t>
 
 
 		<t t-name="PosOrdersDetailRestric" owl="1">
-		<div role="dialog" class="modal-dialog">
-			<Draggable>
-				<div class="popup popup-error">
-					<header class="title drag-handle">
-						Detalles de orden
-					</header>
+			<div role="dialog" class="modal-dialog">
+				<Draggable>
+					<div class="popup popup-error">
+						<header class="title drag-handle">
+							Order Details
+						</header>
 
-					<p class="body">
-	                    Favor de completar la orden actual o descartarla.
-	                </p>
-					<footer class="footer">
-						<div class="button cancel" t-on-click="cancel">
-							Cerrar
-						</div>
+						<p class="body">
+		                    Please complete current order or discard the changes
+		                </p>
+						<footer class="footer">
+							<div class="button cancel" t-on-click="cancel">
+								Close
+							</div>
 
-						<div class="button add_division" t-on-click="discard_order">
-                            Descartar
-                        </div>
-					</footer>
-				</div>
-			</Draggable>
-		</div>
-	</t>
+							<div class="button add_division" t-on-click="discard_order">
+	                            Discard
+	                        </div>
+						</footer>
+					</div>
+				</Draggable>
+			</div>
+		</t>
 
 
 		<t t-name="PayPOSOrdersScreen" t-inherit="pos_orders_list.POSOrdersScreen" t-inherit-mode="extension" owl="1">
 			<xpath expr="//th[hasclass('order_state')]" position="after">
 				<t t-if="env.pos.config.allow_partical_payment">
-					<th>Por pagar</th>
-					<th>Pagar</th>
+					<th>Amount Due</th>
+					<th>Pay</th>
+					<th>Return-Order</th>
 				</t>
 			</xpath> 
 
 			<xpath expr="//div[hasclass('top-content')]" position="replace">
 				<div class="top-content">
 					<div class="button back odoo-theme-color" t-on-click="back">
-						<t t-if="!env.isMobile">Descartar</t>
+						<t t-if="!env.isMobile">Discard</t>
 						<t t-else="">
 							<i class="fa fa-undo"></i>
 						</t>
@@ -55,19 +56,19 @@
 						<i class='fa fa-refresh'></i>
 					</div>
 					<div class="button draft odoo-theme-color" t-on-click="draftFilter">
-						<i class='fa fa-file'></i> Pago pendiente
+						<i class='fa fa-file'></i> Unpaid
 					</div>
 					<div class="button paid odoo-theme-color" t-on-click="paidFilter">
-						<i class='fa fa-credit-card'></i> Pagada
+						<i class='fa fa-credit-card'></i> Paid
 					</div>
 					<div class="button draft  odoo-theme-color" t-on-click="doneFilter">
-						<i class='fa fa-check'></i> Publicada
+						<i class='fa fa-check'></i> Posted
 					</div>
 					<div class="button draft odoo-theme-color" t-on-click="invoicedFilter">
-						<i class='fa fa-dollar'></i> Facturada
+						<i class='fa fa-dollar'></i> Invoiced
 					</div>
 					<div class="button" t-if="state.filter_state">
-						<span id="filter_order">Filtrar por: </span>
+						<span id="filter_order">Filtered By: </span>
 						<span id="filter_state" t-esc="state.filter_state"/>
 					</div>
 					<div class="search-bar-container sb-partner">
@@ -100,16 +101,66 @@
 							<span> - </span>
 						</t>
 					</td>
+					<td class="Return-order" style="text-align:center">
+						<t t-if="props.order.state != 'draft'">
+							<button class="odoo-theme-button" t-on-click.stop="() => this.trigger('click-return', props.order)"><i class="fa fa-sign-in"></i>  Return Order</button>
+						</t>
+						<t t-else="">
+							<span> -- </span>
+						</t>
+					</td>
 				</t>
 			</xpath> 
 		</t>
+
+
+		<t t-name="ReturnOrderPopup" owl="1">
+			<div role="dialog" class="modal-dialog">
+				<Draggable>
+					<div class="popup" style="min-width: 50%;">
+						<header class="title drag-handle">
+							Return Products
+						</header>
+						<main class="body traceback" style="font-family: 'Lato-Reg';">
+							<table class='reorder-product-list' style='width:100%;    text-align: center;line-height: 30px;'>
+								<thead>
+									<tr class="orderline-table-head">
+										<th>Product</th>
+										<th>Ordered Qty</th>
+										<th>Remain Qty</th>
+										<th>Return Qty</th>
+									</tr>
+								</thead>
+								<tbody class='return-product-list-contents'>
+									<tr class="orderline-table" t-foreach="props.orderlines || []" t-as="item" t-key="item.id">
+										<td><t t-esc='item.product_id[1]' /></td>
+										<td><t t-esc='item.qty' /></td>
+										<td><t t-esc='item.qty - item.return_qty' /></td>
+										<td class="entered_item_qty">
+											<input type="text" style="margin: 5px;" class="input-field" t-att-line-id='item.id' t-att-qty-id='item.qty' name="qty"
+											t-att-return-qty='item.return_qty' >
+											</input>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</main>
+						<footer class="footer">
+							<div class="button cancel odoo-theme-button" t-on-click="cancel">Close</div>
+							<div class="button confirm odoo-theme-button" t-on-click="do_returnOrder">Return-Order</div>
+						</footer>
+					</div>
+				</Draggable>
+			</div>
+		</t>
+		
 
 		<t t-name="PayPOSOrdersScreen" t-inherit="point_of_sale.PaymentScreen" t-inherit-mode="extension" owl="1">
 			<xpath expr="//div[hasclass('paymentmethods-container')]" position="before">
 				<t t-if="env.pos.config.allow_partical_payment">
 					<div t-if="!env.isMobile" class="button next partial highlight" t-att-class="{ highlight: !currentOrder.is_paid()}"
                         t-on-click="clickPayLater" style="margin: 0;">
-                        <span class="next_text">Apartado</span>
+                        <span class="next_text">Partial Payment</span>
                     </div>
 				</t>
 			</xpath> 
@@ -117,78 +168,61 @@
 				<div class="button back"
 					t-on-click="click_back">
 					<i class="fa fa-angle-double-left fa-fw"></i>
-					<span class="back_text">Atrás</span>
+					<span class="back_text">Back</span>
 				</div>
 			</xpath>
 		</t>
 
 		<t t-name="OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
 			<xpath expr="//div[hasclass('orderlines')]" position="replace">
+				
+
 				<div class="orderlines">
-					<t t-foreach="receipt.orderlines" t-as="line" t-key="line.id">
-						<t t-if="(props.order.is_paying_partial == false) or (props.order.is_paying_partial == true and line.price > 0)">
-							<t t-if="isSimple(line)">
-								<div>
-									<t t-esc="line.product_name_wrapped[0]" />
-									<span t-esc="env.pos.format_currency_no_symbol(line.price_display)" class="price_display pos-receipt-right-align"/>
-								</div>
-								<WrappedProductNameLines line="line" />
-							</t>
-							<t t-else="">
-								<div t-esc="line.product_name_wrapped[0]" />
-								<WrappedProductNameLines line="line" />
-								<t t-if="line.display_discount_policy == 'without_discount' and line.price != line.price_lst">
-									<div class="pos-receipt-left-padding">
-										<t t-esc="env.pos.format_currency_no_symbol(line.price_lst)" />
-										->
-										<t t-esc="env.pos.format_currency_no_symbol(line.price)" />
-									</div>
-								</t>
-								<t t-elif="line.discount !== 0">
-									<div class="pos-receipt-left-padding">
-										<t t-if="env.pos.config.iface_tax_included === 'total'">
-											<t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax_before_discount)"/>
+					<table style="width:100%;">
+						<colgroup>
+							<!-- <col width='25%' /> -->
+							<col width='25%' />
+							<col width='25%' />
+							<col width="50"/>
+						</colgroup>
+						<thead>
+							<tr style="border-bottom: 2px solid black;">
+
+								<th class="pos-left-align">Qty</th>
+								<th class="pos-left-align">Amount</th>
+								<th class="pos-right-align">Product</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr t-foreach="orderlines" t-as="line" t-key="line.id" style="border-bottom: 1px solid gray;">
+								<t t-if="(props.order.is_paying_partial == false) or (props.order.is_paying_partial == true and line.price > 0)">
+
+									<td class="pos-left-align" style="padding: 10px;">
+										<t t-esc="line.get_quantity_str_with_unit()" />
+									</td>
+									<td class="pos-left-align" style="padding: 10px;">
+										<t t-esc="env.pos.format_currency(line.get_display_price())" />
+										<t t-if="line.get_discount() > 0">
+											<div>
+												Discount: <t t-esc='line.discount' />%
+											</div>
+										</t>
+									</td>
+									<td class="pos-right-align" style="padding: 10px;font-size: 14px;">
+										<t t-if="line.get_product().default_code">
+											[<t t-esc="line.get_product().default_code" />] <t t-esc="line.get_product().display_name" /> 
 										</t>
 										<t t-else="">
-											<t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
+											<t t-esc="line.get_product().display_name" />
 										</t>
-									</div>
+										
+									</td>
 								</t>
-								<t t-if="line.discount !== 0">
-									<div class="pos-receipt-left-padding">
-										Descuento: <t t-esc="line.discount" />%
-									</div>
-								</t>
-								<div class="pos-receipt-left-padding">
-									<t t-esc="Math.round(line.quantity * Math.pow(10, env.pos.dp['Product Unit of Measure'])) / Math.pow(10, env.pos.dp['Product Unit of Measure'])"/>
-									<t t-if="line.unit_name !== 'Units'" t-esc="line.unit_name" />
-									x
-									<t t-esc="env.pos.format_currency_no_symbol(line.price_display_one)" />
-									<span class="price_display pos-receipt-right-align">
-										<t t-esc="env.pos.format_currency_no_symbol(line.price_display)" />
-									</span>
-								</div>
-							</t>
-							<t t-log="line"/>
-							<t t-if="line.customer_note">
-				                <div class="pos-receipt-left-padding pos-receipt-customer-note">
-				                    <t t-esc="line.customer_note"/>
-				                </div>
-				            </t>
-				            <t t-if="line.pack_lot_lines">
-				                <div class="pos-receipt-left-padding">
-				                    <ul>
-				                        <t t-foreach="line.pack_lot_lines" t-as="lot" t-key="lot.cid">
-				                            <li>
-				                                NS <t t-esc="lot.lot_name"/>
-				                            </li>
-				                        </t>
-				                    </ul>
-				                </div>
-				            </t>
-						</t>
-					</t>
+							</tr>
+						</tbody>
+					</table>
 				</div>
+
 			</xpath>
 
 			<xpath expr="//div[hasclass('pos-receipt-amount')]" position="replace">
@@ -207,7 +241,7 @@
 				<t t-if="props.order.is_partial || props.order.is_draft_order ">
 					<table style="width: 100%;">
 						<tr>
-							<td>Total pagado:</td>
+							<td>Total Paid Amount:</td>
 							<td style="text-align: right;">
 								<t t-if="(props.order.is_paying_partial == false) or (props.order.get_total_with_tax() == props.order.get_total_paid())">
 									<t t-esc="env.pos.format_currency(props.order.get_total_paid())"/>
@@ -218,7 +252,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td>Por pagar:</td>
+							<td>Amount Due:</td>
 							<td style="text-align: right;">	
 								<t t-esc="env.pos.format_currency(props.order.get_partial_due())"/>	
 							</td>
@@ -233,13 +267,13 @@
 				<t t-if="props.order.state == 'draft' ">
 					<table style="width: 100%;">
 						<tr>
-							<td>Total Pagado:</td>
+							<td>Total Paid Amount:</td>
 							<td style="text-align: right;">
 								<t t-esc="env.pos.format_currency(props.order.amount_paid)"/>
 							</td>
 						</tr>
 						<tr>
-							<td>Por pagar:</td>
+							<td>Amount Due:</td>
 							<td style="text-align: right;">
 								<t t-esc="env.pos.format_currency(props.order.amount_total - props.order.amount_paid)"/>
 							</td>

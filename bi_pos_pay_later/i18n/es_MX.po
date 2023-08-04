@@ -1,14 +1,14 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* bi_pos_pay_later
+# 	* bi_pos_pay_later
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 12.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-18 06:23+0000\n"
-"PO-Revision-Date: 2020-03-18 06:23+0000\n"
-"Last-Translator: <>\n"
+"POT-Creation-Date: 2023-07-27 05:31+0000\n"
+"PO-Revision-Date: 2023-07-27 05:31+0000\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,104 +16,142 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:146
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:162
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:290
-#, python-format
-msgid "% discount"
-msgstr "% descuento"
-
-#. module: bi_pos_pay_later
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_config__allow_partical_payment
+#: model:ir.model.fields,field_description:bi_pos_pay_later.field_res_config_settings__allow_partical_payment
 msgid "Allow Partial Payment"
-msgstr "Permitir apartados"
+msgstr "Permitir pago parcial"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:45
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Amount"
+msgstr "Cantidad"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order__amount_due
 #, python-format
 msgid "Amount Due"
 msgstr "Importe adeudado"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:229
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:338
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Amount Due:"
-msgstr "Importe adeudado"
+msgstr "Cantidad adeudada:"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:349
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
 msgid "Are you sure,You want to Cancel this payment?"
-msgstr "¿Seguro que deseas cancelar este pago?"
+msgstr "¿Está seguro de que desea cancelar este pago?"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:78
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Back"
-msgstr "Atras"
+msgstr "Atrás"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:17
-#, python-format
-msgid "Cancel"
-msgstr "Cancelar"
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Base Amount"
+msgstr "Monto base"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:348
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Branch"
+msgstr "Sucursal"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
 msgid "Cancel Payment ?"
-msgstr "¡Cancelar pago?"
+msgstr "¿Cancelar el pago?"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:251
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:360
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
-msgid "Change:"
-msgstr "Cambiar:"
+msgid "Close"
+msgstr "Cerrar"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:271
+#: model:ir.model,name:bi_pos_pay_later.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PayPOSOrdersScreen.js:0
 #, python-format
 msgid "Configure Product"
 msgstr "Configurar producto"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:198
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:317
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: bi_pos_pay_later
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.bi_pos_pay_later
+msgid "Default Customer"
+msgstr "Cliente predeterminado"
+
+#. module: bi_pos_pay_later
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.bi_pos_pay_later
+msgid "Default customer is set in POS."
+msgstr "El cliente predeterminado se establece en PDV."
+
+#. module: bi_pos_pay_later
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.bi_pos_pay_later
+msgid "Default customer set on POS order."
+msgstr "Cliente predeterminado establecido en el pedido de PDV."
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Discard"
+msgstr "Descartar"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Discount:"
 msgstr "Descuento:"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:8
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Draft Order"
-msgstr "Apartados"
+msgstr "Orden en borrador/apartado"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:372
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:409
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/CreateDraftPOS.js:0
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
 msgid "Empty Order"
 msgstr "Orden vacía"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:24
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Filtered By:"
+msgstr "Filtrado por:"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Invoiced"
 msgstr "Facturado"
@@ -124,216 +162,423 @@ msgid "Is Partial Payment"
 msgstr "Pago parcial"
 
 #. module: bi_pos_pay_later
-#: code:addons/bi_pos_pay_later/models/pos_order.py:135
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PayPOSOrdersScreen.js:0
 #, python-format
-msgid "No cash statement found for this session. Unable to record returned cash."
-msgstr "No hay registro de caja en efectivo. No es posible procesar la devolución."
+msgid ""
+"Maybe the product is not loaded properly or restricted the product category."
+msgstr ""
+"Tal vez el producto no se cargó correctamente o restringió la categoría del "
+"producto."
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:333
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Name"
+msgstr "Nombre"
+
+#. module: bi_pos_pay_later
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_session.py:0
+#, python-format
+msgid ""
+"Need loss account for the following journals to post the lost amount: %s\n"
+msgstr ""
+"Se necesita una cuenta de pérdidas para los siguientes diarios para "
+"contabilizar el monto perdido: %s\n"
+
+#. module: bi_pos_pay_later
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_session.py:0
+#, python-format
+msgid ""
+"Need profit account for the following journals to post the gained amount: %s"
+msgstr ""
+"Necesita cuenta de ganancias para los siguientes diarios para registrar la "
+"cantidad ganada: %s"
+
+#. module: bi_pos_pay_later
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_order.py:0
+#, python-format
+msgid "No Taxes"
+msgstr "Sin impuestos"
+
+#. module: bi_pos_pay_later
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_order.py:0
+#, python-format
+msgid ""
+"No cash statement found for this session. Unable to record returned cash."
+msgstr ""
+"No se ha encontrado ningún estado de cuenta para esta sesión. No se puede "
+"registrar el efectivo devuelto."
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
 msgid "Not Allowed"
 msgstr "No permitido"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:22
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Order Details"
+msgstr "Detalles del pedido"
+
+#. module: bi_pos_pay_later
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Order Ref"
+msgstr "Referencia de pedido"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/CreateDraftPOS.js:0
+#, python-format
+msgid "Order Validation"
+msgstr "Validación de pedidos"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Ordered Qty"
+msgstr "Cantidad ordenada"
+
+#. module: bi_pos_pay_later
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Orders Details"
+msgstr "Detalles de pedidos"
+
+#. module: bi_pos_pay_later
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.bi_pos_pay_later
+msgid "POS Pay Later Configuration"
+msgstr "Configuración de apartados en PDV"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Paid"
 msgstr "Pagado"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:83
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Partial Payment"
-msgstr "Registrar apartado"
+msgstr "Pago parcial"
 
 #. module: bi_pos_pay_later
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_config__partial_product_id
+#: model:ir.model.fields,field_description:bi_pos_pay_later.field_res_config_settings__partial_product_id
 msgid "Partial Payment Product"
 msgstr "Producto de apartado"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:46
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:64
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Pay"
 msgstr "Pagar"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:81
-#, python-format
-msgid "Payment"
-msgstr "Pago"
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Payments"
+msgstr "Pagos"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:121
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:271
-#, python-format
-msgid "Phone:"
-msgstr "Teléfono"
+#: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order__is_picking_created
+msgid "Picking Created"
+msgstr "Albarán creado"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:272
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Please complete current order or discard the changes"
+msgstr "Complete el pedido actual o descarte los cambios."
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PayPOSOrdersScreen.js:0
 #, python-format
 msgid "Please configure partial product."
-msgstr "Favor de configurar producto de apartado, disponible en PDV"
+msgstr "Configure el producto de apartado."
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:107
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_config.py:0
 #, python-format
-msgid "Please select a payment method."
-msgstr "Selecciona un método de pago"
+msgid "Please enable available in POS for the Partial Payment Product"
+msgstr "Por favor habilite disponible en PDV para el producto de apartado"
 
 #. module: bi_pos_pay_later
 #: model:ir.model,name:bi_pos_pay_later.model_pos_config
 msgid "Point of Sale Configuration"
-msgstr "Configuración del PDV"
+msgstr "Configuración de punto de venta"
+
+#. module: bi_pos_pay_later
+#: model:ir.model,name:bi_pos_pay_later.model_report_point_of_sale_report_saledetails
+msgid "Point of Sale Details"
+msgstr "Detalles del punto de venta"
+
+#. module: bi_pos_pay_later
+#: model:ir.model,name:bi_pos_pay_later.model_pos_make_payment
+msgid "Point of Sale Make Payment Wizard"
+msgstr "Asistente para realizar pagos en el punto de venta"
+
+#. module: bi_pos_pay_later
+#: model:ir.model,name:bi_pos_pay_later.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "Líneas de pedido de punto de venta"
 
 #. module: bi_pos_pay_later
 #: model:ir.model,name:bi_pos_pay_later.model_pos_order
 msgid "Point of Sale Orders"
-msgstr "Pedidos del PDV"
+msgstr "Pedidos de punto de venta"
+
+#. module: bi_pos_pay_later
+#: model:ir.model,name:bi_pos_pay_later.model_pos_payment
+msgid "Point of Sale Payments"
+msgstr "Pagos en el punto de venta"
 
 #. module: bi_pos_pay_later
 #: model:ir.model,name:bi_pos_pay_later.model_pos_session
 msgid "Point of Sale Session"
-msgstr "Sesión PDV"
+msgstr "Sesión de punto de venta"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:23
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Posted"
 msgstr "Publicado"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:32
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Product"
+msgstr "Producto"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Qty"
+msgstr "Cantidad"
+
+#. module: bi_pos_pay_later
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Receipt Number"
+msgstr "Número de ticket"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Remain Qty"
+msgstr "Cantidad restante"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Return Order"
+msgstr "Orden de devolución"
+
+#. module: bi_pos_pay_later
+#: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order__return_order_ref
+msgid "Return Order Ref"
+msgstr "Referencia de orden de devolución"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Return Products"
+msgstr "Productos devueltos"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order_line__return_qty
+#, python-format
+msgid "Return Qty"
+msgstr "Cantidad a devolver"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Return-Order"
+msgstr "Orden de devolución"
+
+#. module: bi_pos_pay_later
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Sales Details"
+msgstr "Detalles de ventas"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Search Orders"
 msgstr "Buscar ordenes"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:403
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.bi_pos_pay_later
+msgid "Select Product"
+msgstr "Seleccionar producto"
+
+#. module: bi_pos_pay_later
+#: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_payment__session_id
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Session"
+msgstr "Sesión"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
-msgid "Select customer first."
-msgstr "Selecciona un cliente primero"
+msgid "TOTAL"
+msgstr "TOTAL"
 
 #. module: bi_pos_pay_later
-#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.inherit_view_pos_config_reports
-msgid "Set Product for partial payment calculation."
-msgstr "Agrega un producto de apartado primero"
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Tax Amount"
+msgstr "Importe del impuesto"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:178
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:305
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Taxes"
+msgstr "Impuestos"
+
+#. module: bi_pos_pay_later
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_session.py:0
 #, python-format
-msgid "Subtotal:"
-msgstr "Subtotal"
+msgid ""
+"There are still orders in draft state in the session. Pay or cancel the "
+"following orders to validate the session:\n"
+"%s"
+msgstr ""
+"Todavía hay pedidos en estado de borrador en la sesión. Paga o cancela los "
+"siguientes pedidos para validar la sesión:\n"
+"%s"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:311
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/CreateDraftPOS.js:0
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
-msgid "Tax:"
-msgstr "Impuesto:"
+msgid "There must be at least one product in your order."
+msgstr "Debe haber al menos un producto en su pedido."
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:373
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:410
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_session.py:0
 #, python-format
-msgid "There must be at least one product in your order before it can be validated."
-msgstr "Agrega algún producto primero."
+msgid "This session is already closed."
+msgstr "Esta sesión ya está cerrada."
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:217
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:332
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
+msgid "Total"
+msgstr "Total"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Total Paid Amount:"
 msgstr "Cantidad total pagada:"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:205
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:323
-#, python-format
+#: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
 msgid "Total:"
-msgstr "Total"
+msgstr "Total:"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:365
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:402
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/CreateDraftPOS.js:0
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
 msgid "Unknown customer"
 msgstr "Cliente desconocido"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:21
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Unpaid"
-msgstr "Sin pago"
+msgstr "No pagado"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:124
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:274
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/CreateDraftPOS.js:0
 #, python-format
-msgid "User:"
-msgstr "Usuario:"
+msgid ""
+"You Can not create invoice for draft order,please uncheck \"Invoice\" from "
+"payment screen."
+msgstr ""
+"No puede crear una factura para el pedido en borrador/apartado, desmarque \"Factura\" "
+"en la pantalla de pago."
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:88
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_config.py:0
 #, python-format
-msgid "Validate"
-msgstr "Validar"
+msgid ""
+"You are not allowed to add Customer Taxes in the Partial Payment Product"
+msgstr ""
+"No está permitido agregar Impuestos de Clientes en el Producto de Pago "
+"Parcial"
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:145
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:161
-#: code:addons/bi_pos_pay_later/static/src/xml/pos.xml:289
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/CreateDraftPOS.js:0
 #, python-format
-msgid "With a"
-msgstr "Con"
+msgid "You cannot Create Order.Select customer first."
+msgstr "No puede crear un pedido. Seleccione el cliente primero."
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:334
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
-msgid "You cannot change customer of draft order"
-msgstr "No es posible cambiar el cliente de una orden"
+msgid "You cannot change customer of draft order."
+msgstr "No puede cambiar el cliente del pedido preliminar."
 
 #. module: bi_pos_pay_later
-#. openerp-web
-#: code:addons/bi_pos_pay_later/static/src/js/pos.js:366
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_session.py:0
 #, python-format
-msgid "You cannot perform partial payment. Select customer first."
-msgstr "Selecciona primero un cliente"
+msgid "You cannot close the POS when orders are still in draft"
+msgstr "No se puede cerrar el PDV cuando los pedidos aún están en borrador"
 
 #. module: bi_pos_pay_later
-#: code:addons/bi_pos_pay_later/models/pos_session.py:33
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
-msgid "You have to set a Sale Journal for the POS:%s"
-msgstr "Selecciona un diario para el munto de venta:%s"
+msgid "You cannot perform partial payment.Select customer first."
+msgstr "No puede realizar pagos parciales. Seleccione el cliente primero."
 
 #. module: bi_pos_pay_later
-#: code:addons/bi_pos_pay_later/models/pos_order.py:140
+#: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_config__res_partner_id
+#: model:ir.model.fields,field_description:bi_pos_pay_later.field_res_config_settings__pos_res_partner_id
+msgid "default Customer"
+msgstr "Cliente predeterminado"
+
+#. module: bi_pos_pay_later
+#: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order_line__original_line_id
+msgid "original Line"
+msgstr "línea original"
+
+#. module: bi_pos_pay_later
+#. odoo-python
+#: code:addons/bi_pos_pay_later/models/pos_order.py:0
 #, python-format
 msgid "return"
 msgstr "Devolver"
-

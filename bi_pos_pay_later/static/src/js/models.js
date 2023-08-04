@@ -51,7 +51,22 @@ odoo.define('bi_pos_pay_later.models', function(require) {
 			this.is_draft_order = false;
 			this.set_is_partial();
 
+			this.return_order_ref = this.return_order_ref || false;
+
+			var default_customer = this.pos.config.res_partner_id;
+	        var default_customer_by_id = this.pos.db.get_partner_by_id(default_customer[0]);
+	        if(default_customer_by_id){
+	            this.set_partner(default_customer_by_id);
+	        } else{
+	            this.set_partner(null);
+	        }
+
     	}
+
+    	set_return_order_ref(return_order_ref) {
+			this.return_order_ref = return_order_ref;
+		}
+
     	set_is_partial(set_partial){
     		this.is_partial = set_partial || false;
     	}
@@ -61,6 +76,7 @@ odoo.define('bi_pos_pay_later.models', function(require) {
 			json.amount_due = this.get_partial_due();
 			json.is_paying_partial = this.is_paying_partial;
 			json.is_draft_order = this.is_draft_order || false;
+			json.return_order_ref = this.return_order_ref || false;
 			return json;
     	}
     	init_from_JSON(json){
@@ -69,6 +85,7 @@ odoo.define('bi_pos_pay_later.models', function(require) {
 			this.amount_due = json.amount_due;
 			this.is_paying_partial = json.is_paying_partial;
 			this.is_draft_order = json.is_draft_order;
+			this.return_order_ref = json.return_order_ref || false;
     	}
     	get_partial_due(){
     		let due = 0;
@@ -79,4 +96,39 @@ odoo.define('bi_pos_pay_later.models', function(require) {
     	}
     }
     Registries.Model.extend(Order, CustomOrder);
+
+
+    const BiCustomOrderLine = (Orderline) => class BiCustomOrderLine extends Orderline{
+		constructor(obj, options) {
+        	super(...arguments);
+			this.original_line_id = this.original_line_id || false;
+		}
+
+		set_original_line_id(original_line_id){
+			this.original_line_id = original_line_id;
+		}
+
+		get_original_line_id(){
+			return this.original_line_id;
+		}
+
+		get_product_description(){
+			
+	        return "xyz";
+	    }
+
+		export_as_JSON() {
+			const json = super.export_as_JSON(...arguments);
+			json.original_line_id = this.original_line_id || false;
+			return json;
+		}
+		
+		init_from_JSON(json){
+			super.init_from_JSON(...arguments);
+			this.original_line_id = json.original_line_id;
+		}
+
+	}
+
+	Registries.Model.extend(Orderline, BiCustomOrderLine);
 });
