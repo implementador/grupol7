@@ -126,13 +126,17 @@
 
 		<t t-name="OrderReprintReceipt" owl="1">
 			<div class="pos-receipt">
-				<img class="pos-receipt-logo" t-att-src='env.pos.company_logo_base64' alt="Logo"/>
-				<br/>
+				<!-- <img class="pos-receipt-logo" t-att-src='env.pos.company_logo_base64' alt="Logo"/>
+				<br/> -->
 
-				<!-- <t t-if="receipt.company.logo">
-	                <img class="pos-receipt-logo" t-att-src="receipt.company.logo" alt="Logo"/>
-	                <br/>
-	            </t> -->
+				<t t-if='env.pos.pos_branch_data[0] and env.pos.pos_branch_data[0].image'>
+					<img class="pos-receipt-logo" t-att-src="'data:image/png;base64,'+env.pos.pos_branch_data[0].image" alt="Logo"/>
+					<br/>
+				</t>
+				<t t-else="">
+					<img class="pos-receipt-logo" t-att-src="env.pos.company_logo_base64" alt="Logo"/>
+					<br/>
+				</t>
 
 				<div class="pos-receipt-contact">
 					<t t-if='env.pos.company.contact_address'>
@@ -160,34 +164,52 @@
 					</t>
 				</div>
 				<br /><br />
-				<div class='orderlines'>
-					<t t-foreach='props.orderlines' t-as='line' t-key="line.id">
-						<t t-set='simple' t-value='(line.discount === 0 and line.qty === 1)' />
-						<div t-if='simple'>
-							<t t-esc="line.product_id"/>
-							<span t-esc='env.pos.format_currency_no_symbol(line.total_price)' class="price_display pos-receipt-right-align"/>
-						</div>
-						<t t-if='!simple'>
-							<div t-esc='line.product_id'/>
-							<t t-if='line.discount !== 0'>
-								<div class="pos-receipt-left-padding">
-									<t t-esc="env.pos.format_currency_no_symbol(line.price_unit)"/>
-								</div>
-								<div class="pos-receipt-left-padding">
-									Discount: <t t-esc='line.discount' />%
-								</div>
-							</t>
-							<div class="pos-receipt-left-padding">
-								<t t-esc="Math.round(line.qty)"/>
-								x
-								<t t-esc='env.pos.format_currency_no_symbol(line.total_price/line.qty)' />
-								<span class="price_display pos-receipt-right-align">
+
+
+				<div class="orderlines">
+					<table style="width:100%;">
+						<colgroup>
+							<!-- <col width='25%' /> -->
+							<col width='25%' />
+							<col width='25%' />
+							<col width="50%"/>
+						</colgroup>
+						<thead>
+							<tr style="border-bottom: 2px solid black;">
+
+								<th class="pos-center-align">Qty</th>
+								<th class="pos-left-align">Amount</th>
+								<th class="pos-right-align">Product</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr t-foreach='props.orderlines' t-as='line' t-key="line.id" style="border-bottom: 1px solid gray;">
+								<t t-log="line"/>
+								<td class="pos-center-align" style="padding: 10px;">
+									<t t-esc="line.qty" />
+								</td>
+								<td class="pos-left-align" style="padding: 10px;">
 									<t t-esc='env.pos.format_currency_no_symbol(line.total_price)'/>
-								</span>
-							</div>
-						</t>
-					</t>
+									<t t-if="line.discount > 0">
+										<div>
+											Discount: <t t-esc='line.discount' />%
+										</div>
+									</t>
+								</td>
+								<td class="pos-right-align" style="padding: 10px;font-size: 14px;">
+									<t t-if="line.product_code">
+										[<t t-esc="line.product_code" />] <t t-esc="line.product_id" /> 
+									</t>
+									<t t-else="">
+										<t t-esc="line.product_id" />
+									</t>
+									
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
+
 				<div class="pos-receipt-right-align">--------</div>
 				<br/>
 				<div class="pos-receipt-amount">

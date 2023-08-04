@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 13.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-22 06:41+0000\n"
-"PO-Revision-Date: 2021-12-22 06:41+0000\n"
+"POT-Creation-Date: 2023-07-27 05:31+0000\n"
+"PO-Revision-Date: 2023-07-27 05:31+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,140 +16,160 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
-msgid "Apply"
-msgstr "Solicitar"
+msgid "Amount"
+msgstr "Monto"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
+#, python-format
+msgid "Back"
+msgstr "Atrás"
+
+#. module: bi_pos_reprint_reorder
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "CHANGE"
-msgstr "CAMBIO"
+msgstr "CAMBIAR"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
-msgid "Cancel"
-msgstr "Cancelar"
+msgid "Close"
+msgstr "Cerrar"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Discount:"
 msgstr "Descuento:"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Discounts"
-msgstr "Descuentos."
+msgstr "Descuentos"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
+#, python-format
+msgid "Loading...."
+msgstr "Cargando...."
+
+#. module: bi_pos_reprint_reorder
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Logo"
 msgstr "Logo"
 
 #. module: bi_pos_reprint_reorder
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
+#, python-format
+msgid "Ok"
+msgstr "De acuerdo"
+
+#. module: bi_pos_reprint_reorder
 #: model:ir.model,name:bi_pos_reprint_reorder.model_pos_order
 msgid "Point of Sale Orders"
-msgstr "Órdenes de punto de venta"
+msgstr "Pedidos de punto de venta"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Print"
-msgstr "Impresión"
+msgstr "Imprimir"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
-#, python-format
-msgid "Print Receipt"
-msgstr "Imprimir el recibo"
-
-#. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Product"
 msgstr "Producto"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
+#, python-format
+msgid "Qty"
+msgstr "Cantidad"
+
+#. module: bi_pos_reprint_reorder
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Re-Order"
 msgstr "Reordenar"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Receipt"
-msgstr "Recibo"
+msgstr "Ticket"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Reorder Products"
-msgstr "Reordenar Productos"
+msgstr "Reordenar productos"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Reorder Qty"
-msgstr "Reordenar Cant."
+msgstr "Cantidad a reordenar"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
+#, python-format
+msgid "Reprint Order"
+msgstr "Reimprimir ticket"
+
+#. module: bi_pos_reprint_reorder
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Served by"
-msgstr "Servido por"
+msgstr "Atendido por:"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "TOTAL"
 msgstr "TOTAL"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Tel:"
-msgstr "Tel:"
+msgstr "Teléfono:"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "Total Taxes"
-msgstr "Impuestos totales"
+msgstr "Impuestos Totales"
 
 #. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
+#. odoo-javascript
+#: code:addons/bi_pos_reprint_reorder/static/src/xml/reprint_reorder.xml:0
 #, python-format
 msgid "VAT:"
 msgstr "IVA:"
-
-#. module: bi_pos_reprint_reorder
-#. openerp-web
-#: code:addons/bi_pos_reprint_reorder/static/src/xml/pos_reprint_reorder.xml:0
-#, python-format
-msgid "back"
-msgstr "espalda"

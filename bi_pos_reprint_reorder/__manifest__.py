@@ -2,11 +2,11 @@
 # Part of BrowseInfo. See LICENSE file for full copyright and licensing details.
 
 {
-    "name" : "Imprimir tickets",
-    "version" : "16.0.0.0",
+    "name" : "POS Orders Reprint and POS ReOrder in Odoo",
+    "version" : "16.0.0.1",
     "category" : "Point of Sale",
     "depends" : ['base','sale','point_of_sale','pos_orders_list'],
-    "author": "Lava Studio",
+    "author": "BrowseInfo",
     'summary': 'point of sale reprint and reorder reprint POS All Order list pos reorder pos repeat order pos order repeat point of sales reorders pos re-orders pos orders pos list orders pos reprint pos order reprint pos order reprint pos order receipt reprint pos receipt pos repeat orders',
     "description": """
 
@@ -76,7 +76,7 @@ This apps helps to manage point of sale orders from the POS screen
 List all POS order on POS screen Show order on POS view all orders on POS Display order on POS View order on POS
     
     """,
-    "website" : "https://www.lava.mx",
+    "website" : "https://www.browseinfo.in",
     'price': '9',
     'currency': "EUR",
     'assets': {
@@ -91,6 +91,7 @@ List all POS order on POS screen Show order on POS view all orders on POS Displa
 
     "auto_install": False,
     "installable": True,
+    "live_test_url": "https://youtu.be/JDjZXnoBsm0",
     "images":['static/description/Banner.gif'],
     'license': 'OPL-1',
 }
