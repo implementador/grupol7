@@ -64,8 +64,8 @@ msgstr "Monto base"
 
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
-msgid "Branch"
-msgstr "Sucursal"
+#msgid "Branch"
+#msgstr "Sucursal"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
