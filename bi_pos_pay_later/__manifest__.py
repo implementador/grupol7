@@ -5,7 +5,7 @@
     "name": "POS Pay Later in Odoo",
     "version": "16.0.0.7",
     "category": "Point of Sale",
-    "depends": ['base', 'sale', 'point_of_sale', 'account', 'bi_pos_reprint_reorder','bi_pos_multi_branch'],
+    "depends": ['base', 'sale', 'point_of_sale', 'account', 'bi_pos_reprint_reorder'],
     "author": "BrowseInfo",
     'summary': 'Using app point of sales pay later feature pos later pos pay later Pay Later in POS  pos after pay pos afterpay pos Multiple and partial payments pos later pay point of sales pay later after pay in pos payment methods POS payments point of sales payment',
     "description": """
