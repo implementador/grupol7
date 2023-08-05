@@ -27,17 +27,17 @@
 		                </tr></thead>
 		                <tbody>
 		                <tr t-foreach='orders' t-as='order'>
-		                    <td><t t-esc="order.name" /></td>
-		                    <td><t t-esc="order.session_id.name" /></td>
-		                    <td><t t-esc='order.pos_reference' /></td>
-		                    <td>
+		                    <td class="text-center"><t t-esc="order.name" /></td>
+		                    <td class="text-center"><t t-esc="order.session_id.name" /></td>
+		                    <td class="text-center"><t t-esc='order.pos_reference' /></td>
+		                    <td class="text-center">
 		                        <t t-if="order.partner_id">
 		                            <t t-esc='order.partner_id.name' />
 		                        </t>
 		                    </td>
 
-		                    <td>
-		                        <t t-esc='order.amount_paid' />
+		                    <td class="text-center">
+		                        <t t-esc='round(order.amount_paid,2)' />
 		                    </td>
 
 		                <!--    <td>
