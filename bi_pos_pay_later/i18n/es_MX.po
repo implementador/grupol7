@@ -418,7 +418,7 @@ msgstr "Cantidad a devolver"
 #: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Return-Order"
-msgstr "Orden de devolución"
+msgstr "Devolver"
 
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
