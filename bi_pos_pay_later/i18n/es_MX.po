@@ -384,7 +384,14 @@ msgstr "Cantidad restante"
 #: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Return Order"
-msgstr "Orden de devolución"
+msgstr "Devolver"
+
+#. module: bi_pos_pay_later
+#. odoo-javascript
+#: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
+#, python-format
+msgid "Receipt"
+msgstr "Ticket"
 
 #. module: bi_pos_pay_later
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order__return_order_ref
