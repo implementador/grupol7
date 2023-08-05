@@ -23,7 +23,7 @@
 		                    <th>Receipt Number</th>
 		                    <th>Customer</th>
 		                    <th>Total</th>
-		                    <th>Branch</th>
+		                  <!--  <th>Branch</th>-->
 		                </tr></thead>
 		                <tbody>
 		                <tr t-foreach='orders' t-as='order'>
@@ -40,11 +40,11 @@
 		                        <t t-esc='order.amount_paid' />
 		                    </td>
 
-		                    <td>
+		                <!--    <td>
 		                        <t t-if="order.branch_id">
 		                            <t t-esc='order.branch_id.name' />
 		                        </t>
-		                    </td>
+		                    </td>-->
 
 		                </tr>
 		                </tbody>
