@@ -170,15 +170,17 @@
 					<table style="width:100%;">
 						<colgroup>
 							<!-- <col width='25%' /> -->
-							<col width='25%' />
-							<col width='25%' />
-							<col width="50%"/>
+							<col width='15%' />
+							<col width='15%' />
+							<col width='15%' />
+							<col width="55%"/>
 						</colgroup>
 						<thead>
 							<tr style="border-bottom: 2px solid black;">
 
 								<th class="pos-center-align">Qty</th>
 								<th class="pos-left-align">Amount</th>
+								<th class="pos-right-align">Item</th>
 								<th class="pos-right-align">Product</th>
 							</tr>
 						</thead>
@@ -198,12 +200,10 @@
 								</td>
 								<td class="pos-right-align" style="padding: 10px;font-size: 14px;">
 									<t t-if="line.product_code">
-										[<t t-esc="line.product_code" />] <t t-esc="line.product_id" /> 
+										[<t t-esc="line.product_code" />] 
 									</t>
-									<t t-else="">
+								<td class="pos-right-align" style="padding: 10px;font-size: 14px;">
 										<t t-esc="line.product_id" />
-									</t>
-									
 								</td>
 							</tr>
 						</tbody>
