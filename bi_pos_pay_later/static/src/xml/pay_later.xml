@@ -181,17 +181,17 @@
 					<table style="width:100%;">
 						<colgroup>
 							<col width='15%' />
-							<col width='15%' />
-							<col width='15%' />
-							<col width="55"/>
+							<col width='25%' />
+							<col width='10%' />
+							<col width="50"/>
 						</colgroup>
 						<thead>
 							<tr style="border-bottom: 2px solid black;">
 
 								<th class="pos-left-align">Qty</th>
-								<th class="pos-left-align">Amount</th>
-								<th class="pos-left-align">Item</th>
-								<th class="pos-right-align">Product</th>
+								<th class="pos-center-align">Amount</th>
+								<th class="pos-center-align">Item</th>
+								<th class="pos-center-align">Product</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -219,7 +219,7 @@
 										
 									</td>
 									<td class="pos-center-align" style="padding: 10px;font-size: 14px;">
-										 <t t-esc="line.get_product().name" /> 
+										 <t t-esc="line.get_product().display_name" /> 
 									</td>
 								</t>
 							</tr>
