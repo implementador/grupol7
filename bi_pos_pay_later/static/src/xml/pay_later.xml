@@ -180,16 +180,17 @@
 				<div class="orderlines">
 					<table style="width:100%;">
 						<colgroup>
-							<!-- <col width='25%' /> -->
-							<col width='25%' />
-							<col width='25%' />
-							<col width="50"/>
+							<col width='15%' />
+							<col width='15%' />
+							<col width='15%' />
+							<col width="55"/>
 						</colgroup>
 						<thead>
 							<tr style="border-bottom: 2px solid black;">
 
 								<th class="pos-left-align">Qty</th>
 								<th class="pos-left-align">Amount</th>
+								<th class="pos-left-align">Item</th>
 								<th class="pos-right-align">Product</th>
 							</tr>
 						</thead>
@@ -197,10 +198,10 @@
 							<tr t-foreach="orderlines" t-as="line" t-key="line.id" style="border-bottom: 1px solid gray;">
 								<t t-if="(props.order.is_paying_partial == false) or (props.order.is_paying_partial == true and line.price > 0)">
 
-									<td class="pos-left-align" style="padding: 10px;">
+									<td class="pos-center-align" style="padding: 10px;">
 										<t t-esc="line.get_quantity_str_with_unit()" />
 									</td>
-									<td class="pos-left-align" style="padding: 10px;">
+									<td class="pos-center-align" style="padding: 10px;">
 										<t t-esc="env.pos.format_currency(line.get_display_price())" />
 										<t t-if="line.get_discount() > 0">
 											<div>
@@ -208,14 +209,17 @@
 											</div>
 										</t>
 									</td>
-									<td class="pos-right-align" style="padding: 10px;font-size: 14px;">
+									<td class="pos-center-align" style="padding: 10px;font-size: 14px;">
 										<t t-if="line.get_product().default_code">
-											[<t t-esc="line.get_product().default_code" />] <t t-esc="line.get_product().display_name" /> 
+											[<t t-esc="line.get_product().default_code" />]
 										</t>
 										<t t-else="">
-											<t t-esc="line.get_product().display_name" />
+											ND
 										</t>
 										
+									</td>
+									<td class="pos-center-align" style="padding: 10px;font-size: 14px;">
+										 <t t-esc="line.get_product().name" /> 
 									</td>
 								</t>
 							</tr>
