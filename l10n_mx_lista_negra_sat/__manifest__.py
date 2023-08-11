@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 {
-    'name':'Lista Negra Sat', 
+    'name':'Lista Negra Sat.', 
     'category':"",
     'author': 'Lava Studio',
     'version': '16.01',
