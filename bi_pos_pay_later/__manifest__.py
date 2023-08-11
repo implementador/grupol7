@@ -37,7 +37,7 @@
 	odoo delay purchase payment delay point of sale purchase delay payment pos delay pay point of sales
    	odoo point of sale Partial Payment Reprint order odoo point of sale Partial Payment
 
-  POS Reorder POS All Orders List POS reorder POS repeat order POS repeatorder pos
+    POS Reorder POS All Orders List POS reorder POS repeat order POS repeatorder pos
     point of sale reorder POS re-order point of sale re-order
     point of sale repeat-order point of sale repeat order point of sales re-order point of sales reorder
     point of sales repeat order point of sales repeat-order point of sales repeat order
