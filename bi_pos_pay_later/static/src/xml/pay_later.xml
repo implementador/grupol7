@@ -190,7 +190,7 @@
 
 								<th class="pos-left-align">Qty</th>
 								<th class="pos-center-align">Amount</th>
-								<th class="pos-center-align"> Item </th>
+								<th class="pos-center-align">Code</th>
 								<th class="pos-center-align">Product</th>
 							</tr>
 						</thead>
