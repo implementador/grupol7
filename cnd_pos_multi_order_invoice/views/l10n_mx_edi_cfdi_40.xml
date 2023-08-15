@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="global_invoice_identification_number_cfdiv40" inherit_id="l10n_mx_edi_40.cfdiv40">
-        <xpath expr="(//*[local-name()='Concepto'])" position="attributes"
-            t-if="record.is_multi_pos_order_invoice and line.l10n_mx_edi_identification_number">
-            <attribute name="t-att-NoIdentificacion">line.l10n_mx_edi_identification_number</attribute>
-            <attribute name="t-att-Unidad"/>
+        <xpath expr="(//*[local-name()='Concepto'])" position="attributes">
+           <attribute name="t-att-NoIdentificacion">line.l10n_mx_edi_identification_number if record.is_multi_pos_order_invoice and record.partner_id.name == 'PUBLICO EN GENERAL' else format_string(line.product_id.default_code)</attribute>
         </xpath>
         <xpath expr="//*[name()='cfdi:Comprobante']/child::*[1]" position="before">
             <t t-if="record.is_multi_pos_order_invoice and record.partner_id.name == 'PUBLICO EN GENERAL' and record.partner_id.vat == 'XAXX010101000' and record.move_type == 'out_invoice'" xmlns:cfdi="http://www.sat.gob.mx/cfd/4">

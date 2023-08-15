@@ -16,7 +16,31 @@ odoo.define('bi_pos_pay_later.PayPOSOrdersScreen', function (require) {
 				};
 				this.searchWordInput = useRef('search-word-input-product');
 				useListener('click-pay', this.clickPay);
+				useListener('click-return', this.clickReturnOrder);
 			}
+
+			clickReturnOrder(event){
+				let self = this;
+				// let order = event.detail;
+
+				// console.log("order---------------------",order)
+				console.log("self------------------------",self)
+				let order = event.detail;
+				let o_id = parseInt(event.detail.id);
+				let orderlines =  self.orderlines;				
+				let pos_lines = [];
+
+				for(let n=0; n < orderlines.length; n++){
+					if (orderlines[n]['order_id'][0] ==o_id){
+						pos_lines.push(orderlines[n])
+					}
+				}
+				self.showPopup('ReturnOrderPopup', {
+					'order': order, 
+					'orderlines':pos_lines,
+				});
+			}
+
 			_clearSearch() {
 	            this.searchWordInput.el.value = '';
 	            this.trigger('clear-search');
@@ -109,8 +133,8 @@ odoo.define('bi_pos_pay_later.PayPOSOrdersScreen', function (require) {
 						let prd = self.env.pos.db.get_product_by_id(product_for_due[0]);
 						if(prd == undefined){
 							self.showPopup('ErrorPopup', {
-								title: self.env._t('Configurar Producto'),
-								body: self.env._t('Parece haber algún error en la carga del producto, verifica que su categoría no esté restringida.'),
+								title: self.env._t('Configure Product'),
+								body: self.env._t('Maybe the product is not loaded properly or restricted the product category.'),
 							});
 						}else{
 							old_order.add_product(prd,{
@@ -122,8 +146,8 @@ odoo.define('bi_pos_pay_later.PayPOSOrdersScreen', function (require) {
 					}
 					else{
 						return self.showPopup('ErrorPopup', {
-							title: self.env._t('Configurar producto'),
-							body: self.env._t('Por favor selecciona un producto para los apartados.'),
+							title: self.env._t('Configure Product'),
+							body: self.env._t('Please configure partial product.'),
 						});
 					}
 				}

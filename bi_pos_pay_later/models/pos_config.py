@@ -12,6 +12,7 @@ class POSConfigInherit(models.Model):
 	allow_partical_payment = fields.Boolean('Allow Partial Payment')
 	partial_product_id = fields.Many2one("product.product",string="Partial Payment Product", domain = [('type', '=', 'service'),('available_in_pos', '=', True)])
 
+	res_partner_id = fields.Many2one('res.partner', string="default Customer")
 
 class ResConfigSettings(models.TransientModel):
 	_inherit = 'res.config.settings'
@@ -20,6 +21,7 @@ class ResConfigSettings(models.TransientModel):
 	allow_partical_payment = fields.Boolean(related='pos_config_id.allow_partical_payment',readonly=False)
 	partial_product_id = fields.Many2one(related='pos_config_id.partial_product_id',readonly=False)
 
+	pos_res_partner_id = fields.Many2one(related='pos_config_id.res_partner_id', readonly=False)
 
 	@api.model
 	def create(self, vals):

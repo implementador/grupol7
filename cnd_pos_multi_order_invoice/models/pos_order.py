@@ -281,7 +281,7 @@ class PosOrder(models.Model):
             'invoice_user_id': self.env.user.id,
             'fiscal_position_id': customer_id.property_account_position_id.id,
             'invoice_line_ids': invoice_line_ids,
-            'invoice_payment_term_id': customer_id.property_payment_term_id.id,
+            'invoice_payment_term_id': customer_id.property_payment_term_id.id or self.env.ref('account.account_payment_term_immediate', raise_if_not_found=False).id,
             'l10n_mx_edi_usage': l10n_mx_edi_usage,
             'l10n_mx_edi_payment_method_id': l10n_mx_edi_payment_method_id.id,
             'is_multi_pos_order_invoice': True,

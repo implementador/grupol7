@@ -3,13 +3,13 @@
 
 {
     "name": "POS Pay Later in Odoo",
-    "version": "16.0.0.6",
+    "version": "16.0.0.7",
     "category": "Point of Sale",
     "depends": ['base', 'sale', 'point_of_sale', 'account', 'bi_pos_reprint_reorder'],
-    "author": "Lava Studio",
+    "author": "BrowseInfo",
     'summary': 'Using app point of sales pay later feature pos later pos pay later Pay Later in POS  pos after pay pos afterpay pos Multiple and partial payments pos later pay point of sales pay later after pay in pos payment methods POS payments point of sales payment',
     "description": """
-	This module  allows you to generate partially paid order, you can  also create draft order from POS.
+	This module allows you to generate partially paid order, you can  also create draft order from POS.
 	odoo POS Pay From Customer Credit pos later payment options Pos Quick Payment
 	odoo later pay pos in odoo POS Partial Payment
 	odoo pay later Pay Later in POS pos Pay Later Account
@@ -37,7 +37,7 @@
 	odoo delay purchase payment delay point of sale purchase delay payment pos delay pay point of sales
    	odoo point of sale Partial Payment Reprint order odoo point of sale Partial Payment
 
-  POS Reorder POS All Orders List POS reorder POS repeat order POS repeatorder pos
+    POS Reorder POS All Orders List POS reorder POS repeat order POS repeatorder pos
     point of sale reorder POS re-order point of sale re-order
     point of sale repeat-order point of sale repeat order point of sales re-order point of sales reorder
     point of sales repeat order point of sales repeat-order point of sales repeat order
@@ -104,7 +104,7 @@ List all POS order on POS screen Show order on POS view all orders on POS Displa
 
 
 	""",
-    "website": "https://www.lava.mx",
+    "website": "https://www.browseinfo.in",
     "price": 14,
     "currency": "EUR",
     "data": [
@@ -119,6 +119,8 @@ List all POS order on POS screen Show order on POS view all orders on POS Displa
             "bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js",
             "bi_pos_pay_later/static/src/js/Screens/BiSeePOSOrdersButton.js",
             "bi_pos_pay_later/static/src/js/PosOrdersDetailRestric.js",
+            "bi_pos_pay_later/static/src/js/ReturnOrderPopup.js",
+            "bi_pos_pay_later/static/src/js/BiProductScreen.js",
             'bi_pos_pay_later/static/src/xml/pay_later.xml',
         ],
     },

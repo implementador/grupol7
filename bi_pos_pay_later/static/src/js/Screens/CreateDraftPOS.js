@@ -18,20 +18,20 @@ odoo.define('bi_pos_pay_later.CreateDraftPOS', function(require) {
 			let partner_id = order.get_partner();
 			if (!partner_id){
 				return self.showPopup('ErrorPopup', {
-					title: self.env._t('Cliente desconocido'),
-					body: self.env._t('Selecciona un cliente primero.'),
+					title: self.env._t('Unknown customer'),
+					body: self.env._t('You cannot Create Order.Select customer first.'),
 				});
 			}
 			else if(orderlines.length === 0){
 				return self.showPopup('ErrorPopup', {
-					title: self.env._t('Orden vacía'),
-					body: self.env._t('Agrega por lo menos un producto.'),
+					title: self.env._t('Empty Order'),
+					body: self.env._t('There must be at least one product in your order.'),
 				});
 			}
 			else if(order.to_invoice){
 				return self.showPopup('ErrorPopup', {
-					'title': self.env._t('Validación'),
-					'body': self.env._t('Facturas no pueden ser creadas a partir de ordenes en borrador.'),
+					'title': self.env._t('Order Validation'),
+					'body': self.env._t('You Can not create invoice for draft order,please uncheck "Invoice" from payment screen.'),
 				});
 				return;
 			}

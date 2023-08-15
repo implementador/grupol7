@@ -1,23 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
+
+
+		<template id="qrcode_inherit" inherit_id="point_of_sale.report_saledetails">
+	        <xpath expr="//div[hasclass('page')]" position="replace">
+	        	<div class="page">
+
+		            <div class="text-center">
+		                <h2>Sales Details</h2>
+
+		                <t t-if="date_start and date_stop">
+		                    <strong><t t-esc="date_start" t-options="{'widget': 'datetime'}"/> - <t t-esc="date_stop" t-options="{'widget': 'datetime'}"/></strong>
+		                </t>
+		            </div>
+
+		            <h3>Orders Details</h3>
+		            <table  class="table table-sm">
+		                <thead><tr>
+		                    <th>Order Ref</th>
+		                    <th>Session</th>
+		                    <th>Receipt Number</th>
+		                    <th>Customer</th>
+		                    <th>Total</th>
+		                  <!--  <th>Branch</th>-->
+		                </tr></thead>
+		                <tbody>
+		                <tr t-foreach='orders' t-as='order'>
+		                    <td class="text-center"><t t-esc="order.name" /></td>
+		                    <td class="text-center"><t t-esc="order.session_id.name" /></td>
+		                    <td class="text-center"><t t-esc='order.pos_reference' /></td>
+		                    <td class="text-center">
+		                        <t t-if="order.partner_id">
+		                            <t t-esc='order.partner_id.name' />
+		                        </t>
+		                    </td>
+
+		                    <td class="text-center">
+		                        <t t-esc='round(order.amount_paid,2)' />
+		                    </td>
+
+		                <!--    <td>
+		                        <t t-if="order.branch_id">
+		                            <t t-esc='order.branch_id.name' />
+		                        </t>
+		                    </td>-->
+
+		                </tr>
+		                </tbody>
+		            </table>
+
+		            <br/>
+
+		            <h3>Payments</h3>
+		            <table  class="table table-sm">
+		                <thead><tr>
+		                    <th class="text-center">Name</th>
+		                    <th class="text-center">Total</th>
+		                </tr></thead>
+		                <tbody>
+		                <tr t-foreach='payments' t-as='payment'>
+		                    <td class="text-center"><t t-esc="payment['name']" /></td>
+		                    <td class="text-center"><t t-esc="payment['total']" t-options="{'widget': 'float', 'precision': currency_precision}"/></td>
+		                </tr>
+		                </tbody>
+		            </table>
+
+		            <br/>
+
+		            <h3>Taxes</h3>
+		            <table  class="table table-sm">
+		                <thead><tr>
+		                    <th class="text-center">Name</th>
+		                    <th class="text-center">Tax Amount</th>
+		                    <th class="text-center">Base Amount</th>
+		                </tr></thead>
+		                <tbody>
+		                <tr t-foreach='taxes' t-as='tax'>
+		                    <td class="text-center"><t t-esc="tax['name']" /></td>
+		                    <td class="text-center"><t t-esc="tax['tax_amount']" t-options="{'widget': 'float', 'precision': currency_precision}"/></td>
+		                    <td class="text-center"><t t-esc="tax['base_amount']" t-options="{'widget': 'float', 'precision': currency_precision}"/></td>
+		                </tr>
+		                </tbody>
+		            </table>
+
+		            <br/>
+		            <br/>
+
+		            <strong>Total: <t t-esc='total_paid' t-options="{'widget': 'float', 'precision': currency_precision}"/></strong>
+
+		        </div>
+	        </xpath>
+    	</template>
+
+
 		<record model="ir.ui.view" id="bi_pos_pay_later">
 	        <field name="name">res.config.setting.form.extended.view</field>
 	        <field name="model">res.config.settings</field>
 	        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
 	        <field name="arch" type="xml">
 	            <xpath expr="//h2[@name='pos_interface']" position="before">
-	                <h2 name="pos_interface">Configuración de apartados</h2>
+	                <h2 name="pos_interface">POS Pay Later Configuration</h2>
 	                <div class="row mt16 o_settings_container">
 	                    <div class="col-12 col-lg-6 o_setting_box">
 	                    	<div class="o_setting_left_pane">
-                                <field name="allow_partical_payment" string="Permitir pago parcial"/>
+                                <field name="allow_partical_payment"/>
                             </div>
 	                        <div class="o_setting_right_pane">
 	                        	<label for="allow_partical_payment"/>
 	                            <div>
 	                                <div class="text-muted">
-                                        Selecciona un producto
+                                        Select Product
                                     </div>
 	                                <div class="content-group mt16" attrs="{'invisible': [('allow_partical_payment','=',False)]}">
 	                                    <field name="partial_product_id" colspan="4" nolabel="1" attrs="{'required': [('allow_partical_payment','=',True)]}"/>
@@ -27,6 +120,21 @@
 	                    </div>
 	                </div>
 	            </xpath>
+
+	            <xpath expr="//div[@id='pos_interface_section']" position="inside">
+	                <div class="col-12 col-lg-6 o_setting_box" title="Default customer is set in POS." id="pos_default_customer_id" >
+	                    <div class="o_setting_right_pane">
+	                        <div>
+	                            <label string="Default Customer" for="pos_res_partner_id"/>
+	                            <div class="text-muted"> Default customer set on POS order. </div>
+	                                <div class="content-group mt16">
+	                                <field name="pos_res_partner_id" colspan="4" nolabel="1"/>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	            </xpath>
+            
 	        </field>
 	    </record>
 
@@ -39,6 +147,12 @@
 					<field name="is_partial" invisible="1"/>
 					<field name="amount_due" invisible="1"/>
 					<field name="amount_paid"  invisible="1"/>
+					<field name="return_order_ref" attrs="{'invisible': [('return_order_ref', '=', False)]}"/>
+				</xpath>
+
+				<xpath expr="//form/sheet/notebook/page/field[@name='lines']//tree/field[@name='discount']" position="before">
+					<field name="original_line_id" invisible="1"/>
+					<field name="return_qty"  invisible="0"/>
 				</xpath>
 			</field>
 		</record>
