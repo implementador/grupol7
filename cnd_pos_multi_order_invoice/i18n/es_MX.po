@@ -505,8 +505,8 @@ msgstr "Pagos por servicios educativos (colegiaturas)"
 #: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_account_payment__l10n_mx_edi_periodicity
 #: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_company__l10n_mx_edi_periodicity
 #: model:ir.model.fields,field_description:cnd_pos_multi_order_invoice.field_res_config_settings__l10n_mx_edi_periodicity
-msgid "Periodicity"
-msgstr "Periodicidad"
+msgid "Periodicity Mx"
+msgstr "Periodicidad Mx"
 
 #. module: cnd_pos_multi_order_invoice
 #: model:ir.model,name:cnd_pos_multi_order_invoice.model_pos_order
