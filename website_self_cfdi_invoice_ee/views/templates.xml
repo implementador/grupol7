@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         <div class="form-group form-field">
-                            <label class="col-md-3 col-sm-4 control-label" for="monto_total">Monto Total * (Sin comas ",")</label>
+                            <label class="col-md-3 col-sm-4 control-label" for="monto_total">Monto Total (Sin comas ",") *</label>
                             <div class="col-md-4 col-sm-6">
                                 <input type="text" class="form-control" name="monto_total" t-att-value="request.params.get('monto_total', '')" required=""/>
                             </div>
