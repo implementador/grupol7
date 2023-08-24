@@ -86,7 +86,7 @@
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                         <div class="form-group form-field">
-                            <label class="col-md-3 col-sm-4 control-label" for="partner_name">Nombre, Denominación o Razón Social</label>
+                            <label class="col-md-3 col-sm-4 control-label" for="partner_name">Nombre, Denominación o Razón Social *</label>
                             <div class="col-md-4 col-sm-6">
                                 <input type="text" id="name" class="form-control o_website_self_cfdi_invoice_input" name="partner_name" t-att-value="partner_name" required=""/>
                             </div>
@@ -99,13 +99,13 @@
                           </div>  
                          
                          <div class="form-group form-field">
-                            <label class="col-md-3 col-sm-4 control-label" for="cp_post">Codigo postal</label>
+                            <label class="col-md-3 col-sm-4 control-label" for="cp_post">Codigo postal *</label>
                             <div class="col-md-4 col-sm-6">
                                 <input type="text" id="post_code" class="form-control o_website_self_cfdi_invoice_input" name="cp_post" t-att-value="cp_post" required=""/>
                             </div>
                           </div>
                           <div class="form-group form-field">
-                            <label class="col-md-3 col-sm-4 control-label" for="regimen_fiscal">Regiment fiscal</label>
+                            <label class="col-md-3 col-sm-4 control-label" for="regimen_fiscal">Regiment fiscal *</label>
                             <div class="col-md-4 col-sm-6">
                                 <select id="regimen_fiscal" name="regimen_fiscal" class="form-control" t-att-selected="regimen_fiscal" required="">
 				                        <option value='601' t-att-selected="regimen_fiscal == '601'">General de Ley Personas Morales</option>
@@ -136,13 +136,13 @@
 
                         </div>
                         <div class="form-group form-field">
-                            <label class="col-md-3 col-sm-4 control-label" for="correo_electronico">Correo electrónico</label>
+                            <label class="col-md-3 col-sm-4 control-label" for="correo_electronico">Correo electrónico *</label>
                             <div class="col-md-4 col-sm-6">
                                 <input type="text" id="email" class="form-control"  name="correo_electronico" t-att-value="correo_electronico" required=""/>
                             </div>
                         </div>
                         <div class="form-group form-field">
-			                <label class="col-md-3 col-sm-4 control-label" for="uso_del_cfdi">Uso del CFDI</label>
+			                <label class="col-md-3 col-sm-4 control-label" for="uso_del_cfdi">Uso del CFDI *</label>
 						    <div class="col-md-4 col-sm-6">
 							    <select id="uso_del_cfdi" name="uso_del_cfdi" class="form-control" t-att-selected="uso_del_cfdi" required="">
 				                        <option value='G01' t-att-selected="uso_del_cfdi == 'G01'">Adquisición de mercancías</option>
