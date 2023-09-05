@@ -69,7 +69,7 @@ class stock_quant(models.Model):
     @api.model
     def sync_product(self, prd_id):
 
-        print("\n\nsync-------------------------",product_id)
+        print("\n\nsync-------------------------",prd_id)
         notifications = []
         ssn_obj = self.env['pos.session'].sudo()
         prod_fields = ssn_obj._loader_params_product_product()['search_params']['fields']
