@@ -31,7 +31,6 @@ odoo.define('bi_pos_stock.ProductsWidget', function(require) {
 
 				let self = this;
 
-				console.log("notifications--------------------------------",notifications)
 				notifications.forEach(function (ntf) {
 					ntf = JSON.parse(JSON.stringify(ntf))
 					if(ntf && ntf.type && ntf.type == "product.product/sync_data"){
@@ -42,17 +41,14 @@ odoo.define('bi_pos_stock.ProductsWidget', function(require) {
 
 						prod.pos = self.env.pos;
 
-						console.log("prod-------------------",prod)
 						if(self.env.pos.db.product_by_id[prod.id]){
 
-							console.log('inside-----------if----------------------',old_category_id)
 							if(old_category_id.pos_categ_id){
 								stored_categories[old_category_id.pos_categ_id[0]] = stored_categories[old_category_id.pos_categ_id[0]].filter(function(item) {
 									return item != prod.id;
 								});
 							}
 
-							console.log("stored_categories--------------------",stored_categories)
 							if(stored_categories[new_category_id]){
 								stored_categories[new_category_id].push(prod.id);
 							}
@@ -67,7 +63,6 @@ odoo.define('bi_pos_stock.ProductsWidget', function(require) {
 
 			updateProd(product){
 
-				console.log("updateProd------------------------------------",product)
 				let self = this;
 				self.env.pos._loadProductProduct([product]);
 				const productMap = {};
@@ -79,13 +74,9 @@ odoo.define('bi_pos_stock.ProductsWidget', function(require) {
 				productTemplateMap[product.product_tmpl_id[0]] = (productTemplateMap[product.product_tmpl_id[0]] || []).concat(product);
 				let new_prod =  Product.create(product);
 
-				console.log("new_prod--------------------------",new_prod)
-
-				console.log("self--------------------",self.env.pos)
 				for (let pricelist of self.env.pos.pricelists) {
 					for (const pricelistItem of pricelist.items) {
 
-						console.log("pricelistItem--------------------------".pricelistItem)
 						if (pricelistItem.product_id) {
 							let product_id = pricelistItem.product_id[0];
 							let correspondingProduct = productMap[product_id];
@@ -105,8 +96,6 @@ odoo.define('bi_pos_stock.ProductsWidget', function(require) {
 						}
 					}
 				}
-
-				console.log("new_prod---222222-----------------------",new_prod)
 				self.env.pos.db.product_by_id[product.id] = new_prod ;
 			}
 
@@ -128,21 +117,12 @@ odoo.define('bi_pos_stock.ProductsWidget', function(require) {
 				let self = this;
 				let prods = super.productsToDisplay;
 				let location = this.env.pos.custom_stock_locations;
-
-				console.log("location--------------------",location)
-				
-				console.log("specific----------------------",self.env.pos.config.show_stock_location)
-				
-				console.log("type-======================",self.env.pos.config.pos_stock_type)
 				if (self.env.pos.config.show_stock_location == 'specific'){
 					if (self.env.pos.config.pos_stock_type == 'onhand'){
-
 
 						$.each(prods, function( i, prd ){
 							prd['bi_on_hand'] = 0;
 							let loc_onhand = JSON.parse(prd.quant_text);
-
-							console.log("loc_onhand------------------------",loc_onhand)
 							$.each(loc_onhand, function( k, v ){
 								if(location[0]['id'] == parseInt(k)){
 									prd['bi_on_hand'] = v[0];
