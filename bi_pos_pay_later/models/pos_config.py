@@ -24,7 +24,7 @@ class ResConfigSettings(models.TransientModel):
 	pos_res_partner_id = fields.Many2one(related='pos_config_id.res_partner_id', readonly=False)
 
 	@api.model_create_multi
-    def create(self, vals_list):
+	def create(self, vals_list):
 		res = super(ResConfigSettings, self).create(vals_list)
 
 		for vals in vals_list:
