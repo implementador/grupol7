@@ -68,6 +68,8 @@ class stock_quant(models.Model):
 
     @api.model
     def sync_product(self, prd_id):
+
+        print("sync-------------------------",product_id)
         notifications = []
         ssn_obj = self.env['pos.session'].sudo()
         prod_fields = ssn_obj._loader_params_product_product()['search_params']['fields']
@@ -76,6 +78,8 @@ class stock_quant(models.Model):
         product = prod_obj.with_context(display_default_code=False).search_read([('id', '=', prd_id)],prod_fields)
         product_id = prod_obj.search([('id', '=', prd_id)]) 
 
+
+        print("product_id------------------------".product_id)
         res = product_id._compute_quantities_dict(self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'), self._context.get('from_date'), self._context.get('to_date'))
         product[0]['qty_available'] = res[product_id.id]['qty_available']
         if product :
@@ -89,7 +93,11 @@ class stock_quant(models.Model):
                 'access':'pos.sync.product',
             }
             notifications.append([self.env.user.partner_id,'product.product/sync_data',vals])
+        
+        print("notifications---------------------------",notifications)
         if len(notifications) > 0:
+            print("notifications------------222222---------------",notifications)
+
             self.env['bus.bus']._sendmany(notifications)
         return True
 
@@ -101,6 +109,7 @@ class stock_quant(models.Model):
         notifications = []
 
         for rec in res:
+            print("create-----------------------")
             rec.sync_product(rec.product_id.id)
         return res
 
@@ -108,6 +117,8 @@ class stock_quant(models.Model):
         res = super(stock_quant, self).write(vals)
         notifications = []
         for rec in self:
+
+            print("write-----------------------")
             rec.sync_product(rec.product_id.id)
         return res
 
