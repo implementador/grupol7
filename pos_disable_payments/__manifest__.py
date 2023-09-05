@@ -3,7 +3,7 @@
 
 
 {
-    "name": "Bloquear botones del PDV",
+    "name": "Allow/Disable POS Features Point of Sales Access rights POS Restrict User staff permissions",
     "version": "16.0.0.1",
     "category": "Point of Sale",
     'summary': 'POS hide Features POS Access rights pos Disable Payment disable Qty pos Discount pos disable price pos restric pos Limitations pos Disable pos enabled POS deny pos hide features pos permissions pos user pos extra',
@@ -84,8 +84,8 @@
 	odoo point of sale apply and restrict Remove Order line option point of sale
 	odoo point of sale apply and restrict delete Order line option point of sale
 	""",
-    "author": "Lava Studio",
-    "website": "https://www.lava.mx",
+    "author": "BrowseInfo",
+    "website": "https://www.browseinfo.in",
     "price": 20,
     "currency": 'EUR',
     "depends": ['base', 'point_of_sale', 'pos_hr'],
@@ -101,6 +101,7 @@
     },
     "auto_install": False,
     "installable": True,
+    'live_test_url': 'https://youtu.be/p_Xuz95CAgg',
     "images": ['static/description/Banner.gif'],
     'license': 'OPL-1',
 }

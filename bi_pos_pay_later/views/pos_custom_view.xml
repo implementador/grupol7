@@ -23,7 +23,7 @@
 		                    <th>Receipt Number</th>
 		                    <th>Customer</th>
 		                    <th>Total</th>
-		                  <!--  <th>Branch</th>-->
+		                    <th>Branch</th>
 		                </tr></thead>
 		                <tbody>
 		                <tr t-foreach='orders' t-as='order'>
@@ -36,15 +36,15 @@
 		                        </t>
 		                    </td>
 
-		                    <td class="text-center">
+				    <td class="text-center">
 		                        <t t-esc='round(order.amount_paid,2)' />
 		                    </td>
 
-		                <!--    <td>
+		                    <td>
 		                        <t t-if="order.branch_id">
 		                            <t t-esc='order.branch_id.name' />
 		                        </t>
-		                    </td>-->
+		                    </td>
 
 		                </tr>
 		                </tbody>
@@ -55,12 +55,12 @@
 		            <h3>Payments</h3>
 		            <table  class="table table-sm">
 		                <thead><tr>
-		                    <th class="text-center">Name</th>
+			            <th class="text-center">Name</th>
 		                    <th class="text-center">Total</th>
 		                </tr></thead>
 		                <tbody>
 		                <tr t-foreach='payments' t-as='payment'>
-		                    <td class="text-center"><t t-esc="payment['name']" /></td>
+			           <td class="text-center"><t t-esc="payment['name']" /></td>
 		                    <td class="text-center"><t t-esc="payment['total']" t-options="{'widget': 'float', 'precision': currency_precision}"/></td>
 		                </tr>
 		                </tbody>
@@ -71,13 +71,13 @@
 		            <h3>Taxes</h3>
 		            <table  class="table table-sm">
 		                <thead><tr>
-		                    <th class="text-center">Name</th>
+			            <th class="text-center">Name</th>
 		                    <th class="text-center">Tax Amount</th>
 		                    <th class="text-center">Base Amount</th>
 		                </tr></thead>
 		                <tbody>
 		                <tr t-foreach='taxes' t-as='tax'>
-		                    <td class="text-center"><t t-esc="tax['name']" /></td>
+				    <td class="text-center"><t t-esc="tax['name']" /></td>
 		                    <td class="text-center"><t t-esc="tax['tax_amount']" t-options="{'widget': 'float', 'precision': currency_precision}"/></td>
 		                    <td class="text-center"><t t-esc="tax['base_amount']" t-options="{'widget': 'float', 'precision': currency_precision}"/></td>
 		                </tr>

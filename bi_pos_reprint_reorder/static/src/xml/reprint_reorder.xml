@@ -169,48 +169,54 @@
 				<div class="orderlines">
 					<table style="width:100%;">
 						<colgroup>
-							<!-- <col width='25%' /> -->
 							<col width='15%' />
-							<col width='15%' />
-							<col width='15%' />
-							<col width="55%"/>
+							<col width='25%' />
+							<col width='10%' />
+							<col width='50' />
 						</colgroup>
 						<thead>
 							<tr style="border-bottom: 2px solid black;">
 
 								<th class="pos-center-align">Qty</th>
-								<th class="pos-left-align">Amount</th>
-								<th class="pos-right-align">Item</th>
-								<th class="pos-right-align">Product</th>
+								<th class="pos-center-align">Amount</th>
+								<th class="pos-center-align">Code</th>
+								<th class="pos-center-align">Product</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr t-foreach='props.orderlines' t-as='line' t-key="line.id" style="border-bottom: 1px solid gray;">
-								<t t-log="line"/>
-								<td class="pos-center-align" style="padding: 10px;">
-									<t t-esc="line.qty" />
-								</td>
-								<td class="pos-left-align" style="padding: 10px;">
-									<t t-esc='env.pos.format_currency_no_symbol(line.total_price)'/>
-									<t t-if="line.discount > 0">
-										<div>
-											Discount: <t t-esc='line.discount' />%
-										</div>
-									</t>
-								</td>
-								<td class="pos-right-align" style="padding: 10px;font-size: 14px;">
-									<t t-if="line.product_code">
-										[<t t-esc="line.product_code" />] 
-									</t>
-								<td class="pos-right-align" style="padding: 10px;font-size: 14px;">
-										<t t-esc="line.product_id" />
-								</td>
+						<tr t-foreach='props.orderlines' t-as='line' t-key="line.id" style="border-bottom: 1px solid gray;">
+ 								
+							<t t-log="line"/>
+
+									<td class="pos-center-align" style="padding: 10px;">
+										<t t-esc="line.qty" />
+									</td>
+									<td class="pos-center-align" style="padding: 10px;">
+										<t t-esc="env.pos.format_currency_no_symbol(line.total_price)" />
+										<t t-if="line.discount > 0">
+											<div>
+												Discount: <t t-esc='line.discount' />%
+											</div>
+										</t>
+									</td>
+									<td class="pos-center-align" style="padding: 10px;font-size: 14px;">
+										<t t-if="line.product_code">
+											[<t t-esc="line.product_code" />]
+										</t>
+										<t t-else="">
+											ND
+										</t>
+										
+									</td>
+									<td class="pos-center-align" style="padding: 10px;font-size: 14px;">
+										 <t t-esc="line.product_id" /> 
+									</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 
-				<div class="pos-receipt-right-align">--------</div>
+				<div class="pos-receipt-right-align">          </div>
 				<br/>
 				<div class="pos-receipt-amount">
 					TOTAL

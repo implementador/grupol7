@@ -19,7 +19,7 @@ odoo.define('pos_disable_payments.BiProductScreen', function(require) {
             if (this.currentOrder.get_selected_orderline()) {
                 if (this.env.pos.numpadMode === 'quantity') {
                     const result = this.currentOrder.get_selected_orderline().set_quantity(val);
-                    if (!result) NumberBuffer.reset();
+                    // if (!result) NumberBuffer.reset();
                 } else if (this.env.pos.numpadMode === 'discount') {
                     this.currentOrder.get_selected_orderline().set_discount(val);
                 } else if (this.env.pos.numpadMode === 'price') {

@@ -18,3 +18,9 @@ Version 16.0.0.6 : (13-07-2023)
 
 Version 16.0.0.7 : (31-07-2023)
 	-- If the order is draft then hide return order button in the pos order scree.
+
+Version 16.0.0.8 : (28-08-2023)
+	-- when we close session at that time get an error debug for taht and fixed that issue.
+
+Version 16.0.0.9 : (29-08-2023)
+	-- For the customer screen added css because some content is not display becuase of overflow.
