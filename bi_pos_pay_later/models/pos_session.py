@@ -297,9 +297,11 @@ class PosSessionInherit(models.Model):
 						line['base_tags'],
 					)
 					sales[sale_key] = self._update_amounts(sales[sale_key], {'amount': line['amount']}, line['date_order'])
+					sales[sale_key].setdefault('tax_amount', 0.0)
 					# Combine tax lines
 					for tax in line['taxes']:
 						tax_key = (tax['account_id'], tax['tax_repartition_line_id'], tax['id'], tuple(tax['tag_ids']))
+						sales[sale_key]['tax_amount'] += tax['amount']
 						order_taxes[tax_key] = self._update_amounts(
 							order_taxes[tax_key],
 							{'amount': tax['amount'], 'base_amount': tax['base']},
