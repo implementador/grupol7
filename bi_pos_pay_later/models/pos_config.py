@@ -23,17 +23,19 @@ class ResConfigSettings(models.TransientModel):
 
 	pos_res_partner_id = fields.Many2one(related='pos_config_id.res_partner_id', readonly=False)
 
-	@api.model
-	def create(self, vals):
-		res=super(ResConfigSettings, self).create(vals)
-		product=self.env['product.product'].browse(vals.get('partial_product_id',False))
+	@api.model_create_multi
+    def create(self, vals_list):
+		res=super(ResConfigSettings, self).create(vals_list)
 
-		if vals.get('allow_partical_payment',False) and product:
-			if product.available_in_pos != True:
-				raise ValidationError(_('Please enable available in POS for the Partial Payment Product'))
+		for vals in vals_list:
+			product=self.env['product.product'].browse(vals.get('partial_product_id',False))
 
-			if product.taxes_id:
-				raise ValidationError(_('You are not allowed to add Customer Taxes in the Partial Payment Product'))
+			if vals.get('allow_partical_payment',False) and product:
+				if product.available_in_pos != True:
+					raise ValidationError(_('Please enable available in POS for the Partial Payment Product'))
+
+				if product.taxes_id:
+					raise ValidationError(_('You are not allowed to add Customer Taxes in the Partial Payment Product'))
 
 		return res
 

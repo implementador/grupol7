@@ -11,7 +11,7 @@ odoo.define('bi_pos_pay_later.BiProductScreen', function(require) {
                 this.env.pos.add_new_order();
             }
             const product = event.detail;
-            if(product.qty_available > -100000){
+            if(product.qty_available > 0){
 
 	            const options = await this._getAddProductOptions(product);
 	            // Do not add product if options is undefined.

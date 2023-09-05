@@ -60,7 +60,7 @@ msgstr "Atrás"
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
 msgid "Base Amount"
-msgstr "Monto base"
+msgstr "Cantidad base"
 
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
@@ -72,14 +72,14 @@ msgstr "Sucursal"
 #: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
 msgid "Cancel Payment ?"
-msgstr "¿Cancelar el pago?"
+msgstr "Cancelar el pago ?"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
 #: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Cerca"
 
 #. module: bi_pos_pay_later
 #: model:ir.model,name:bi_pos_pay_later.model_res_config_settings
@@ -106,19 +106,19 @@ msgstr "Cliente predeterminado"
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.bi_pos_pay_later
 msgid "Default customer is set in POS."
-msgstr "El cliente predeterminado se establece en PDV."
+msgstr "El cliente predeterminado se establece en POS."
 
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.bi_pos_pay_later
 msgid "Default customer set on POS order."
-msgstr "Cliente predeterminado establecido en el pedido de PDV."
+msgstr "Cliente predeterminado establecido en el pedido de POS."
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
 #: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Discard"
-msgstr "Descartar"
+msgstr "Desechar"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -132,7 +132,7 @@ msgstr "Descuento:"
 #: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Draft Order"
-msgstr "Orden en borrador/apartado"
+msgstr "Proyecto de orden"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -140,7 +140,7 @@ msgstr "Orden en borrador/apartado"
 #: code:addons/bi_pos_pay_later/static/src/js/Screens/PaymentScreen.js:0
 #, python-format
 msgid "Empty Order"
-msgstr "Orden vacía"
+msgstr "Pedido vacío"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -159,7 +159,7 @@ msgstr "Facturado"
 #. module: bi_pos_pay_later
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order__is_partial
 msgid "Is Partial Payment"
-msgstr "Pago parcial"
+msgstr "Es pago parcial"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -254,7 +254,7 @@ msgstr "Detalles de pedidos"
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.bi_pos_pay_later
 msgid "POS Pay Later Configuration"
-msgstr "Configuración de apartados en PDV"
+msgstr "Configuración de pago posterior de POS"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -274,7 +274,7 @@ msgstr "Pago parcial"
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_config__partial_product_id
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_res_config_settings__partial_product_id
 msgid "Partial Payment Product"
-msgstr "Producto de apartado"
+msgstr "Producto de Pago Parcial"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -286,33 +286,33 @@ msgstr "Pagar"
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
 msgid "Payments"
-msgstr "Pagos"
+msgstr "Payments"
 
 #. module: bi_pos_pay_later
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order__is_picking_created
 msgid "Picking Created"
-msgstr "Albarán creado"
+msgstr "Selección creada"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
 #: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Please complete current order or discard the changes"
-msgstr "Complete el pedido actual o descarte los cambios."
+msgstr "Complete el pedido actual o descarte los cambios"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
 #: code:addons/bi_pos_pay_later/static/src/js/Screens/PayPOSOrdersScreen.js:0
 #, python-format
 msgid "Please configure partial product."
-msgstr "Configure el producto de apartado."
+msgstr "Configure el producto parcial."
 
 #. module: bi_pos_pay_later
 #. odoo-python
 #: code:addons/bi_pos_pay_later/models/pos_config.py:0
 #, python-format
 msgid "Please enable available in POS for the Partial Payment Product"
-msgstr "Por favor habilite disponible en PDV para el producto de apartado"
+msgstr "Por favor habilite disponible en POS para el Producto de Pago Parcial"
 
 #. module: bi_pos_pay_later
 #: model:ir.model,name:bi_pos_pay_later.model_pos_config
@@ -354,7 +354,7 @@ msgstr "Sesión de punto de venta"
 #: code:addons/bi_pos_pay_later/static/src/xml/pay_later.xml:0
 #, python-format
 msgid "Posted"
-msgstr "Publicado"
+msgstr "Posted"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -373,7 +373,7 @@ msgstr "Cantidad"
 #. module: bi_pos_pay_later
 #: model_terms:ir.ui.view,arch_db:bi_pos_pay_later.qrcode_inherit
 msgid "Receipt Number"
-msgstr "Número de ticket"
+msgstr "Número de recibo"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -407,7 +407,7 @@ msgstr "Productos devueltos"
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order_line__return_qty
 #, python-format
 msgid "Return Qty"
-msgstr "Cantidad a devolver"
+msgstr "Cantidad de devolución"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -524,7 +524,7 @@ msgid ""
 "You Can not create invoice for draft order,please uncheck \"Invoice\" from "
 "payment screen."
 msgstr ""
-"No puede crear una factura para el pedido en borrador/apartado, desmarque \"Factura\" "
+"No puede crear una factura para el pedido preliminar, desmarque \"Factura\" "
 "en la pantalla de pago."
 
 #. module: bi_pos_pay_later
@@ -556,7 +556,7 @@ msgstr "No puede cambiar el cliente del pedido preliminar."
 #: code:addons/bi_pos_pay_later/models/pos_session.py:0
 #, python-format
 msgid "You cannot close the POS when orders are still in draft"
-msgstr "No se puede cerrar el PDV cuando los pedidos aún están en borrador"
+msgstr "No se puede cerrar el TPV cuando los pedidos aún están en borrador"
 
 #. module: bi_pos_pay_later
 #. odoo-javascript
@@ -569,7 +569,7 @@ msgstr "No puede realizar pagos parciales. Seleccione el cliente primero."
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_config__res_partner_id
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_res_config_settings__pos_res_partner_id
 msgid "default Customer"
-msgstr "Cliente predeterminado"
+msgstr "cliente predeterminado"
 
 #. module: bi_pos_pay_later
 #: model:ir.model.fields,field_description:bi_pos_pay_later.field_pos_order_line__original_line_id
@@ -581,4 +581,4 @@ msgstr "línea original"
 #: code:addons/bi_pos_pay_later/models/pos_order.py:0
 #, python-format
 msgid "return"
-msgstr "Devolver"
+msgstr "devolver"

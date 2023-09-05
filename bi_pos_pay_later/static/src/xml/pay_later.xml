@@ -188,7 +188,7 @@
 						<thead>
 							<tr style="border-bottom: 2px solid black;">
 
-								<th class="pos-left-align">Qty</th>
+								<th class="pos-center-align">Qty</th>
 								<th class="pos-center-align">Amount</th>
 								<th class="pos-center-align">Code</th>
 								<th class="pos-center-align">Product</th>
