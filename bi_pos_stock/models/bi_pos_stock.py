@@ -107,7 +107,7 @@ class stock_quant(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        res = = super(stock_quant,self).create(vals_list)
+        res = super(stock_quant,self).create(vals_list)
 
         notifications = []
 

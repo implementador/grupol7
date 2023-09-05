@@ -25,7 +25,7 @@ class ResConfigSettings(models.TransientModel):
 
 	@api.model_create_multi
     def create(self, vals_list):
-		res=super(ResConfigSettings, self).create(vals_list)
+		res = super(ResConfigSettings, self).create(vals_list)
 
 		for vals in vals_list:
 			product=self.env['product.product'].browse(vals.get('partial_product_id',False))
