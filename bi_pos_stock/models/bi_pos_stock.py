@@ -71,7 +71,7 @@ class stock_quant(models.Model):
 
     @api.model
     def sync_product(self, prd_id):
-        
+
         _logger.info("\n\nsync-------------------------",prd_id)
         notifications = []
         ssn_obj = self.env['pos.session'].sudo()
@@ -112,7 +112,7 @@ class stock_quant(models.Model):
         notifications = []
 
         for rec in res:
-            _logger.info("create-----------------------")
+            _logger.info("create-----------------------",rec.product_id)
             rec.sync_product(rec.product_id.id)
         return res
 
@@ -121,7 +121,7 @@ class stock_quant(models.Model):
         notifications = []
         for rec in self:
 
-            _logger.info("\n\nwrite-----------------------")
+            _logger.info("\n\nwrite-----------------------",rec.product_id)
             rec.sync_product(rec.product_id.id)
         return res
 
