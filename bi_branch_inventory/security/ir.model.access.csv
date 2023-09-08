@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+action_res_branch_location_rule,res.branch.user.location,stock.model_stock_location,bi_branch_base.group_branch_user,1,1,1,1
+action_res_branch_location_rule_manager,res.branch.user.location,stock.model_stock_location,bi_branch_base.group_branch_user_manager,1,1,1,1
+access_stock_warehouse_branch_user,stock.warehouse.branch.user,stock.model_stock_warehouse,bi_branch_base.group_branch_user,1,1,0,0
+access_stock_warehouse_branch_manager,stock.warehouse.branch.manager,stock.model_stock_warehouse,bi_branch_base.group_branch_user_manager,1,1,1,1
+access_stock_picking_branc_user,stock.picking.branch.user,stock.model_stock_picking,bi_branch_base.group_branch_user,1,1,1,1
