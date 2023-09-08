@@ -7,7 +7,7 @@
 	"category" : "Point of Sale",
 	"depends" : ['base','sale_management','point_of_sale'],
 	"author": "BrowseInfo",
-	'summary': 'Apps manage point of sale orders from the POS screen pos all order list pos order list pos list point of sales list Pos All Orders List on POS screen pos orderlist pos all orderlist list pos list orders pos all orders display pos orders list pos all orders',
+	'summary': 'Apps manage point of sale orders from the POS screen, pos all order list pos order list pos list point of sales list Pos All Orders List on POS screen pos orderlist pos all orderlist list pos list orders pos all orders display pos orders list pos all orders',
 	'price': 18,
 	'currency': "EUR",
 	"description": """
