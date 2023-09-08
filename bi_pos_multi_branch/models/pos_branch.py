@@ -107,8 +107,8 @@ class pos_order(models.Model):
         values['branch_id'] = self.branch_id and self.branch_id.id or False
         return values
 
-    def _prepare_invoice_line(self, order_line):
-        values = super(pos_order, self)._prepare_invoice_line(order_line)
+    def _prepare_invoice_line(self, order_line, receipt_number=False):
+        values = super(pos_order, self)._prepare_invoice_line(order_line, receipt_number)
         values['branch_id'] = self.branch_id and self.branch_id.id or False
         return values
 
