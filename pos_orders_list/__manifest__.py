@@ -6,7 +6,7 @@
 	"version" : "16.0.0.1",
 	"category" : "Point of Sale",
 	"depends" : ['base','sale_management','point_of_sale'],
-	"author": "BrowseInfo",
+	"author": "Lava Studio",
 	'summary': 'Apps manage point of sale orders from the POS screen, pos all order list pos order list pos list point of sales list Pos All Orders List on POS screen pos orderlist pos all orderlist list pos list orders pos all orders display pos orders list pos all orders',
 	'price': 18,
 	'currency': "EUR",
@@ -39,7 +39,7 @@ It shows the Pos All Orders List on POS screen View all POS order on screen.
 This apps helps to manage point of sale orders from the POS screen
 List all POS order on POS screen Show order on POS view all orders on POS Display order on POS View order on POS
 	""",
-	"website" : "https://www.browseinfo.in",
+	"website" : "https://www.lava.mx",
 	"data": [
 		'views/custom_pos_view.xml',
 	],

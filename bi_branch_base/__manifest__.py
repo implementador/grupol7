@@ -17,10 +17,10 @@
        multiple Branch for contact in odoo,
     
     """,
-    'author': 'BrowseInfo',
+    'author': 'Lava Studio',
     "price": 10,
     "currency": 'EUR',
-    'website': 'https://www.browseinfo.in',
+    'website': 'https://www.lava.mx',
     'depends': ['base', 'web'],
     'data': [
         'security/branch_security.xml',

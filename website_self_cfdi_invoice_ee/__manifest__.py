@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Portal de Auto-Facturacion CFDI",
+    'name': "Portal de Auto Facturacion CFDI",
 
     'summary': """
         Portal de Cliente diseñado para generar facturas desde la Web.""",

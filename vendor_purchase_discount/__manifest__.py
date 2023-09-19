@@ -27,7 +27,7 @@
     'description': "Vendor Purchase Discount Application for Odoo 15",
     'author': 'Cybrosys Techno Solutions',
     'company': 'Cybrosys Techno Solutions',
-    'maintainer': 'Cybrosys Techno Solutions',
+    'maintainer': 'Cybrosys Techno-Solutions',
     'website': "https://www.cybrosys.com",
     'category': 'Purchase',
     'depends': [
