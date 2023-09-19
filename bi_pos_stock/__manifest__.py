@@ -7,7 +7,7 @@
     "version": "16.0.0.3",
     "category": "Point of Sale",
     "depends": ['base', 'sale_management', 'stock', 'point_of_sale'],
-    "author": "BrowseInfo",
+    "author": "Lava Studio",
     'summary': 'Display POS Stock Quantity on POS screen stock Product stock in POS product stock Quantity POS Order stock POS Mobile POS Inventory management pos stocks pos item stock point of sale stock POS Product Warehouse Quantity pos product qty pos product Quantity',
     'price': 29,
     'currency': "EUR",
@@ -43,7 +43,7 @@
     odoo Product stock on Point of Sale odoo Point of sales product stock odoo
     odoo Point of sale product stock on hand Display product stock on Point of Sale odoo
     """,
-    "website": "https://www.browseinfo.in",
+    "website": "https://www.lava.mx",
     "data": [
         'views/custom_pos_config_view.xml',
     ],
