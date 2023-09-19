@@ -7,7 +7,7 @@
     "version": "16.0.1.0.2",
     "category": "Account",
     "website": "https://github.com/OCA/multi-company",
-    "author": "Tecnativa, Odoo Community Association (OCA)",
+    "author": "Lava Studio",
     "license": "AGPL-3",
     "depends": ["account"],
     "data": ["views/product_template_view.xml"],
