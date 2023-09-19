@@ -17,10 +17,10 @@
         Branch on Journal Entry in odoo,
 
     """,
-    'author': 'BrowseInfo',
+    'author': 'Lava Studio',
     "price": 40,
     "currency": 'EUR',
-    'website': 'https://www.browseinfo.in',
+    'website': 'https://www.lava.mx',
     "depends": ['point_of_sale', 'bi_branch_invoice', 'bi_branch_inventory'],
     "data": [
         'security/branch_pos_security.xml',
