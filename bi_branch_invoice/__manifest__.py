@@ -18,10 +18,10 @@
         multiple Branch for Bank Statement in odoo,
 
     """,
-    'author': 'BrowseInfo',
+    'author': 'Lava Studio',
     "price": 30,
     "currency": 'EUR',
-    'website': 'https://www.browseinfo.in',
+    'website': 'https://www.lava.mx',
     'depends': ['account', 'sale_management', 'bi_branch_base'],
     'data': [
         'views/inherited_account_invoice.xml',
