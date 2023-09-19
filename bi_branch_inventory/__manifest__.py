@@ -17,10 +17,10 @@
        multiple Branch for product move in odoo,
 
     """,
-    'author': 'BrowseInfo',
+    'author': 'Lava Studio',
     "price": 30,
     "currency": 'EUR',
-    'website': 'https://www.browseinfo.in',
+    'website': 'https://www.lava.mx',
     'depends': ['stock', 'bi_branch_base'],
     'data': [
         'security/branch_security.xml',
