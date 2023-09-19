@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Factura Global POS (Mexico SAT)',
+    'name': 'Factura Global POS (Mexico-SAT)',
 
     'summary': """
     Con este módulo puedes generar una Factura Global de pedidos de Punto de Venta de sesiones abiertas o cerradas.""",
