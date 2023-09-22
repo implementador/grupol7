@@ -6,7 +6,7 @@
     "version" : "16.0.0.1",
     "category" : "Point of Sale",
     "depends" : ['base','sale','point_of_sale','pos_orders_list'],
-    "author": "BrowseInfo",
+    "author": "Lava Studio",
     'summary': 'point of sale reprint and reorder reprint POS All Order list pos reorder pos repeat order pos order repeat point of sales reorders pos re-orders pos orders pos list orders pos reprint pos order reprint pos order reprint pos order receipt reprint pos receipt pos repeat orders',
     "description": """
 
@@ -76,7 +76,7 @@ This apps helps to manage point of sale orders from the POS screen
 List all POS order on POS screen Show order on POS view all orders on POS Display order on POS View order on POS
     
     """,
-    "website" : "https://www.browseinfo.in",
+    "website" : "https://www.lava.mx",
     'price': '9',
     'currency': "EUR",
     'assets': {

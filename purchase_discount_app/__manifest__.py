@@ -2,7 +2,7 @@
 
 {
     'name': 'Discount on Purchase Order',
-    "author": "Edge Technologies",
+    "author": "Lava Studio",
     'version': '16.0.1.1',
     'live_test_url': "",
     "images":['static/description/main_screenshot.png'], 

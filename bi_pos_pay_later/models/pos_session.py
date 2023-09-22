@@ -41,9 +41,10 @@ class PosSessionInherit(models.Model):
 		return self.env['pos.order'].search_read(**params['search_params'])
 
 
-	@api.model
-	def create(self, vals):
-		res = super(PosSessionInherit, self).create(vals)
+	@api.model_create_multi
+	def create(self, vals_list):
+		res = super(PosSessionInherit, self).create(vals_list)
+		
 		orders = self.env['pos.order'].search([('user_id', '=', self.env.uid),
 											   ('state', '=', 'draft'), ('session_id.state', '=', 'closed')])
 		orders.write({'session_id': res.id})

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Uso y Forma de Pago por defecto (Localización Mexicana)',
+    'name': 'Uso y Forma de Pago por defecto (Localización-Mexicana)',
 
     'summary': """
     Es posible definir valores por defecto de "Uso" y "Forma de Pago" del cliente.""",
