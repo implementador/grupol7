@@ -68,34 +68,37 @@ class stock_quant(models.Model):
 
 	@api.model
 	def sync_product(self, prd_id):
-
-		notifications = []
-		ssn_obj = self.env['pos.session'].sudo()
-		prod_fields = ssn_obj._loader_params_product_product()['search_params']['fields']
-		prod_obj = self.env['product.product']
-
-		product = prod_obj.with_context(display_default_code=False).search_read([('id', '=', prd_id)],prod_fields)
-		product_id = prod_obj.search([('id', '=', prd_id)]) 
-
-
-		res = product_id._compute_quantities_dict(self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'), self._context.get('from_date'), self._context.get('to_date'))
-		product[0]['qty_available'] = res[product_id.id]['qty_available']
-		if product :
-			categories = ssn_obj._get_pos_ui_product_category(ssn_obj._loader_params_product_category())
-			product_category_by_id = {category['id']: category for category in categories}
-			product[0]['categ'] = product_category_by_id[product[0]['categ_id'][0]]
-
-			vals = {
-				'id': [product[0].get('id')], 
-				'product': product,
-				'access':'pos.sync.product',
-			}
-			notifications.append([self.env.user.partner_id,'product.product/sync_data',vals])
-		
-		if len(notifications) > 0:
-			self.env['bus.bus']._sendmany(notifications)
-		return True
-
+	    notifications = []
+	    ssn_obj = self.env['pos.session'].sudo()
+	    prod_fields = ssn_obj._loader_params_product_product()['search_params']['fields']
+	    prod_obj = self.env['product.product']
+	
+	    product = prod_obj.with_context(display_default_code=False).search_read([('id', '=', prd_id)], prod_fields)
+	    product_id = prod_obj.search([('id', '=', prd_id)])
+	
+	    try:
+	        res = product_id._compute_quantities_dict(self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'), self._context.get('from_date'), self._context.get('to_date'))
+	        product[0]['qty_available'] = res.get(product_id.id, {}).get('qty_available', 0)
+	    except KeyError as e:
+	        # Handle the KeyError here, you can log the error or take appropriate action
+	        # For example, set qty_available to 0 or raise a custom exception
+	        product[0]['qty_available'] = 0
+	
+	    if product:
+	        categories = ssn_obj._get_pos_ui_product_category(ssn_obj._loader_params_product_category())
+	        product_category_by_id = {category['id']: category for category in categories}
+	        product[0]['categ'] = product_category_by_id.get(product[0]['categ_id'][0])
+	
+	        vals = {
+	            'id': [product[0].get('id')],
+	            'product': product,
+	            'access': 'pos.sync.product',
+	        }
+	        notifications.append([self.env.user.partner_id, 'product.product/sync_data', vals])
+	
+	    if len(notifications) > 0:
+	        self.env['bus.bus']._sendmany(notifications)
+	    return True
 
 	@api.model_create_multi
 	def create(self, vals_list):
