@@ -32,7 +32,7 @@ class pos_config(models.Model):
 
 	stock_location_id = fields.Many2one(
 		'stock.location', string='Stock Location',
-		domain=[('usage', '=', 'internal')], required=True, default=_get_default_location)
+		domain=[('usage', '=', 'internal')], default=_get_default_location)
 
 
 class ResConfigSettings(models.TransientModel):
