@@ -81,7 +81,7 @@
                                     Stock location used for inventory
                                 </div>
                                 <div class="content-group mt16">
-                                    <field name="stock_location_id"/>
+                                    <field name="stock_location_id" attrs="{'required' : [('show_stock_location', '=', 'specific')]}"/>
                                 </div>
                             </div>
                         </div>
