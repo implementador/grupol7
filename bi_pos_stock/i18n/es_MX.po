@@ -51,13 +51,13 @@ msgstr "Almacén actual"
 #: code:addons/bi_pos_stock/static/src/js/Screens/ProductScreen.js:0
 #, python-format
 msgid "Deny Order"
-msgstr "Venta denegado"
+msgstr "Venta denegada"
 
 #. module: bi_pos_stock
 #. odoo-javascript
 #: code:addons/bi_pos_stock/static/src/js/Screens/ProductScreen.js:0
 #, python-format
-msgid "Deny Order() is Out of Stock."
+msgid "Denegar venta () está agotado."
 msgstr "Denegar venta () está agotado."
 
 #. module: bi_pos_stock
