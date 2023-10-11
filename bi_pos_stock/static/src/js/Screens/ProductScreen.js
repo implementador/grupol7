@@ -25,7 +25,7 @@ odoo.define('bi_pos_stock.productScreen', function(require) {
 								call_super = false;
 								self.showPopup('ErrorPopup', {
 									title: self.env._t('Deny Order'),
-									body: self.env._t("Deny Order" + "(" + product.display_name + ")" + " is Out of Stock."),
+									body: self.env._t("(" + product.display_name + ")" + " is Out of Stock."),
 								});
 							}
 						}
@@ -34,7 +34,7 @@ odoo.define('bi_pos_stock.productScreen', function(require) {
 								call_super = false;
 								self.showPopup('ErrorPopup', {
 									title: self.env._t('Deny Order'),
-									body: self.env._t("Deny Order" + "(" + product.display_name + ")" + " is Out of Stock."),
+									body: self.env._t("(" + product.display_name + ")" + " is Out of Stock."),
 								});
 							}
 						}
@@ -43,7 +43,7 @@ odoo.define('bi_pos_stock.productScreen', function(require) {
 								call_super = false;
 								self.showPopup('ErrorPopup', {
 									title: self.env._t('Deny Order'),
-									body: self.env._t("Deny Order" + "(" + product.display_name + ")" + " is Out of Stock."),
+									body: self.env._t("(" + product.display_name + ")" + " is Out of Stock."),
 								});
 							}
 						}
@@ -52,7 +52,7 @@ odoo.define('bi_pos_stock.productScreen', function(require) {
 								call_super = false;
 								self.showPopup('ErrorPopup', {
 									title: self.env._t('Deny Order'),
-									body: self.env._t("Deny Order" + "(" + product.display_name + ")" + " is Out of Stock."),
+									body: self.env._t("(" + product.display_name + ")" + " is Out of Stock."),
 								});
 							}
 						}
@@ -62,7 +62,7 @@ odoo.define('bi_pos_stock.productScreen', function(require) {
 								call_super = false;
 								self.showPopup('ErrorPopup', {
 									title: self.env._t('Deny Order'),
-									body: self.env._t("Deny Order" + "(" + product.display_name + ")" + " is Out of Stock."),
+									body: self.env._t("(" + product.display_name + ")" + " is Out of Stock."),
 								});
 							}
 						}
@@ -71,7 +71,7 @@ odoo.define('bi_pos_stock.productScreen', function(require) {
 								call_super = false;
 								self.showPopup('ErrorPopup', {
 									title: self.env._t('Deny Order'),
-									body: self.env._t("Deny Order" + "(" + product.display_name + ")" + " is Out of Stock."),
+									body: self.env._t("(" + product.display_name + ")" + " is Out of Stock."),
 								});
 							}
 						}
@@ -80,7 +80,7 @@ odoo.define('bi_pos_stock.productScreen', function(require) {
 								call_super = false;
 								self.showPopup('ErrorPopup', {
 									title: self.env._t('Deny Order'),
-									body: self.env._t("Deny Order" + "(" + product.display_name + ")" + " is Out of Stock."),
+									body: self.env._t("(" + product.display_name + ")" + " is Out of Stock."),
 								});
 							}
 						}
@@ -89,7 +89,7 @@ odoo.define('bi_pos_stock.productScreen', function(require) {
 								call_super = false;
 								self.showPopup('ErrorPopup', {
 									title: self.env._t('Deny Order'),
-									body: self.env._t("Deny Order" + "(" + product.display_name + ")" + " is Out of Stock."),
+									body: self.env._t("(" + product.display_name + ")" + " is Out of Stock."),
 								});
 							}
 						}
