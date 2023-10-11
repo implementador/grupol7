@@ -57,8 +57,8 @@ msgstr "Venta denegada"
 #. odoo-javascript
 #: code:addons/bi_pos_stock/static/src/js/Screens/ProductScreen.js:0
 #, python-format
-msgid "Denegar venta () está agotado."
-msgstr "Denegar venta () está agotado."
+msgid "() is Out of Stock."
+msgstr "() está agotado."
 
 #. module: bi_pos_stock
 #: model:ir.model.fields,field_description:bi_pos_stock.field_pos_config__pos_deny_order
