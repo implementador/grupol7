@@ -202,6 +202,7 @@
 									<t t-if="line.product_code">
 										[<t t-esc="line.product_code" />] 
 									</t>
+								</td>
 								<td class="pos-right-align" style="padding: 10px;font-size: 14px;">
 										<t t-esc="line.product_id" />
 								</td>
