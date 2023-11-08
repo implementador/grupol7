@@ -37,13 +37,6 @@
 
 		<t t-name="PayPOSOrdersScreen" t-inherit="pos_orders_list.POSOrdersScreen" t-inherit-mode="extension" owl="1">
 		
-		        <xpath expr="//div[hasclass('orderlines')]" position="before">
-			    <div class="client-info" style="text-align:center;">
-			        <h2>Cliente</h2>
-			        <!-- Asumiendo que existe una variable 'client_name' que contiene el nombre del cliente -->
-			        <h3 t-esc="props.order.partner_id.name"></h3>
-			    </div>
-		        </xpath>
 			
 			<xpath expr="//th[hasclass('order_state')]" position="after">
 				<t t-if="env.pos.config.allow_partical_payment">
