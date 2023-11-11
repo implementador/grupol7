@@ -2,11 +2,11 @@
 # See README.rst file on addons root folder for license details
 
 {
-    "name": "No Negative Stock",
-    "summary": "Negative stocks are not allowed",
+    "name": "Bloquear existencias negativas",
+    "summary": "Este módulo te permite bloquear inventario negativo en ubicaciones específicas",
     "version": "16.0.2.0.2",
-    "author": "Terrabit, Dorin Hongu",
-    "website": "https://www.terrabit.ro",
+    "author": "Lava Studio",
+    "website": "https://www.lava.mx",
     "category": "Generic Modules/Stock",
     "depends": ["stock"],
     "license": "OPL-1",
