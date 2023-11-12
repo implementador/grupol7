@@ -7,11 +7,13 @@
             <field name="inherit_id" ref="base.view_company_form" />
             <field name="arch" type="xml">
                 <!-- Modifica esta expresión XPath -->
-                <xpath expr="//page[@name='general_info']/group/group[last()]" position="after">
+                <xpath expr="//page[@name='social_media']/group/group[last()]" position="before">
+                    <group>
                     <field name="no_negative_stock" widget="boolean_toggle"/>
                     <div class="text-muted">
                         Activando esta función no se permitirán los movimientos de almacén si generan existencias negativas, a menos que se permita explícitamente en cada ubicación.
                     </div>
+                    <group/>
                 </xpath>
             </field>
         </record>
