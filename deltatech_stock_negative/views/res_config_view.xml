@@ -9,7 +9,7 @@
             <field name="arch" type="xml">
                 <!-- Agregar el nuevo grupo después del grupo de social_media -->
                 <xpath expr="//group[@name='social_media']" position="after">
-                    <group string="Inventario">
+                    <group string="Movimientos de inventario">
                         <field name="no_negative_stock" widget="boolean_toggle"/>
                         <div class="text-muted">
                             Activando esta función no se permitirán los movimientos de almacén si generan existencias negativas, a menos que se permita explícitamente en cada ubicación.
