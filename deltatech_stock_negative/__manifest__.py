@@ -8,7 +8,7 @@
     "author": "Lava Studio",
     "website": "https://www.lava.mx",
     "category": "Generic Modules/Stock",
-    "depends": ["stock,social_media"],
+    "depends": ["stock','social_media"],
     "license": "OPL-1",
     "data": ["views/res_config_view.xml", "views/stock_location_view.xml"],
     "images": ["static/description/main_screenshot.png"],
