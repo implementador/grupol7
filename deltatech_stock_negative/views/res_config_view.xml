@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="base.view_company_form" />
             <field name="arch" type="xml">
                 <!-- Modifica esta expresión XPath -->
-                <xpath expr="//page[@name='general_info']/group/group[@name='social_media']" position="after">
+                <xpath expr="//page[@name='general_info']/group/group[@name=last()]" position="after">
                     <!-- Crear un nuevo grupo para el campo -->
                     <group string="Inventario">
                         <field name="no_negative_stock" widget="boolean_toggle"/>
