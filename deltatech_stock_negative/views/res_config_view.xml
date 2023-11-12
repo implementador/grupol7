@@ -5,7 +5,7 @@
             <field name="name">res.company.view.form.inherit.stock</field>
             <field name="model">res.company</field>
             <!-- Cambia la referencia de la vista heredada aquí -->
-            <field name="inherit_id" ref="res.company.form.inherit.social.media" />
+            <field name="inherit_id" ref="view_company_form_inherit_social_media" />
             <field name="arch" type="xml">
                 <!-- Modifica esta expresión XPath -->
                 <xpath expr="//page[@name='general_info']/group/group[@name='social_media']" position="after">
