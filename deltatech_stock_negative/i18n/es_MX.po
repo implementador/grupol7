@@ -23,7 +23,7 @@ msgstr "<span class=\"fa fa-lg fa-building-o\" title=\"Nota\" aria-label=\"Los v
 #. module: deltatech_stock_negative
 #: model:ir.model.fields,field_description:deltatech_stock_negative.field_stock_location__allow_negative_stock
 msgid "Allow Negative Stock"
-msgstr "Permitir valores negativos"
+msgstr "Permitir existencias negativas"
 
 #. module: deltatech_stock_negative
 #: model:ir.model.fields,help:deltatech_stock_negative.field_res_company__no_negative_stock
