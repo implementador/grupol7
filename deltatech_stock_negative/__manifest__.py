@@ -1,5 +1,5 @@
 # ©  2008-2021 Lava Studio
-# See README.rst file on addons root folder for license details
+# See README.rst  file on addons root folder for license details
 
 {
     "name": "Bloquear existencias negativas",
