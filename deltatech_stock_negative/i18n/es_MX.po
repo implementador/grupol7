@@ -55,7 +55,7 @@ msgstr "Bloquear existencias negativas"
 #. module: deltatech_stock_negative
 #: model_terms:ir.ui.view,arch_db:deltatech_stock_negative.res_config_settings_view_form
 msgid "No negative stocks are allowed"
-msgstr "Fară stoc negativ"
+msgstr "Activando esta función no se permitirán los movimientos de almacén si generan existencias negativas, a menos que se permita explicitamente en cada ubicación."
 
 #. module: deltatech_stock_negative
 #: model:ir.model,name:deltatech_stock_negative.model_stock_quant
