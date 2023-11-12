@@ -4,6 +4,7 @@
         <record id="res_company_view_form" model="ir.ui.view">
             <field name="name">res.company.view.form.inherit.stock</field>
             <field name="model">res.company</field>
+            <!-- Cambia la referencia de la vista heredada aquí -->
             <field name="inherit_id" ref="res.company.form.inherit.social.media" />
             <field name="arch" type="xml">
                 <!-- Modifica esta expresión XPath -->
