@@ -30,13 +30,13 @@ class StockQuant(models.Model):
                             "You have chosen to avoid negative stock. %s pieces of %s are remaining in location %s, "
                             "but you want to transfer %s pieces. "
                             "Please adjust your quantities or correct your stock with an inventory adjustment."
-                        ) % (lot_qty, product_id.name, location_id.location_id.name, quantity)
+                        ) % (lot_qty, product_id.name, location_id.display_name, quantity)
                     else:
                         err = _(
                             "You have chosen to avoid negative stock. %s pieces of %s are remaining in location %s, "
                             "lot %s, but you want to transfer %s pieces. "
                             "Please adjust your quantities or correct your stock with an inventory adjustment."
-                        ) % (lot_qty, product_id.name, location_id.location_id.name, lot_id.name, quantity)
+                        ) % (lot_qty, product_id.name, location_id.display_name, lot_id.name, quantity)
                     raise UserError(err)
 
         return super()._update_available_quantity(
