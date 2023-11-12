@@ -29,7 +29,7 @@ msgstr "Permitir valores negativos"
 #: model:ir.model.fields,help:deltatech_stock_negative.field_res_company__no_negative_stock
 #: model:ir.model.fields,help:deltatech_stock_negative.field_res_config_settings__no_negative_stock
 msgid "Allows you to prohibit negative stock quantities."
-msgstr "Te habilita para prohibir existencias negativas"
+msgstr "Activando esta función no se permitirán los movimientos de almacén si generan existencias negativas, a menos que se permita explicitamente en cada ubicación."
 
 #. module: deltatech_stock_negative
 #: model:ir.model,name:deltatech_stock_negative.model_res_company
