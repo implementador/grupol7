@@ -1,3 +1,3 @@
 Features:
- - No negative stock for internal location
- - Allows negative stock at certain locations
+ - Bloqueo de movimientos de inventario que generan existencias negativas
+ - Es posible habilitar las existencias negativas en ubicaciones en específico

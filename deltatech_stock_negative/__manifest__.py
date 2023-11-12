@@ -1,4 +1,4 @@
-# ©  2008-2021 Deltatech
+# ©  2008-2021 Lava Studio
 # See README.rst file on addons root folder for license details
 
 {
@@ -11,8 +11,7 @@
     "depends": ['stock', 'social_media'],
     "license": "OPL-1",
     "data": ["views/res_config_view.xml", "views/stock_location_view.xml"],
-    "images": ["static/description/main_screenshot.png"],
     "installable": True,
     "development_status": "Mature",
-    "maintainers": ["dhongu"],
+    "maintainers": ["Lava"],
 }
