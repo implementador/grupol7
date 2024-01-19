@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="pos_template" inherit_id="point_of_sale.template" xml:space="preserve">
+    <t t-name="ProductItem" t-inherit="point_of_sale.ProductItem" t-inherit-mode="extension" owl="1">
+        <xpath expr="//span[hasclass('price-tag')]" position="inside">
+            <t t-if="env.pos.config.show_product_info">
+                <i role="img" aria-label="Info" title="Info" class="custom-product-info-button fa fa-info-circle"
+                    t-on-click.stop="() => this.trigger('click-product-info', props.product)"
+                />
+            </t>
+        </xpath>
+    </t>
+</templates>
