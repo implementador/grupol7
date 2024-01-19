@@ -1,0 +1,17 @@
+.custom-product-info-button{
+    position: absolute;
+    right: 3px;
+    bottom: 7px;
+    font-size: 13px;
+    border-radius: 2px;
+    background-color: #714b67;
+    color: white;
+    padding: 1px 4px;
+    width: 15px;
+    height: 15px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+}
