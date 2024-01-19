@@ -8,12 +8,12 @@
             <xpath expr="//div[@id='pos_interface_section']" position="inside">
                 <div class="col-12 col-lg-6 o_setting_box">
                     <div class="o_setting_left_pane">
-                        <field name="pos_show_product_info"/>
+                        <field name="pos_show_product_info" string="Mostrar botón de información en productos"/>
                     </div>
                     <div class="o_setting_right_pane">
                         <label for="pos_show_product_info"/>
                         <div class="text-muted">
-                            Enabled for Show Product Information on Prodcut.
+                            HAbilita botón de información en productos.
                         </div>
                     </div>
                 </div>
