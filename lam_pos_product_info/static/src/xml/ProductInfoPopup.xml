@@ -1,0 +1,9 @@
+<templates id="template" xml:space="preserve">
+  <t t-name="ProductInfoPopup" t-inherit="point_of_sale.ProductInfoPopup" t-inherit-mode="extension" owl="1">
+    <xpath expr="//div[hasclass('section-financials')]" position="replace">
+    </xpath>
+    <xpath expr="//div[hasclass('section-order')]" position="replace">
+      
+    </xpath>
+  </t>
+</templates>
