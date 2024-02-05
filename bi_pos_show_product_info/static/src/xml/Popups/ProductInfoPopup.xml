@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="pos_template" inherit_id="point_of_sale.template" xml:space="preserve">
+    <t t-name="ProductInfoPopup" t-inherit="point_of_sale.ProductInfoPopup" t-inherit-mode="extension" owl="1">
+        <xpath expr="//header[hasclass('title')]" position="inside">
+            <t t-if="env.pos.get_order().get_partner()">
+                <t t-esc="env.pos.get_order().get_partner().name"/>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[hasclass('section-financials-body')]" position="replace">
+             <t t-if="env.pos.config.show_product_info">
+                <div class="section-financials-body">
+                    <table>
+                        <tr>
+                            <td>Price excl. VAT:</td>
+                            <td><t t-esc="env.pos.format_currency(productInfo.all_prices.price_without_tax)"/></td>
+                        </tr>
+                        <t t-if="!env.pos.config.hide_cost_currency">
+                            <tr t-if="_hasMarginsCostsAccessRights()">
+                                <td>Cost:</td>
+                                <td><t t-esc="costCurrency"/></td>
+                            </tr>                        
+                        </t>
+                        <t t-if="!env.pos.config.hide_margin">
+                            <tr t-if="_hasMarginsCostsAccessRights()">
+                                <td>Margin:</td>
+                                <td><t t-esc="marginCurrency"/> (<t t-esc="marginPercent"/>%) </td>
+                            </tr>
+                        </t>
+                    </table>
+                    <table>
+                        <t t-foreach="productInfo.pricelists" t-as="pricelist" t-key="pricelist.name">
+                            <t t-if="env.pos.config.show_available_pricelist_ids.includes(pricelist.id)">
+                                <tr>
+                                    <td t-esc="pricelist.name"/>
+                                    <td t-esc="env.pos.format_currency(pricelist.price)"/>
+                                </tr>
+                            </t>
+                        </t>
+                    </table>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="section-financials-body">
+                    <table>
+                        <tr>
+                            <td>Price excl. VAT:</td>
+                            <td><t t-esc="env.pos.format_currency(productInfo.all_prices.price_without_tax)"/></td>
+                        </tr>
+                        <tr t-if="_hasMarginsCostsAccessRights()">
+                            <td>Cost:</td>
+                            <td><t t-esc="costCurrency"/></td>
+                        </tr>
+                        <tr t-if="_hasMarginsCostsAccessRights()">
+                            <td>Margin:</td>
+                            <td><t t-esc="marginCurrency"/> (<t t-esc="marginPercent"/>%) </td>
+                        </tr>
+                    </table>
+                    <table>
+                        <t t-foreach="productInfo.pricelists" t-as="pricelist" t-key="pricelist.name">
+                            <tr>
+                                <td t-esc="pricelist.name"/>
+                                <td t-esc="env.pos.format_currency(pricelist.price)"/>
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+            </t>
+        </xpath>
+    </t>
+</templates>
