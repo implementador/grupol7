@@ -1,4 +1,4 @@
-# Copyright 2017-2019 Tecnativa - Carlos Dauden
+# Copyright 2017-2019 Pymex ERP
 # Copyright 2018 Tecnativa - Vicent Cubells
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
