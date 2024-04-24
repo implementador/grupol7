@@ -4,7 +4,7 @@
 
 {
     "name": "POS Stock in Odoo",
-    "version": "16.0.0.3",
+    "version": "16.0.0.4",
     "category": "Point of Sale",
     "depends": ['base', 'sale_management', 'stock', 'point_of_sale'],
     "author": "Lava Studio",

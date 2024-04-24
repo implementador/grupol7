@@ -67,6 +67,16 @@
 						</span>
 					</t>
 				</t>
+				<t t-if="props.product.reserve_qty > 0">
+					<span class="reserve-qty-label" id="reserved_qty">
+						<t t-esc="env.pos.format_currency_no_symbol(props.product.reserve_qty)"/>
+					</span>
+				</t>
+				<t t-else="">
+					<span class="reserve-qty-label out-of-stock-qty" id="reserved_qty">
+						<t t-esc="env.pos.format_currency_no_symbol(props.product.reserve_qty)"/>
+					</span>
+				</t>
 			</t>
 		</xpath>
 	</t> 

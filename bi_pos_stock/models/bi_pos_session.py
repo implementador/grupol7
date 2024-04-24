@@ -12,7 +12,7 @@ class PosSession(models.Model):
 	def _loader_params_product_product(self):
 		result = super()._loader_params_product_product()
 		result['search_params']['fields'].extend(['type','virtual_available',
-					'qty_available','incoming_qty','outgoing_qty','quant_text'])
+					'qty_available','incoming_qty','outgoing_qty','quant_text','reserve_draft_qty'])
 		return result
 
 

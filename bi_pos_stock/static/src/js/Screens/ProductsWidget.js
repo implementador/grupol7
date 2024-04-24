@@ -117,6 +117,15 @@ odoo.define('bi_pos_stock.ProductsWidget', function(require) {
 				let self = this;
 				let prods = super.productsToDisplay;
 				let location = this.env.pos.custom_stock_locations;
+				$.each(prods, function( i, prd ){
+					let reserve_qty = JSON.parse(prd.reserve_draft_qty);
+					prd['reserve_qty'] = 0;
+					$.each(reserve_qty, function( k, v ){
+						if(location[0]['id'] == parseInt(k)){
+							prd['reserve_qty'] = v[0];
+						}
+					})
+				})
 				if (self.env.pos.config.show_stock_location == 'specific'){
 					if (self.env.pos.config.pos_stock_type == 'onhand'){
 

@@ -61,6 +61,35 @@ class pos_order(models.Model):
 		readonly=True,
 	)
 
+	def _create_order_picking(self):
+		self.ensure_one()
+		if self.state != 'draft':
+			if self.to_ship:
+				self.lines._launch_stock_rule_from_pos_order_lines()
+			else:
+				if self._should_create_picking_real_time():
+					picking_type = self.config_id.picking_type_id
+					if self.partner_id.property_stock_customer:
+						destination_id = self.partner_id.property_stock_customer.id
+					elif not picking_type or not picking_type.default_location_dest_id:
+						destination_id = self.env['stock.warehouse']._get_partner_locations()[0].id
+					else:
+						destination_id = picking_type.default_location_dest_id.id
+
+					pickings = self.env['stock.picking']._create_picking_from_pos_order_lines(destination_id, self.lines, picking_type, self.partner_id)
+					pickings.write({'pos_session_id': self.session_id.id, 'pos_order_id': self.id, 'origin': self.name})
+
+			for line in self.lines:
+				line.product_id._compute_reserved_qty()
+
+
+	@api.model_create_multi
+	def create(self, vals_list):
+		res = super().create(vals_list)
+		for line in res.lines:
+			line.product_id._compute_reserved_qty()
+		return res
+
 
 class stock_quant(models.Model):
 	_inherit = 'stock.move'
@@ -69,37 +98,37 @@ class stock_quant(models.Model):
 
 	@api.model
 	def sync_product(self, prd_id):
-	    notifications = []
-	    ssn_obj = self.env['pos.session'].sudo()
-	    prod_fields = ssn_obj._loader_params_product_product()['search_params']['fields']
-	    prod_obj = self.env['product.product']
+		notifications = []
+		ssn_obj = self.env['pos.session'].sudo()
+		prod_fields = ssn_obj._loader_params_product_product()['search_params']['fields']
+		prod_obj = self.env['product.product']
 	
-	    product = prod_obj.with_context(display_default_code=False).search_read([('id', '=', prd_id)], prod_fields)
-	    product_id = prod_obj.search([('id', '=', prd_id)])
+		product = prod_obj.with_context(display_default_code=False).search_read([('id', '=', prd_id)], prod_fields)
+		product_id = prod_obj.search([('id', '=', prd_id)])
 	
-	    try:
-	        res = product_id._compute_quantities_dict(self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'), self._context.get('from_date'), self._context.get('to_date'))
-	        product[0]['qty_available'] = res.get(product_id.id, {}).get('qty_available', 0)
-	    except KeyError as e:
-	        # Handle the KeyError here, you can log the error or take appropriate action
-	        # For example, set qty_available to 0 or raise a custom exception
-	        product[0]['qty_available'] = 0
+		try:
+			res = product_id._compute_quantities_dict(self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'), self._context.get('from_date'), self._context.get('to_date'))
+			product[0]['qty_available'] = res.get(product_id.id, {}).get('qty_available', 0)
+		except KeyError as e:
+			# Handle the KeyError here, you can log the error or take appropriate action
+			# For example, set qty_available to 0 or raise a custom exception
+			product[0]['qty_available'] = 0
 	
-	    if product:
-	        categories = ssn_obj._get_pos_ui_product_category(ssn_obj._loader_params_product_category())
-	        product_category_by_id = {category['id']: category for category in categories}
-	        product[0]['categ'] = product_category_by_id.get(product[0]['categ_id'][0])
+		if product:
+			categories = ssn_obj._get_pos_ui_product_category(ssn_obj._loader_params_product_category())
+			product_category_by_id = {category['id']: category for category in categories}
+			product[0]['categ'] = product_category_by_id.get(product[0]['categ_id'][0])
 	
-	        vals = {
-	            'id': [product[0].get('id')],
-	            'product': product,
-	            'access': 'pos.sync.product',
-	        }
-	        notifications.append([self.env.user.partner_id, 'product.product/sync_data', vals])
+			vals = {
+				'id': [product[0].get('id')],
+				'product': product,
+				'access': 'pos.sync.product',
+			}
+			notifications.append([self.env.user.partner_id, 'product.product/sync_data', vals])
 	
-	    if len(notifications) > 0:
-	        self.env['bus.bus']._sendmany(notifications)
-	    return True
+		if len(notifications) > 0:
+			self.env['bus.bus']._sendmany(notifications)
+		return True
 
 	@api.model_create_multi
 	def create(self, vals_list):
@@ -123,6 +152,34 @@ class ProductInherit(models.Model):
 	_inherit = 'product.product'
 
 	quant_text = fields.Text('Quant Qty', compute='_compute_avail_locations', store=True)
+	reserve_draft_qty = fields.Text('Reserved Draft Qty', compute='_compute_reserved_qty', store=True)
+
+	@api.depends('reserve_draft_qty')
+	def _compute_reserved_qty(self):
+		for record in self:
+			orders = self.env['pos.order'].sudo().search([('state', '=', 'draft'), ('location_id.usage', '=', 'internal')])
+			final_data = {}
+			record.reserve_draft_qty = json.dumps(final_data)
+			for order in orders:
+				for line in order.lines:
+					if len(order.picking_ids) > 0:
+						for pick in order.picking_ids:
+							loc1 = pick.location_id.id
+							if record.id == line.product_id.id:
+								if loc1 in final_data:
+									final_data[loc1][0] = final_data[loc1][0] - line.qty
+								else:
+									final_data[loc1] = [line.qty]
+					else:
+						loc = order.location_id.id
+						if record.id == line.product_id.id:
+							if loc in final_data:
+								final_data[loc][0] = final_data[loc][0] + line.qty
+							else:
+								final_data[loc] = [line.qty]
+			record.reserve_draft_qty = json.dumps(final_data)
+		return True
+
 
 	@api.depends('stock_quant_ids', 'stock_quant_ids.product_id', 'stock_quant_ids.location_id',
 				 'stock_quant_ids.quantity')
@@ -165,9 +222,41 @@ class ProductInherit(models.Model):
 						final_data[loc][2] = last_qty + inc.product_qty
 					else:
 						final_data[loc] = [0, 0, inc.product_qty]
-
 				rec.quant_text = json.dumps(final_data)
 		return True
+
+	@api.model
+	def sync_product(self, prd_id):
+		notifications = []
+		ssn_obj = self.env['pos.session'].sudo()
+		prod_fields = ssn_obj._loader_params_product_product()['search_params']['fields']
+		product = self.with_context(display_default_code=False).search_read([('id', '=', prd_id)],prod_fields)		
+		if product :
+			categories = ssn_obj._get_pos_ui_product_category(ssn_obj._loader_params_product_category())
+			product_category_by_id = {category['id']: category for category in categories}
+			product[0]['categ'] = product_category_by_id[product[0]['categ_id'][0]]
+
+			vals = {
+				'id': [product[0].get('id')], 
+				'product': product,
+				'access':'pos.sync.product',
+			}
+			notifications.append([self.env.user.partner_id,'product.product/sync_data',vals])
+		if len(notifications) > 0:
+			self.env['bus.bus']._sendmany(notifications)
+		return True
+
+	@api.model
+	def create(self, vals):
+		res = super(ProductInherit, self).create(vals)
+		self.sync_product(res.id)
+		return res
+
+	def write(self, vals):
+		res = super(ProductInherit, self).write(vals)
+		for i in self:
+			i.sync_product(i._origin.id)
+		return res
 
 
 class StockPicking(models.Model):

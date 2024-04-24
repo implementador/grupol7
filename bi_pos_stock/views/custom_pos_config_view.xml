@@ -99,6 +99,7 @@
                 <field name="barcode" position="after">
                    <field name="stock_quant_ids" readonly="1" invisible="1"/>
                    <field name="quant_text" invisible="1"/>
+                   <field name="reserve_draft_qty" invisible="1"/>
                 </field>
             </field>
         </record>
