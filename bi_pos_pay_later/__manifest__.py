@@ -3,7 +3,7 @@
 
 {
     "name": "POS Pay Later in Odoo",
-    "version": "16.0.0.7",
+    "version": "16.0.0.8",
     "category": "Point of Sale",
     "depends": ['base', 'sale', 'point_of_sale', 'account', 'bi_pos_reprint_reorder'],
     "author": "Lava Studio",

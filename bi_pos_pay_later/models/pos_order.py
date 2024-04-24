@@ -343,11 +343,17 @@ class PosMakePayment(models.TransientModel):
 				'payment_method_id': init_data['payment_method_id'][0],
 			})
 
-		if order._is_pos_order_paid():
-			order.action_pos_order_paid()
-			order._create_order_picking()
-			order._compute_total_cost_in_real_time()
-			return {'type': 'ir.actions.act_window_close'}
+		if order.is_partial == True:
+			if order._is_pos_order_paid():
+				order.action_pos_order_paid()
+				order._compute_total_cost_in_real_time()
+				return {'type': 'ir.actions.act_window_close'}
+		else:
+			if order._is_pos_order_paid():
+				order.action_pos_order_paid()
+				order._create_order_picking()
+				order._compute_total_cost_in_real_time()
+				return {'type': 'ir.actions.act_window_close'}
 
 		return self.launch_payment()
 

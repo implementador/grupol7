@@ -21,10 +21,6 @@ odoo.define('bi_pos_pay_later.PayPOSOrdersScreen', function (require) {
 
 			clickReturnOrder(event){
 				let self = this;
-				// let order = event.detail;
-
-				// console.log("order---------------------",order)
-				console.log("self------------------------",self)
 				let order = event.detail;
 				let o_id = parseInt(event.detail.id);
 				let orderlines =  self.orderlines;				

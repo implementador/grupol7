@@ -16,6 +16,7 @@ odoo.define('bi_pos_pay_later.CreateDraftPOS', function(require) {
 			let order = this.env.pos.get_order();
 			let orderlines = order.get_orderlines();
 			let partner_id = order.get_partner();
+			let flag_call = true;
 			if (!partner_id){
 				return self.showPopup('ErrorPopup', {
 					title: self.env._t('Unknown customer'),
@@ -36,13 +37,33 @@ odoo.define('bi_pos_pay_later.CreateDraftPOS', function(require) {
 				return;
 			}
 			else{
-				if(order.get_total_with_tax() !== order.get_total_paid()){
-					order.amount_due = order.get_due();
-					order.is_draft_order = true;
-					order.is_partial = true;
-					order.to_invoice = false;
-					self.env.pos.push_single_order(order);
-					self.showScreen('ReceiptScreen');			
+				$.each(orderlines, function( i, line ){
+					let prd = line.product;
+					var final_qty = prd.bi_on_hand - prd.reserve_qty
+					if(prd.bi_on_hand < line.quantity){
+						self.showPopup('ErrorPopup', {
+							title: self.env._t('Deny Order 1'),
+							body: self.env._t("(" + prd.display_name + ")" + " existencias insuficientes."),
+						});
+						flag_call = false;
+					}else if(final_qty < line.quantity){
+						self.showPopup('ErrorPopup', {
+							title: self.env._t('Deny Order 2'),
+							body: self.env._t("(" + prd.display_name + ")" + " existencias insuficientes."),
+						});
+						flag_call = false;
+					}						
+					
+				})
+				if(flag_call){
+					if(order.get_total_with_tax() !== order.get_total_paid()){
+						order.amount_due = order.get_due();
+						order.is_draft_order = true;
+						order.is_partial = true;
+						order.to_invoice = false;
+						self.env.pos.push_single_order(order);
+						self.showScreen('ReceiptScreen');			
+					}					
 				}
 			}
 

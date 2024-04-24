@@ -18,8 +18,6 @@ odoo.define('bi_pos_pay_later.BiSeePOSOrdersButton', function (require) {
 				var order = this.env.pos.get_order()
 				if(order.get_orderlines().length > 0){
 					// alert("pls first Complete current order or remove the order")
-					console.log("onClick----------------------")
-
 					this.showPopup('PosOrdersDetailRestric',{
 					})
 				}else{
