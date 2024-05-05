@@ -11,3 +11,8 @@ Version 16.0.0.4 : (19/04/2024)
 	Customization
 		- Add Flow for reserve draft qty when we create draft/order at that time it store qty to reserve qty.
 		- Stop creating picking when draft order is created not create picking when in config real time is on.
+
+Version 16.0.0.5 : (29/04/2024) 
+	Customization Issue
+		- Added validation on the pay button for stock blockage for reserve qty. 
+		- Paying order to order screen at that time reserve qty is not updated fixed the issue.

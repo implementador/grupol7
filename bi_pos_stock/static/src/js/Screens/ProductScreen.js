@@ -146,10 +146,16 @@ odoo.define('bi_pos_stock.productScreen', function(require) {
 									prod_used_qty[prd.id] = [prd.bi_available,line.quantity]
 								}
 							}
-
-							
+							var final_qty = prd.bi_on_hand - prd.reserve_qty
+							if(final_qty < line.quantity){
+								call_super = false;
+								self.showPopup('ErrorPopup', {
+									title: self.env._t('Reserve Deny Order'),
+									body: self.env._t("(" + prd.display_name + ")" + " existencias insuficientes."),
+								});
+							}
 						}
-					});
+					});						
 
 					$.each(prod_used_qty, function( i, pq ){
 						let product = self.env.pos.db.get_product_by_id(i);

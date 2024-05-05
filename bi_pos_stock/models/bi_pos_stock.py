@@ -79,15 +79,19 @@ class pos_order(models.Model):
 					pickings = self.env['stock.picking']._create_picking_from_pos_order_lines(destination_id, self.lines, picking_type, self.partner_id)
 					pickings.write({'pos_session_id': self.session_id.id, 'pos_order_id': self.id, 'origin': self.name})
 
-			for line in self.lines:
-				line.product_id._compute_reserved_qty()
-
 
 	@api.model_create_multi
 	def create(self, vals_list):
 		res = super().create(vals_list)
 		for line in res.lines:
 			line.product_id._compute_reserved_qty()
+		return res
+
+	def write(self, vals):
+		res = super().write(vals)
+		for order in self:
+			for line in order.lines:
+				line.product_id._compute_reserved_qty()
 		return res
 
 
@@ -162,24 +166,14 @@ class ProductInherit(models.Model):
 			record.reserve_draft_qty = json.dumps(final_data)
 			for order in orders:
 				for line in order.lines:
-					if len(order.picking_ids) > 0:
-						for pick in order.picking_ids:
-							loc1 = pick.location_id.id
-							if record.id == line.product_id.id:
-								if loc1 in final_data:
-									final_data[loc1][0] = final_data[loc1][0] - line.qty
-								else:
-									final_data[loc1] = [line.qty]
-					else:
-						loc = order.location_id.id
-						if record.id == line.product_id.id:
-							if loc in final_data:
-								final_data[loc][0] = final_data[loc][0] + line.qty
-							else:
-								final_data[loc] = [line.qty]
+					loc = order.location_id.id
+					if record.id == line.product_id.id:
+						if loc in final_data:
+							final_data[loc][0] = final_data[loc][0] + line.qty
+						else:
+							final_data[loc] = [line.qty]
 			record.reserve_draft_qty = json.dumps(final_data)
 		return True
-
 
 	@api.depends('stock_quant_ids', 'stock_quant_ids.product_id', 'stock_quant_ids.location_id',
 				 'stock_quant_ids.quantity')
