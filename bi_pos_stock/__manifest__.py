@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Part of BrowseInfo. See LICENSE file for full copyright and licensing details.
+# Part of PymexErp. See LICENSE file for full copyright and licensing details.
 
 
 {
