@@ -2,3 +2,8 @@
 	path = drefal
 	url = git@github.com:drefal/grupol7.git
 	branch = main
+
+[submodule "birthday"]
+	path = birthday
+	url = git@github.com:drefal/grupol7.git
+	branch = main
