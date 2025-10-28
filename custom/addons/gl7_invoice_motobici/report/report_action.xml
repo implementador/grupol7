@@ -1,0 +1,9 @@
+<odoo>
+  <report
+      id="action_report_invoice_motobici"
+      model="account.move"
+      string="Factura (Propietario)"
+      name="gl7_invoice_motobici.report_invoice_motobici"
+      report_type="qweb-pdf"
+      print_report_name="'Factura_%s' % (object.name or '')"/>
+</odoo>
