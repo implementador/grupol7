@@ -1,5 +1,5 @@
 <odoo>
-  <!-- Formato 30x25 mm para stickers -->
+  <!-- Papel 30 x 25 mm -->
   <record id="paperformat_liq_label_30x25" model="report.paperformat">
     <field name="name">LIQ Label 30x25</field>
     <field name="default" eval="False"/>
@@ -29,34 +29,27 @@
           name="grupol7_liquidacion_qr.liq_label_code128_doc"
           paperformat="paperformat_liq_label_30x25"/>
 
-  <!-- Plantilla QR: sin header/footer; solo el QR centrado -->
+  <!-- Usamos web.html_container (provee <main>) y armamos la URL absoluta con report_base_url -->
   <template id="liq_label_qr_doc">
-    <t t-call="web.basic_layout">
-      <div class="page">
-        <t t-foreach="docs" t-as="o">
-          <div style="width:28mm;height:23mm;display:flex;align-items:center;justify-content:center;margin:0 auto;">
-            <img t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=256&amp;height=256' % ('LIQ/' + o.name)"
-                 style="width:22mm;height:22mm;"/>
-          </div>
-        </t>
-      </div>
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="o">
+        <div style="width:30mm;height:25mm;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <img t-att-src="report_base_url + '/report/barcode/QR/' + ('LIQ/' + o.name) + '?width=256&amp;height=256'"
+               style="width:22mm;height:22mm;"/>
+        </div>
+      </t>
     </t>
   </template>
 
-  <!-- Plantilla Code128: barra y el texto pequeño abajo -->
   <template id="liq_label_code128_doc">
-    <t t-call="web.basic_layout">
-      <div class="page">
-        <t t-foreach="docs" t-as="o">
-          <div style="width:28mm;height:23mm;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;">
-            <img t-att-src="'/report/barcode/?type=Code128&amp;value=%s&amp;width=280&amp;height=90&amp;humanreadable=0' % ('LIQ/' + o.name)"
-                 style="width:26mm;height:10mm;"/>
-            <div style="font-size:7px;text-align:center;line-height:1;margin-top:1mm;">
-              LIQ/<t t-esc="o.name"/>
-            </div>
-          </div>
-        </t>
-      </div>
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="o">
+        <div style="width:30mm;height:25mm;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
+          <img t-att-src="report_base_url + '/report/barcode/Code128/' + ('LIQ/' + o.name) + '?humanreadable=0&amp;width=280&amp;height=90'"
+               style="width:26mm;height:10mm;"/>
+          <div style="font-size:7px;line-height:1;margin-top:1mm;">LIQ/<t t-esc="o.name"/></div>
+        </div>
+      </t>
     </t>
   </template>
 </odoo>
