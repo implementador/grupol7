@@ -15,11 +15,30 @@ class SaleOrderLine(models.Model):
         coupon = self.env['liquidation.coupon'].search([('name', '=', self.x_liq_code)], limit=1)
         if not coupon:
             raise UserError(_('Código LIQ no encontrado.'))
+
         order = self.order_id
-        coupon._check_valid(company=order.company_id, product=self.product_id or coupon.product_id)
+        # Asegurar producto correcto en la línea
         if not self.product_id or self.product_id != coupon.product_id:
             self.product_id = coupon.product_id
-        self.price_unit = coupon.clearance_price
+
+        # Validaciones de compañía/producto
+        coupon._check_valid(company=order.company_id, product=self.product_id)
+
+        # Tomamos el precio del cupón como "precio final con IVA"
+        price_with_tax = coupon.clearance_price
+
+        # Determinar impuestos vigentes para esta línea (producto + FP)
+        taxes = self.tax_id or self.product_id.taxes_id.filtered(lambda t: t.company_id == order.company_id)
+        if order.fiscal_position_id:
+            taxes = order.fiscal_position_id.map_tax(taxes, self.product_id, order.partner_id)
+
+        # Convertir precio con IVA -> base imponible (price_unit)
+        # (Si los impuestos no son price_include, esta función no cambia el valor)
+        price_excluded = self.env['account.tax']._fix_tax_included_price_company(
+            price_with_tax, taxes, taxes, company=order.company_id
+        )
+
+        self.price_unit = price_excluded
         self.x_liq_coupon_id = coupon.id
         self.name = f"[LIQ-{coupon.damage_grade}] {self.product_id.display_name}"
 
