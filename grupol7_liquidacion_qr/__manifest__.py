@@ -9,7 +9,6 @@
         "security/ir.model.access.csv",
         "report/liquidation_labels.xml",          # <-- cargar primero el report (define action_liq_coupon_print_labels)
         "views/liquidation_coupon_views.xml",
-        "views/pos_views.xml",
         "views/wizard_views.xml",
         "views/report_liq_sales.xml",
     ],
