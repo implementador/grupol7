@@ -1,0 +1,10 @@
+<odoo>
+<record id="action_liq_sales_pos" model="ir.actions.act_window">
+<field name="name">Ventas LIQ por PdV</field>
+<field name="res_model">pos.order.line</field>
+<field name="domain">[("x_liq_coupon_id","!=",False)]</field>
+<field name="view_mode">pivot,graph,tree</field>
+<field name="context">{"group_by":["order_id.config_id","order_id.date_order:day"]}</field>
+</record>
+<menuitem id="menu_liq_sales_pos" name="Reporte LIQ PdV" parent="menu_liq_root" action="action_liq_sales_pos"/>
+</odoo>

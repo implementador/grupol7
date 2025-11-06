@@ -1,0 +1,12 @@
+<odoo>
+<record id="view_pos_order_line_tree_inherit_liq" model="ir.ui.view">
+<field name="name">pos.order.line.tree.liq</field>
+<field name="model">pos.order.line</field>
+<field name="inherit_id" ref="point_of_sale.view_pos_pos_order_line_tree"/>
+<field name="arch" type="xml">
+<xpath expr="//tree/field[@name='price_unit']" position="after">
+<field name="x_liq_coupon_id"/>
+</xpath>
+</field>
+</record>
+</odoo>

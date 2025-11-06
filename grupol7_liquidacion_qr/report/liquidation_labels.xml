@@ -1,0 +1,29 @@
+<odoo>
+<report
+id="action_liq_coupon_print_labels"
+model="liquidation.coupon"
+string="Etiqueta LIQ"
+report_type="qweb-pdf"
+name="grupol7_liquidacion_qr.liq_coupon_label"
+file="grupol7_liquidacion_qr.liq_coupon_label"
+/>
+
+
+<template id="liq_coupon_label">
+<t t-call="web.external_layout">
+<div class="page">
+<t t-foreach="docs" t-as="o">
+<div class="label" style="display:inline-block;width:48mm;height:30mm;padding:4mm;border:1px solid #ddd;margin:2mm;">
+<div style="font-weight:700;font-size:12px;">
+<t t-esc="o.product_id.display_name"/>
+</div>
+<div style="font-size:10px;">Daño: <t t-esc="o.damage_grade"/></div>
+<div style="font-size:12px;">$<t t-esc="'%.2f' % o.clearance_price"/></div>
+<img t-att-src="'/report/barcode/?type=QR&amp;value=%s' % ('LIQ/' + o.name)" style="width:120px;height:120px;"/>
+<div style="font-size:9px;">LIQ/<t t-esc="o.name"/></div>
+</div>
+</t>
+</div>
+</t>
+</template>
+</odoo>
