@@ -7,7 +7,6 @@
 "depends": ["base", "sale", "point_of_sale", "stock", "barcodes"],
 "data": [
 "security/ir.model.access.csv",
-"data/barcode_rule.xml",
 "views/liquidation_coupon_views.xml",
 "views/pos_views.xml",
 "views/wizard_views.xml",
