@@ -1,5 +1,4 @@
 <odoo>
-  <!-- Tree -->
   <record id="view_liq_coupon_tree" model="ir.ui.view">
     <field name="name">liquidation.coupon.tree</field>
     <field name="model">liquidation.coupon</field>
@@ -17,17 +16,14 @@
     </field>
   </record>
 
-  <!-- Form -->
   <record id="view_liq_coupon_form" model="ir.ui.view">
     <field name="name">liquidation.coupon.form</field>
     <field name="model">liquidation.coupon</field>
     <field name="arch" type="xml">
       <form string="Cupón de liquidación">
         <header>
-          <button name="%(action_liq_coupon_print_labels)d"
-                  string="Imprimir etiqueta"
-                  type="action"
-                  class="btn-primary"/>
+          <button name="%(action_liq_coupon_print_label_qr)d" string="Imprimir QR" type="action" class="btn-primary"/>
+          <button name="%(action_liq_coupon_print_label_code128)d" string="Imprimir Code128" type="action" class="btn-secondary"/>
         </header>
         <sheet>
           <group>
@@ -63,7 +59,6 @@
     </field>
   </record>
 
-  <!-- Acción y menús -->
   <record id="action_liq_coupon" model="ir.actions.act_window">
     <field name="name">Cupones de liquidación</field>
     <field name="res_model">liquidation.coupon</field>

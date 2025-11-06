@@ -1,44 +1,62 @@
 <odoo>
-  <record id="paperformat_liq_label_48x30" model="report.paperformat">
-    <field name="name">LIQ Label 48x30</field>
+  <!-- Formato 30x25 mm para stickers -->
+  <record id="paperformat_liq_label_30x25" model="report.paperformat">
+    <field name="name">LIQ Label 30x25</field>
     <field name="default" eval="False"/>
     <field name="format">custom</field>
-    <field name="page_width">48</field>
-    <field name="page_height">30</field>
+    <field name="page_width">30</field>
+    <field name="page_height">25</field>
     <field name="orientation">Portrait</field>
-    <field name="margin_top">2</field>
-    <field name="margin_bottom">2</field>
-    <field name="margin_left">2</field>
-    <field name="margin_right">2</field>
-    <field name="dpi">90</field>
+    <field name="margin_top">1</field>
+    <field name="margin_bottom">1</field>
+    <field name="margin_left">1</field>
+    <field name="margin_right">1</field>
+    <field name="dpi">96</field>
   </record>
 
-  <report
-    id="action_liq_coupon_print_labels"
-    model="liquidation.coupon"
-    string="Etiqueta LIQ"
-    report_type="qweb-pdf"
-    name="grupol7_liquidacion_qr.liq_coupon_label_document"
-    paperformat="paperformat_liq_label_48x30"
-  />
+  <!-- Acciones: QR y Code128 -->
+  <report id="action_liq_coupon_print_label_qr"
+          model="liquidation.coupon"
+          string="Etiqueta LIQ (QR)"
+          report_type="qweb-pdf"
+          name="grupol7_liquidacion_qr.liq_label_qr_doc"
+          paperformat="paperformat_liq_label_30x25"/>
 
-  <template id="liq_coupon_label_document">
-    <t t-call="web.html_container">
-      <t t-foreach="docs" t-as="o">
-        <t t-call="web.external_layout">
-          <div class="page">
-            <div class="label" style="display:inline-block;width:48mm;height:30mm;padding:4mm;border:1px solid #ddd;margin:2mm;">
-              <div style="font-weight:700;font-size:12px;">
-                <t t-esc="o.product_id.display_name"/>
-              </div>
-              <div style="font-size:10px;">Daño: <t t-esc="o.damage_grade"/></div>
-              <div style="font-size:12px;">$<t t-esc="'%.2f' % o.clearance_price"/></div>
-              <img t-att-src="'/report/barcode/?type=QR&amp;value=%s' % ('LIQ/' + o.name)" style="width:120px;height:120px;"/>
-              <div style="font-size:9px;">LIQ/<t t-esc="o.name"/></div>
+  <report id="action_liq_coupon_print_label_code128"
+          model="liquidation.coupon"
+          string="Etiqueta LIQ (Code128)"
+          report_type="qweb-pdf"
+          name="grupol7_liquidacion_qr.liq_label_code128_doc"
+          paperformat="paperformat_liq_label_30x25"/>
+
+  <!-- Plantilla QR: sin header/footer; solo el QR centrado -->
+  <template id="liq_label_qr_doc">
+    <t t-call="web.basic_layout">
+      <div class="page">
+        <t t-foreach="docs" t-as="o">
+          <div style="width:28mm;height:23mm;display:flex;align-items:center;justify-content:center;margin:0 auto;">
+            <img t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=256&amp;height=256' % ('LIQ/' + o.name)"
+                 style="width:22mm;height:22mm;"/>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- Plantilla Code128: barra y el texto pequeño abajo -->
+  <template id="liq_label_code128_doc">
+    <t t-call="web.basic_layout">
+      <div class="page">
+        <t t-foreach="docs" t-as="o">
+          <div style="width:28mm;height:23mm;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;">
+            <img t-att-src="'/report/barcode/?type=Code128&amp;value=%s&amp;width=280&amp;height=90&amp;humanreadable=0' % ('LIQ/' + o.name)"
+                 style="width:26mm;height:10mm;"/>
+            <div style="font-size:7px;text-align:center;line-height:1;margin-top:1mm;">
+              LIQ/<t t-esc="o.name"/>
             </div>
           </div>
         </t>
-      </t>
+      </div>
     </t>
   </template>
 </odoo>
