@@ -23,7 +23,7 @@
                  style="width:22mm;height:22mm"/>
             <div style="font-size:8pt" t-esc="'LIQ/' + o.name"/>
             <div style="font-size:7pt" t-esc="(o.product_id.display_name or '')[:32]"/>
-            <div style="font-size:8pt"><b t-esc="('$. %0.2f' % o.clearance_price)"/></div>
+            <div style="font-size:8pt"><b t-esc="('$ %0.2f' % o.clearance_price)"/></div>
           </div>
         </t>
       </div>
@@ -50,7 +50,7 @@
                  style="width:28mm;height:8mm"/>
             <div style="font-size:8pt;margin-top:1mm" t-esc="'LIQ/' + o.name"/>
             <div style="font-size:7pt" t-esc="(o.product_id.display_name or '')[:32]"/>
-            <div style="font-size:8pt"><b t-esc="('$. %0.2f' % o.clearance_price)"/></div>
+            <div style="font-size:8pt"><b t-esc="('$ %0.2f' % o.clearance_price)"/></div>
           </div>
         </t>
       </div>
