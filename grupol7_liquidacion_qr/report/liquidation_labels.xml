@@ -1,4 +1,5 @@
 <odoo>
+  <!-- Paper formats -->
   <record id="paperformat_liq_label_30x25" model="report.paperformat">
     <field name="name">LIQ Label 30x25</field>
     <field name="default" eval="False"/>
@@ -13,47 +14,55 @@
     <field name="dpi">96</field>
   </record>
 
-  <report id="action_liq_coupon_print_label_qr"
-          model="liquidation.coupon"
-          string="Etiqueta LIQ (QR)"
-          report_type="qweb-pdf"
-          name="grupol7_liquidacion_qr.liq_label_qr_doc"
-          paperformat="paperformat_liq_label_30x25"/>
+  <record id="paperformat_liq_letter" model="report.paperformat">
+    <field name="name">LIQ Letter (Carta)</field>
+    <field name="default" eval="False"/>
+    <field name="format">custom</field>
+    <field name="page_width">216</field>
+    <field name="page_height">279</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">5</field>
+    <field name="margin_bottom">5</field>
+    <field name="margin_left">5</field>
+    <field name="margin_right">5</field>
+    <field name="dpi">96</field>
+  </record>
 
-  <report id="action_liq_coupon_print_label_code128"
-          model="liquidation.coupon"
-          string="Etiqueta LIQ (Code128)"
-          report_type="qweb-pdf"
-          name="grupol7_liquidacion_qr.liq_label_code128_doc"
-          paperformat="paperformat_liq_label_30x25"/>
+  <!-- ACCIONES: usar ir.actions.report en lugar de <report> -->
+  <record id="action_liq_coupon_print_label_qr" model="ir.actions.report">
+    <field name="name">Etiqueta LIQ (QR)</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">grupol7_liquidacion_qr.liq_label_qr_doc</field>
+    <field name="paperformat_id" ref="paperformat_liq_label_30x25"/>
+  </record>
 
-  <!-- QR -->
-  <template id="liq_label_qr_doc">
-    <t t-call="web.html_container">
-      <!-- base_url seguro (report.url o web.base.url) -->
-      <t t-set="base_url"
-         t-value="env['ir.config_parameter'].sudo().get_param('report.url') or env['ir.config_parameter'].sudo().get_param('web.base.url')"/>
-      <t t-foreach="docs" t-as="o">
-        <div style="width:30mm;height:25mm;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-          <img t-att-src="base_url + '/report/barcode/QR/' + ('LIQ/' + o.name) + '?width=256&amp;height=256'"
-               style="width:22mm;height:22mm;"/>
-        </div>
-      </t>
-    </t>
-  </template>
+  <record id="action_liq_coupon_print_label_code128" model="ir.actions.report">
+    <field name="name">Etiqueta LIQ (Code128)</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">grupol7_liquidacion_qr.liq_label_code128_doc</field>
+    <field name="paperformat_id" ref="paperformat_liq_label_30x25"/>
+  </record>
 
-  <!-- Code128 -->
-  <template id="liq_label_code128_doc">
-    <t t-call="web.html_container">
-      <t t-set="base_url"
-         t-value="env['ir.config_parameter'].sudo().get_param('report.url') or env['ir.config_parameter'].sudo().get_param('web.base.url')"/>
-      <t t-foreach="docs" t-as="o">
-        <div style="width:30mm;height:25mm;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
-          <img t-att-src="base_url + '/report/barcode/Code128/' + ('LIQ/' + o.name) + '?humanreadable=0&amp;width=280&amp;height=90'"
-               style="width:26mm;height:10mm;"/>
-          <div style="font-size:7px;line-height:1;margin-top:1mm;">LIQ/<t t-esc="o.name"/></div>
-        </div>
-      </t>
-    </t>
-  </template>
+  <record id="action_liq_coupon_print_sheet_qr" model="ir.actions.report">
+    <field name="name">Hoja Carta LIQ (QR, 2×)</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">grupol7_liquidacion_qr.liq_sheet_qr_doc</field>
+    <field name="paperformat_id" ref="paperformat_liq_letter"/>
+  </record>
+
+  <record id="action_liq_coupon_print_sheet_code128" model="ir.actions.report">
+    <field name="name">Hoja Carta LIQ (Code128, 2×)</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">grupol7_liquidacion_qr.liq_sheet_code128_doc</field>
+    <field name="paperformat_id" ref="paperformat_liq_letter"/>
+  </record>
+
+  <!-- (De aquí hacia abajo deja tus plantillas tal como ya están) -->
+  <!-- common_label_content, liq_label_qr_doc, liq_label_code128_doc,
+       common_sheet_grid, liq_sheet_qr_doc, liq_sheet_code128_doc -->
+  <!-- ... -->
 </odoo>
