@@ -24,6 +24,13 @@
             <div style="font-size:8pt" t-esc="'LIQ/' + o.name"/>
             <div style="font-size:7pt" t-esc="(o.product_id.display_name or '')[:32]"/>
             <div style="font-size:8pt"><b t-esc="('$ %0.2f' % o.clearance_price)"/></div>
+
+            <div style="font-size:6.5pt;margin-top:0.8mm;white-space:nowrap;">
+              <t t-esc="'Creado: %s por %s' % (format_datetime(o.create_date, tz=env.user.tz), o.create_uid.name)"/>
+            </div>
+            <div style="margin-top:0.6mm;height:7mm;border:0.25mm solid #000;border-radius:1mm;"></div>
+            <div style="text-align:center;font-size:6pt;line-height:1;">Firma</div>
+
           </div>
         </t>
       </div>
@@ -51,6 +58,13 @@
             <div style="font-size:8pt;margin-top:1mm" t-esc="'LIQ/' + o.name"/>
             <div style="font-size:7pt" t-esc="(o.product_id.display_name or '')[:32]"/>
             <div style="font-size:8pt"><b t-esc="('$ %0.2f' % o.clearance_price)"/></div>
+
+            <div style="font-size:6.5pt;margin-top:0.8mm;white-space:nowrap;">
+              <t t-esc="'Creado: %s por %s' % (format_datetime(o.create_date, tz=env.user.tz), o.create_uid.name)"/>
+            </div>
+            <div style="margin-top:0.6mm;height:7mm;border:0.25mm solid #000;border-radius:1mm;"></div>
+            <div style="text-align:center;font-size:6pt;line-height:1;">Firma</div>
+
           </div>
         </t>
       </div>
