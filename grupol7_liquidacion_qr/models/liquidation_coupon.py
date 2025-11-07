@@ -17,7 +17,7 @@ class LiquidationCoupon(models.Model):
         ("B", "Golpe"),
         ("C", "Detalle serio"),
     ], string="Daño", required=True)
-    clearance_price = fields.Monetary("Precio liquidación", required=True)
+    clearance_price = fields.Float(string="Precio liquidación", digits=(16, 4), required=True)
     currency_id = fields.Many2one(related="company_id.currency_id", store=True, readonly=True)
 
     pos_allowed_ids = fields.Many2many("pos.config", string="PdV permitidos")
