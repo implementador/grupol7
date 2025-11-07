@@ -68,3 +68,85 @@
   </record>
 
 </odoo>
+
+  <!-- Papel 60x50 mm -->
+  <record id="paperformat_liq_label_60x50" model="report.paperformat">
+    <field name="name">LIQ 60x50</field>
+    <field name="format">custom</field>
+    <field name="page_width">60</field>
+    <field name="page_height">50</field>
+    <field name="margin_top">3</field>
+    <field name="margin_bottom">3</field>
+    <field name="margin_left">3</field>
+    <field name="margin_right">3</field>
+    <field name="orientation">Portrait</field>
+  </record>
+
+  <!-- Template: QR 60x50 con fecha, usuario y firma -->
+  <template id="liq_label_qr_doc_big">
+    <t t-call="web.basic_layout">
+      <div class="page" style="width:60mm;height:50mm;box-sizing:border-box;padding:2mm;">
+        <t t-foreach="docs" t-as="o">
+          <div style="text-align:center;page-break-inside:avoid;display:inline-block;width:56mm;height:46mm">
+            <img t-att-src="'/report/barcode/QR/' + ('LIQ/' + o.name) + '?width=520&amp;height=520'"
+                 style="width:42mm;height:42mm"/>
+            <div style="font-size:12pt;margin-top:1mm" t-esc="'LIQ/' + o.name"/>
+            <div style="font-size:10pt" t-esc="(o.product_id.display_name or '')[:48]"/>
+            <div style="font-size:12pt"><b t-esc="'$ %0.2f' % (o.clearance_price or 0.0)"/></div>
+
+            <div style="font-size:9pt;margin-top:1mm"
+                 t-esc="'Fec.: ' + (o.create_date.strftime('%d/%m/%Y') if o.create_date else '')"/>
+            <div style="font-size:9pt" t-esc="'Gen.: ' + (o.create_uid.name or '')"/>
+
+            <div style="border-top:1px solid #000;margin:3mm auto 0;width:40mm"></div>
+            <div style="font-size:8pt">Firma</div>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <record id="action_liq_coupon_print_label_qr_big" model="ir.actions.report">
+    <field name="name">Etiqueta LIQ (QR) 60x50</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">grupol7_liquidacion_qr.liq_label_qr_doc_big</field>
+    <field name="report_file">grupol7_liquidacion_qr.liq_label_qr_doc_big</field>
+    <field name="paperformat_id" ref="grupol7_liquidacion_qr.paperformat_liq_label_60x50"/>
+    <field name="print_report_name">'Etiqueta_LIQ_QR_60x50_%s' % (object.name)</field>
+  </record>
+
+  <!-- Template: Code128 60x50 con fecha, usuario y firma -->
+  <template id="liq_label_code128_doc_big">
+    <t t-call="web.basic_layout">
+      <div class="page" style="width:60mm;height:50mm;box-sizing:border-box;padding:2mm;">
+        <t t-foreach="docs" t-as="o">
+          <div style="text-align:center;page-break-inside:avoid;display:inline-block;width:56mm;height:46mm">
+            <img t-att-src="'/report/barcode/Code128/' + ('LIQ/' + o.name) + '?width=520&amp;height=160'"
+                 style="width:52mm;height:16mm"/>
+            <div style="font-size:12pt;margin-top:1mm" t-esc="'LIQ/' + o.name"/>
+            <div style="font-size:10pt" t-esc="(o.product_id.display_name or '')[:48]"/>
+            <div style="font-size:12pt"><b t-esc="'$ %0.2f' % (o.clearance_price or 0.0)"/></div>
+
+            <div style="font-size:9pt;margin-top:1mm"
+                 t-esc="'Fec.: ' + (o.create_date.strftime('%d/%m/%Y') if o.create_date else '')"/>
+            <div style="font-size:9pt" t-esc="'Gen.: ' + (o.create_uid.name or '')"/>
+
+            <div style="border-top:1px solid #000;margin:3mm auto 0;width:40mm"></div>
+            <div style="font-size:8pt">Firma</div>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <record id="action_liq_coupon_print_label_code128_big" model="ir.actions.report">
+    <field name="name">Etiqueta LIQ (Code128) 60x50</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">grupol7_liquidacion_qr.liq_label_code128_doc_big</field>
+    <field name="report_file">grupol7_liquidacion_qr.liq_label_code128_doc_big</field>
+    <field name="paperformat_id" ref="grupol7_liquidacion_qr.paperformat_liq_label_60x50"/>
+    <field name="print_report_name">'Etiqueta_LIQ_Code128_60x50_%s' % (object.name)</field>
+  </record>
+
