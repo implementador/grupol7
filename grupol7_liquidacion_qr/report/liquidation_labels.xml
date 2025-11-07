@@ -67,7 +67,6 @@
     <field name="print_report_name">'Etiqueta_LIQ_Code128_%s' % (object.name)</field>
   </record>
 
-</odoo>
 
   <!-- Papel 60x50 mm -->
   <record id="paperformat_liq_label_60x50" model="report.paperformat">
@@ -150,3 +149,4 @@
     <field name="print_report_name">'Etiqueta_LIQ_Code128_60x50_%s' % (object.name)</field>
   </record>
 
+</odoo>
