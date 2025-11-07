@@ -1,5 +1,4 @@
 <odoo>
-  <!-- Papel 30 x 25 mm -->
   <record id="paperformat_liq_label_30x25" model="report.paperformat">
     <field name="name">LIQ Label 30x25</field>
     <field name="default" eval="False"/>
@@ -14,7 +13,6 @@
     <field name="dpi">96</field>
   </record>
 
-  <!-- Acciones: QR y Code128 -->
   <report id="action_liq_coupon_print_label_qr"
           model="liquidation.coupon"
           string="Etiqueta LIQ (QR)"
@@ -29,23 +27,29 @@
           name="grupol7_liquidacion_qr.liq_label_code128_doc"
           paperformat="paperformat_liq_label_30x25"/>
 
-  <!-- Usamos web.html_container (provee <main>) y armamos la URL absoluta con report_base_url -->
+  <!-- QR -->
   <template id="liq_label_qr_doc">
     <t t-call="web.html_container">
+      <!-- base_url seguro (report.url o web.base.url) -->
+      <t t-set="base_url"
+         t-value="env['ir.config_parameter'].sudo().get_param('report.url') or env['ir.config_parameter'].sudo().get_param('web.base.url')"/>
       <t t-foreach="docs" t-as="o">
         <div style="width:30mm;height:25mm;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-          <img t-att-src="report_base_url + '/report/barcode/QR/' + ('LIQ/' + o.name) + '?width=256&amp;height=256'"
+          <img t-att-src="base_url + '/report/barcode/QR/' + ('LIQ/' + o.name) + '?width=256&amp;height=256'"
                style="width:22mm;height:22mm;"/>
         </div>
       </t>
     </t>
   </template>
 
+  <!-- Code128 -->
   <template id="liq_label_code128_doc">
     <t t-call="web.html_container">
+      <t t-set="base_url"
+         t-value="env['ir.config_parameter'].sudo().get_param('report.url') or env['ir.config_parameter'].sudo().get_param('web.base.url')"/>
       <t t-foreach="docs" t-as="o">
         <div style="width:30mm;height:25mm;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
-          <img t-att-src="report_base_url + '/report/barcode/Code128/' + ('LIQ/' + o.name) + '?humanreadable=0&amp;width=280&amp;height=90'"
+          <img t-att-src="base_url + '/report/barcode/Code128/' + ('LIQ/' + o.name) + '?humanreadable=0&amp;width=280&amp;height=90'"
                style="width:26mm;height:10mm;"/>
           <div style="font-size:7px;line-height:1;margin-top:1mm;">LIQ/<t t-esc="o.name"/></div>
         </div>
