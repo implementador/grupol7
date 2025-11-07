@@ -14,22 +14,32 @@ class SaleOrderLine(models.Model):
             code = code[4:]
         if not code:
             return
+
         coupon = self.env['liquidation.coupon'].search([('name', '=', code)], limit=1)
         if not coupon:
             raise UserError(_('Código LIQ no encontrado.'))
+
         order = self.order_id
-        # Producto correcto
+
+        # Establecer producto correcto si hace falta
         if not self.product_id or self.product_id != coupon.product_id:
             self.product_id = coupon.product_id
-        # Validaciones
-        coupon._check_valid(company=order.company_id, product=self.product_id)
-        # Precio final con IVA -> base imponible de la línea
-        taxes = self.tax_id or self.product_id.taxes_id.filtered(lambda t: t.company_id == order.company_id)
+
+        # Impuestos del producto en la compañía de la orden
+        product_taxes = self.product_id.taxes_id.filtered(lambda t: t.company_id == order.company_id)
+        # Impuestos aplicables en la línea (posición fiscal)
+        mapped_taxes = product_taxes
         if order.fiscal_position_id:
-            taxes = order.fiscal_position_id.map_tax(taxes, self.product_id, order.partner_id)
+            mapped_taxes = order.fiscal_position_id.map_tax(product_taxes, self.product_id, order.partner_id)
+
+        # Precio final del cupón incluye impuestos -> obtener precio sin impuestos para price_unit
+        # Firma correcta en Odoo 16: _fix_tax_included_price_company(price, product_taxes, mapped_taxes, company)
         price_excluded = self.env['account.tax']._fix_tax_included_price_company(
-            coupon.clearance_price, taxes, taxes, company=order.company_id
+            coupon.clearance_price, product_taxes, mapped_taxes, order.company_id
         )
+
+        # Aplicar en la línea
+        self.tax_id = mapped_taxes
         self.price_unit = price_excluded
         self.x_liq_coupon_id = coupon.id
         self.x_liq_code = code
