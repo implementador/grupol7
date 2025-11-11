@@ -1,5 +1,0 @@
-[submodule "drefal"]
-	path = drefal
-	url = git@github.com:drefal/grupol7.git
-	branch = main
-
