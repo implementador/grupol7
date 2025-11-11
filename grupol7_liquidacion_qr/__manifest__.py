@@ -10,7 +10,6 @@
         "report/liquidation_labels.xml",          # <-- cargar primero el report (define action_liq_coupon_print_labels)
         "views/liquidation_coupon_views.xml",
         "views/liq_trace_views.xml",
-        "views/wizard_views.xml",
         "views/menu_liq_root.xml",
                 "views/report_liq_sales.xml",
     ],
