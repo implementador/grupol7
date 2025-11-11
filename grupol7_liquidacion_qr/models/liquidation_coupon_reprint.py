@@ -1,32 +1,21 @@
-# -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
 class LiquidationCoupon(models.Model):
     _inherit = 'liquidation.coupon'
 
-    # --- Nuevos campos de reimpresión ---
-    reprint_count = fields.Integer(
-        string='Reimpresiones', default=0, readonly=True
-    )
-    last_printed_by = fields.Many2one(
-        'res.users', string='Última impresión por', readonly=True
-    )
-    last_printed_at = fields.Datetime(
-        string='Fecha última impresión', readonly=True
-    )
+    reprint_count = fields.Integer(string='Reimpresiones', default=0, readonly=True)
+    last_printed_at = fields.Datetime(string='Última impresión', readonly=True)
+    last_printed_by_id = fields.Many2one('res.users', string='Impreso por', readonly=True)
 
-    # --- Botón: imprime QR y cuenta reimpresión ---
     def action_print_qr(self):
-        self.ensure_one()
-        # Acción del reporte QR ya existente en tu módulo
-        report_action = self.env.ref(
-            'grupol7_liquidacion_qr.action_liq_coupon_print_label_qr'
-        )
-        # Actualiza contador y huella
-        self.sudo().write({
-            'reprint_count': (self.reprint_count or 0) + 1,
-            'last_printed_by': self.env.user.id,
-            'last_printed_at': fields.Datetime.now(),
-        })
-        # Lanza el PDF del reporte
-        return report_action.report_action(self)
+        """Suma reimpresión y devuelve el reporte QR 205x105 (x2)."""
+        now = fields.Datetime.now()
+        uid = self.env.user.id
+        for rec in self.sudo():
+            rec.write({
+                'reprint_count': (rec.reprint_count or 0) + 1,
+                'last_printed_at': now,
+                'last_printed_by_id': uid,
+            })
+        action = self.env.ref('grupol7_liquidacion_qr.action_liq_coupon_print_label_qr_205x105_double')
+        return action.report_action(self)

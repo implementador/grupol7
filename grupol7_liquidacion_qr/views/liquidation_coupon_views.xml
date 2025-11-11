@@ -14,7 +14,7 @@
         <field name="pos_order_id"/>
         <field name="sale_order_id"/>
         <field name="expiration_date"/>
-        <!-- opcional, visible también en lista -->
+        <!-- contador visible también en lista -->
         <field name="reprint_count"/>
       </tree>
     </field>
@@ -27,12 +27,11 @@
     <field name="arch" type="xml">
       <form string="Cupón de liquidación">
         <header>
-          <!-- Solo QR: ahora llama al método Python -->
+          <!-- Imprime vía método Python -->
           <button name="action_print_qr"
                   string="Imprimir QR"
                   type="object"
                   class="btn-primary"/>
-          <!-- Se elimina el botón Code128 -->
         </header>
 
         <sheet>
@@ -51,20 +50,15 @@
             </group>
           </group>
 
-          <!-- Info de reimpresión -->
-          <group string="Impresiones">
-            <group>
-              <field name="reprint_count" readonly="1"/>
-            </group>
-            <group>
-              <field name="last_printed_by" readonly="1"/>
-              <field name="last_printed_at" readonly="1"/>
-            </group>
-          </group>
-
           <group>
             <field name="pos_allowed_ids" widget="many2many_tags"/>
             <field name="notes"/>
+          </group>
+
+          <group string="Impresiones">
+            <field name="reprint_count" readonly="1"/>
+            <field name="last_printed_at" readonly="1"/>
+            <field name="last_printed_by_id" readonly="1"/>
           </group>
 
           <notebook>
@@ -82,22 +76,25 @@
     </field>
   </record>
 
-  <!-- Acción y menú (igual que ya lo tenías) -->
+  <!-- Acción de ventana principal -->
   <record id="action_liq_coupon" model="ir.actions.act_window">
     <field name="name">Cupones de liquidación</field>
     <field name="res_model">liquidation.coupon</field>
     <field name="view_mode">tree,form</field>
   </record>
 
+  <!-- Menú -->
   <menuitem id="menu_liq_root" name="Liquidación" parent="stock.menu_stock_root" sequence="80"/>
   <menuitem id="menu_liq_coupon" name="Cupones" parent="menu_liq_root" action="action_liq_coupon" sequence="10"/>
 
+  <!-- Wizard: Generar cupones -->
   <record id="action_open_liq_generate_wizard" model="ir.actions.act_window">
     <field name="name">Generar cupones LIQ</field>
     <field name="res_model">liq.generate.coupons.wizard</field>
     <field name="view_mode">form</field>
     <field name="target">new</field>
   </record>
-  <menuitem id="menu_liq_generate" name="Generar cupones" parent="menu_liq_root" action="action_open_liq_generate_wizard" sequence="20"/>
+  <menuitem id="menu_liq_generate" name="Generar cupones" parent="menu_liq_root"
+            action="action_open_liq_generate_wizard" sequence="20"/>
 
 </odoo>
