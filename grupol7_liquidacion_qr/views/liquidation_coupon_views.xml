@@ -88,13 +88,5 @@
   <menuitem id="menu_liq_coupon" name="Cupones" parent="menu_liq_root" action="action_liq_coupon" sequence="10"/>
 
   <!-- Wizard: Generar cupones -->
-  <record id="action_open_liq_generate_wizard" model="ir.actions.act_window">
-    <field name="name">Generar cupones LIQ</field>
-    <field name="res_model">liq.generate.coupons.wizard</field>
-    <field name="view_mode">form</field>
-    <field name="target">new</field>
-  </record>
-  <menuitem id="menu_liq_generate" name="Generar cupones" parent="menu_liq_root"
-            action="action_open_liq_generate_wizard" sequence="20"/>
 
 </odoo>
