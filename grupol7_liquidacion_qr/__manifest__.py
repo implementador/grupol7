@@ -12,17 +12,16 @@
         "views/liq_trace_views.xml",
         "views/menu_liq_root.xml",
         "views/report_liq_sales.xml",
-        # Si agregas reglas de código de barras por XML, descomenta la línea de abajo:
         # "data/barcode_rules.xml",
     ],
     "assets": {
         "point_of_sale.assets": [
             "grupol7_liquidacion_qr/static/src/js/liq_coupon_barcode.js",
             "grupol7_liquidacion_qr/static/src/js/liq_lock_price.js",
-            "grupol7_liquidacion_qr/static/src/js/liq_coupon_button.js",  # <- NUEVO
+            "grupol7_liquidacion_qr/static/src/js/liq_coupon_button.js",
         ],
         "web.assets_qweb": [
-            "grupol7_liquidacion_qr/static/src/xml/pos_coupon_button.xml",  # <- NUEVO
+            "grupol7_liquidacion_qr/static/src/xml/pos_coupon_button.xml",
         ],
     },
     "license": "LGPL-3",

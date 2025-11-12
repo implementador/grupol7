@@ -1,65 +1,86 @@
-/** @odoo-module **/
+odoo.define('grupol7_liquidacion_qr.CouponButton', function (require) {
+    'use strict';
 
-import { PosComponent } from 'point_of_sale.PosComponent';
-import Registries from 'point_of_sale.Registries';
-import { ProductScreen } from 'point_of_sale.ProductScreen';
+    const { PosComponent } = require('point_of_sale.PosComponent');
+    const ProductScreen = require('point_of_sale.ProductScreen');
+    const Registries = require('point_of_sale.Registries');
+    const { useListener } = require('web.custom_hooks');
 
-class L7CouponButton extends PosComponent {
-    async onClick() {
-        // Pedir código (puedes escanear aquí o teclear)
-        const { confirmed, payload } = await this.showPopup('TextInputPopup', {
-            title: this.env._t('Escanea o escribe el cupón'),
-            startingValue: '',
-            confirmText: this.env._t('Validar'),
-            placeholder: this.env._t('Código de cupón'),
-        });
-        if (!confirmed || !payload) return;
+    class CouponButton extends PosComponent {
+        setup() {
+            super.setup();
+            useListener('click', this.onClick);
+        }
 
-        const code = (payload || '').trim();
-        try {
-            // Llama a tu método Python que ya existe
-            const res = await this.env.services.rpc({
-                model: 'liquidation.coupon',
-                method: 'pos_validate_coupon',
-                args: [code, this.env.pos.config.id],
+        async onClick() {
+            const { confirmed, payload } = await this.showPopup('TextInputPopup', {
+                title: this.env._t('Canjear cupón'),
+                startingValue: '',
+                confirmText: this.env._t('Validar'),
+                placeholder: this.env._t('Escanea o escribe el código'),
             });
+            if (!confirmed) return;
 
-            // Cargar el producto del cupón y agregar con precio del cupón
-            const product = this.env.pos.db.get_product_by_id(res.product_id);
-            if (!product) {
-                return this.showPopup('ErrorPopup', {
-                    title: this.env._t('Producto no disponible en el PdV'),
-                    body: this.env._t('El producto del cupón no fue cargado en esta sesión.'),
+            const code = (payload || '').trim();
+            if (!code) return;
+
+            try {
+                const res = await this.rpc({
+                    model: 'liquidation.coupon',
+                    method: 'pos_validate_coupon',
+                    args: [code, this.env.pos.config.id],
+                });
+
+                const product = this.env.pos.db.get_product_by_id(res.product_id);
+                if (!product) {
+                    await this.showPopup('ErrorPopup', {
+                        title: this.env._t('Producto no cargado en PdV'),
+                        body: this.env._t('Actualiza la sesión del PdV e inténtalo de nuevo.'),
+                    });
+                    return;
+                }
+
+                this.currentOrder.add_product(product, {
+                    price: res.price,
+                    extras: {
+                        liq_coupon_id: res.coupon_id,
+                        liq_coupon_code: code,
+                        liq_damage: res.damage || '',
+                    },
+                });
+
+                const line = this.currentOrder.get_last_orderline();
+                if (line) {
+                    line.set_unit_price(res.price);
+                    line.price_manually_set = true;
+                    line.set_full_product_name(`[Cupón] ${product.display_name}`);
+                }
+
+                await this.showPopup('ConfirmPopup', {
+                    title: this.env._t('Cupón aplicado'),
+                    body: this.env._t(`Se aplicó el cupón ${code}`),
+                });
+            } catch (err) {
+                const msg = (err && err.message) ||
+                            (err && err.data && err.data.message) ||
+                            this.env._t('Cupón inválido o no autorizado.');
+                await this.showPopup('ErrorPopup', {
+                    title: this.env._t('No se pudo aplicar'),
+                    body: msg,
                 });
             }
-
-            const order = this.env.pos.get_order();
-            order.add_product(product, {
-                price: res.price,
-                extras: {
-                    liq_coupon_id: res.coupon_id,
-                    liq_damage_grade: res.damage_grade,
-                },
-            });
-        } catch (err) {
-            const msg =
-                (err && err.message && err.message.data && err.message.data.message)
-                || (err && err.message)
-                || this.env._t('No se pudo validar el cupón.');
-            this.showPopup('ErrorPopup', {
-                title: this.env._t('Cupón inválido'),
-                body: msg,
-            });
         }
     }
-}
-L7CouponButton.template = 'L7CouponButton';
 
-// Mostrar el botón en la columna de botones de control del ProductScreen
-ProductScreen.addControlButton({
-    component: L7CouponButton,
-    condition() { return true; },   // puedes filtrar por grupo, compañía, etc.
+    CouponButton.template = 'CouponButton';
+
+    ProductScreen.addControlButton({
+        component: CouponButton,
+        condition: function () {
+            return true; // botón siempre visible
+        },
+    });
+
+    Registries.Component.add(CouponButton);
+    return CouponButton;
 });
-
-Registries.Component.add(L7CouponButton);
-export default L7CouponButton;
