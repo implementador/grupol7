@@ -1,63 +1,36 @@
 /** @odoo-module **/
-import { ProductScreen } from 'point_of_sale.ProductScreen';
+
 import Registries from 'point_of_sale.Registries';
-import rpc from 'web.rpc';
+import { ProductScreen } from 'point_of_sale.ProductScreen';
 
-const LiqCouponPatch = (ProductScreen) => class extends ProductScreen {
-
-    /** Intenta manejar un cupón. Devuelve true si lo consumió. */
-    async _tryLiqCoupon(raw) {
-        const code = (raw && raw.code) ? raw.code : (raw || '');
-        const m = code.trim().match(/^(?:LIQ\/)?([A-Za-z0-9_-]{4,64})$/);
-        if (!m) return false;  // no parece cupón
-
+const LiqUnknownBarcodePatch = (ProductScreen) => class extends ProductScreen {
+    async _barcodeErrorAction(code) {
+        // Intentar tratarlo como Cupón LIQ antes del popup de error
         try {
-            const res = await rpc.query({
-                model: 'liquidation.coupon',
-                method: 'pos_scan_coupon',
-                args: [[], m[1], this.env.pos.config.id],
-            });
-            if (!res || !res.ok) {
-                await this.showPopup('ErrorPopup', {
-                    title: this.env._t('Cupón no válido'),
-                    body: (res && res.message) || this.env._t('No se pudo validar el cupón.'),
+            // Filtro simple para no spamear RPC con códigos raros
+            const clean = (code || '').trim();
+            if (clean.length >= 6 && clean.length <= 64) {
+                const result = await this.rpc({
+                    model: 'liquidation.coupon',
+                    method: 'pos_apply_coupon',
+                    args: [clean, this.env.pos.config.id],
                 });
-                return true;
+                if (result && result.product_id && !result.error) {
+                    const product = this.env.pos.db.get_product_by_id(result.product_id);
+                    if (product) {
+                        const order = this.env.pos.get_order();
+                        const line = order.add_product(product, { price: result.price, extras: { liq_coupon_code: clean } });
+                        line.set_unit_price(result.price);
+                        line.price_manually_set = true;
+                        return; // Consumimos el “desconocido”
+                    }
+                }
             }
-            const product = this.env.pos.db.get_product_by_id(res.product_id);
-            if (!product) {
-                await this.showPopup('ErrorPopup', {
-                    title: this.env._t('Producto no disponible'),
-                    body: this.env._t('El producto del cupón no está cargado en este POS.'),
-                });
-                return true;
-            }
-            this.currentOrder.add_product(product, {
-                price: res.price,
-                extras: { liq_coupon_code: res.code },
-            });
-            return true;
         } catch (e) {
-            await this.showPopup('ErrorPopup', {
-                title: this.env._t('Error de red'),
-                body: this.env._t('No se pudo contactar al servidor.'),
-            });
-            return true;
+            console.warn('[LIQ] pos_apply_coupon error', e);
         }
-    }
-
-    /** Si el escaneo llega como “desconocido”, probamos cupón antes del popup estándar. */
-    async _barcodeUnknownAction(code) {
-        const handled = await this._tryLiqCoupon(code);
-        if (handled) return true;
-        return super._barcodeUnknownAction(...arguments);
-    }
-
-    /** Si el POS cree que es “producto”, igual probamos cupón primero. */
-    async _barcodeProductAction(code) {
-        const handled = await this._tryLiqCoupon(code);
-        if (handled) return true;
-        return super._barcodeProductAction(...arguments);
+        // Si no era cupón válido, seguimos con el comportamiento estándar
+        return super._barcodeErrorAction(code);
     }
 };
-Registries.Component.extend(ProductScreen, LiqCouponPatch);
+Registries.Component.extend(ProductScreen, LiqUnknownBarcodePatch);
