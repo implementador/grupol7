@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<t t-name="CouponButton" owl="1">
-    <div class="control-button" role="button" t-on-click="onClick">
-        <i class="fa fa-qrcode"/>
-        <span t-esc="env._t('Canjear cupón')"/>
-    </div>
-</t>
+<templates xml:space="preserve">
+    <t t-name="Grupol7CouponButton" owl="1">
+        <div class="control-button">
+            <i class="fa fa-qrcode"/>
+            <span>Canjear cupón</span>
+        </div>
+    </t>
+</templates>

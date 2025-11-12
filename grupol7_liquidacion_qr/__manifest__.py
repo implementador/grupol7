@@ -2,7 +2,7 @@
 {
     "name": "Liquidación con QR (Cupones por pieza)",
     "summary": "Cupones QR para liquidación: valida producto y precio, un solo uso, POS y Ventas, reporte por PdV.",
-    "version": "16.0.1.25",
+    "version": "16.0.1.26",
     "author": "Grupo L7 / Implementación",
     "depends": ["base", "sale", "point_of_sale", "stock", "barcodes"],
     "data": [
@@ -20,7 +20,6 @@
             "grupol7_liquidacion_qr/static/src/js/liq_lock_price.js",
             "grupol7_liquidacion_qr/static/src/js/liq_coupon_button.js",
         ],
-        "web.assets_qweb": [
             "grupol7_liquidacion_qr/static/src/xml/pos_coupon_button.xml",
         ],
     },
