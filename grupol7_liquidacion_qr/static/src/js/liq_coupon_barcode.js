@@ -4,34 +4,38 @@ import { ProductScreen } from 'point_of_sale.ProductScreen';
 import Registries from 'point_of_sale.Registries';
 import rpc from 'web.rpc';
 
-const LiqCouponProductScreen = (ProductScreen) => class extends ProductScreen {
-    mounted() {
-        super.mounted();
-        // Registra una regla que acepta LIQ/<codigo> o solo <codigo>
-        this.env.pos.barcodeReader.addRule({
-            name: 'liq-coupon',
-            // 6–32 chars alfanum, guion y guion bajo; con o sin prefijo LIQ/
-            pattern: /^(?:LIQ\/)?([A-Za-z0-9_-]{6,32})$/,
-            callback: (barcode) => this._onLiqCouponScanned(barcode),
-        });
+const LiqCouponPatch = (ProductScreen) => class extends ProductScreen {
+    /**
+     * Se ejecuta cuando el POS interpreta el escaneo como "producto".
+     * Aquí interceptamos primero para intentar tratarlo como CUPÓN.
+     */
+    async _barcodeProductAction(barcode) {
+        const code = (barcode && barcode.code) ? barcode.code : (barcode || '');
+        const m = code.trim().match(/^(?:LIQ\/)?([A-Za-z0-9_-]{6,32})$/);
+        if (m) {
+            const handled = await this._handleLiqCoupon(m[1]);
+            if (handled) {
+                // Consumido: NO continuar con la lógica por defecto de producto
+                return true;
+            }
+        }
+        // Si no parecía cupón o algo falló, continuar con la lógica estándar
+        return await super._barcodeProductAction(...arguments);
     }
-    willUnmount() {
-        this.env.pos.barcodeReader.removeRule('liq-coupon');
-        super.willUnmount();
-    }
-    async _onLiqCouponScanned(raw) {
+
+    async _handleLiqCoupon(cleanCode) {
         try {
             const res = await rpc.query({
                 model: 'liquidation.coupon',
                 method: 'pos_scan_coupon',
-                args: [[], raw, this.env.pos.config.id],
+                args: [[], cleanCode, this.env.pos.config.id],
             });
             if (!res || !res.ok) {
                 await this.showPopup('ErrorPopup', {
                     title: this.env._t('Cupón no válido'),
                     body: (res && res.message) || this.env._t('No se pudo validar el cupón.'),
                 });
-                return true; // Consumir el escaneo para que no dispare “desconocido”.
+                return true; // ya lo manejamos
             }
             const product = this.env.pos.db.get_product_by_id(res.product_id);
             if (!product) {
@@ -41,7 +45,6 @@ const LiqCouponProductScreen = (ProductScreen) => class extends ProductScreen {
                 });
                 return true;
             }
-            // Agrega la línea con el precio de liquidación (sin permitir editar)
             const order = this.currentOrder;
             order.add_product(product, {
                 price: res.price,
@@ -57,4 +60,5 @@ const LiqCouponProductScreen = (ProductScreen) => class extends ProductScreen {
         }
     }
 };
-Registries.Component.extend(ProductScreen, LiqCouponProductScreen);
+
+Registries.Component.extend(ProductScreen, LiqCouponPatch);
