@@ -21,6 +21,7 @@
         "views/liq_trace_views.xml",
         "views/menu_liq_root.xml",
         "views/report_liq_sales.xml",
+    "data/barcode_rules.xml"",
     ],
     "assets": {
         # Carga los JS del POS (acepta archivos en static/src/js y/o static/src/pos)
