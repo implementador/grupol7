@@ -20,6 +20,7 @@
             "grupol7_liquidacion_qr/static/src/js/liq_lock_price.js",
             "grupol7_liquidacion_qr/static/src/js/liq_coupon_button.js",
             "grupol7_liquidacion_qr/static/src/xml/pos_coupon_button.xml",
+            "grupol7_liquidacion_qr/static/src/xml/pos_rename_note_button.xml",
         ],
     },
     "license": "LGPL-3",

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Cambia sólo el texto del botón "Nota de cliente" -->
+    <t t-name="grupol7_liquidacion_qr.RenameOrderNoteButton"
+       t-inherit="point_of_sale.OrderNoteButton"
+       t-inherit-mode="extension">
+        <xpath expr="//span[contains(@class,'control-button-text')]" position="replace">
+            <span class="control-button-text">Cupón QR</span>
+        </xpath>
+    </t>
+</templates>
