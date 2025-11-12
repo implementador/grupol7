@@ -15,10 +15,8 @@
             groups="stock.group_stock_user"/>
 
   <!-- Generar cupones (wizard) -->
-  <menuitem id="menu_liq_generate"
             name="Generar cupones"
             parent="menu_liq_root"
-            action="grupol7_liquidacion_qr.action_open_liq_generate_wizard"
             sequence="20"
             groups="stock.group_stock_user"/>
 </odoo>
