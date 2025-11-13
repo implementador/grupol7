@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <!-- Extiende el template OWL/QWeb del botón "Nota de cliente" -->
-    <t t-extend="point_of_sale.OrderNoteButton">
-        <t t-jquery="span.control-button-text" t-operation="replace">
-            <span class="control-button-text">Cupón QR</span>
-        </t>
+  <!-- Cambia el texto del botón "Nota de cliente" a "Cupón QR" -->
+  <t t-extend="OrderlineCustomerNoteButton">
+    <!-- En este template el texto está en un <span> simple -->
+    <t t-jquery="span" t-operation="replace">
+      <span>Cupón QR</span>
     </t>
+  </t>
 </templates>
