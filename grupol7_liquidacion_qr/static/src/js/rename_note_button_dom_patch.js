@@ -2,18 +2,21 @@ odoo.define('grupol7_liquidacion_qr.rename_note_button_dom_patch', function (req
     'use strict';
     const domReady = require('web.dom_ready');
 
-    function applyRename(root = document) {
-        const candidates = root.querySelectorAll('div.control-button[title], div.control-button[aria-label]');
-        for (const btn of candidates) {
-            const label = ((btn.getAttribute('title') || btn.getAttribute('aria-label') || '') + '').toLowerCase();
-            if (label.includes('customer note') || label.includes('nota de cliente')) {
-                // Texto visible
-                const span = btn.querySelector('span');
-                if (span && span.textContent !== 'Cupón QR') span.textContent = 'Cupón QR';
-                // Ícono
-                const ico = btn.querySelector('i');
-                if (ico && !ico.classList.contains('fa-qrcode')) ico.className = 'fa fa-qrcode';
-                // A11y/tooltip
+    function rename(root=document) {
+        const btns = root.querySelectorAll('div.control-button');
+        for (const btn of btns) {
+            const icon = btn.querySelector('i');
+            if (!icon) continue;
+
+            const isNote =
+                icon.classList.contains('fa-sticky-note') ||           // botón de “Nota de cliente”
+                /customer note|nota de cliente/i.test(btn.getAttribute('title')||'') ||
+                /customer note|nota de cliente/i.test(btn.getAttribute('aria-label')||'');
+
+            if (isNote) {
+                const labelEl = btn.querySelector('span');
+                if (labelEl && labelEl.textContent !== 'Cupón QR') labelEl.textContent = 'Cupón QR';
+                icon.className = 'fa fa-qrcode';
                 btn.setAttribute('title', 'Cupón QR');
                 btn.setAttribute('aria-label', 'Cupón QR');
             }
@@ -21,13 +24,11 @@ odoo.define('grupol7_liquidacion_qr.rename_note_button_dom_patch', function (req
     }
 
     function start() {
-        // Espera a que exista la app del POS en el DOM
-        const root = document.querySelector('.pos');
-        if (!root) { setTimeout(start, 300); return; }
-        applyRename(root);
-        // Reaplica cuando OWL re-renderiza
-        const obs = new MutationObserver(() => applyRename(root));
-        obs.observe(root, { childList: true, subtree: true });
+        const posRoot = document.querySelector('.pos');
+        if (!posRoot) { setTimeout(start, 300); return; }
+        rename(posRoot);
+        const mo = new MutationObserver(() => rename(posRoot));
+        mo.observe(posRoot, { childList: true, subtree: true });
     }
 
     domReady(start);
