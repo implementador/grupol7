@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-  <!-- OrderlineCustomerNoteButton es el template real del botón -->
+  <!-- Forzamos el reemplazo del botón "Nota de cliente" -->
   <t t-extend="OrderlineCustomerNoteButton">
-    <!-- Cambiar el texto visible del botón -->
-    <t t-jquery="span" t-operation="replace">
-      <span>Cupón QR</span>
-    </t>
-    <!-- Cambiar el ícono de 'sticky-note' a 'qrcode' -->
-    <t t-jquery="i" t-operation="attributes">
-      <attribute name="class">fa fa-qrcode</attribute>
-      <attribute name="aria-label">Cupón QR</attribute>
-      <attribute name="title">Cupón QR</attribute>
+    <!-- En este template, el nodo raíz es un <div class="control-button"> -->
+    <t t-jquery="div.control-button" t-operation="replace">
+      <div class="control-button" t-on-click="onClick" role="img" aria-label="Cupón QR" title="Cupón QR">
+        <i class="fa fa-qrcode"/>
+        <span>Cupón QR</span>
+      </div>
     </t>
   </t>
 </templates>
