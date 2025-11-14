@@ -1,29 +1,38 @@
 odoo.define('grupol7_liquidacion_qr.qr_dom_patch', function (require) {
     'use strict';
-    function safePatch() {
+    function patch() {
         try {
-            // Busca el botón de Nota de cliente por su icono de "sticky-note"
             const icon = document.querySelector('.control-button i.fa-sticky-note');
             if (!icon) return;
             const btn = icon.closest('.control-button');
-            if (!btn || btn.dataset.__qr_patched) return;
-            btn.dataset.__qr_patched = '1';
+            if (!btn) return;
 
-            // Cambia icono y texto (sin romper si no existen nodos)
+            // Icono a QR
             try { icon.classList.remove('fa-sticky-note'); icon.classList.add('fa-qrcode'); } catch(e){}
-            const label = btn.querySelector('.label, span, div');
-            if (label) label.textContent = 'Cupón QR';
 
-            // Click: sólo alterna un flag y avisa (nunca revienta)
-            btn.addEventListener('click', () => {
-                try {
+            // Quitar cualquier etiqueta previa (todo hijo directo que NO sea el contenedor del icono)
+            Array.from(btn.children).forEach(ch => {
+                if (!ch.querySelector || !ch.querySelector('i')) {
+                    btn.removeChild(ch);
+                }
+            });
+
+            // Poner nuestro label desde cero
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = 'Cupón QR';
+            btn.appendChild(label);
+
+            // Click seguro: sólo alterna modo (aún sin validar cupon)
+            if (!btn.dataset.qrBound) {
+                btn.dataset.qrBound = '1';
+                btn.addEventListener('click', () => {
                     window.__qr_mode = !window.__qr_mode;
                     alert(window.__qr_mode ? 'Modo Cupón QR ACTIVADO' : 'Modo Cupón QR DESACTIVADO');
-                } catch(e){}
-            });
-        } catch(e) { /* swallow */ }
+                });
+            }
+        } catch (e) {}
     }
-    document.addEventListener('DOMContentLoaded', safePatch);
-    // Reintenta cuando el DOM cambia (cargas Owl)
-    new MutationObserver(safePatch).observe(document.documentElement, {childList:true, subtree:true});
+    document.addEventListener('DOMContentLoaded', patch);
+    new MutationObserver(patch).observe(document.documentElement, {childList:true, subtree:true});
 });
