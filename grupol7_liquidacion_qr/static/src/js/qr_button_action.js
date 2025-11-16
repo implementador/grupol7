@@ -1,100 +1,101 @@
-odoo.define('grupol7_liquidacion_qr.qr_button_action', function (require) {
-    'use strict';
+/** @odoo-module **/
 
-    const rpc = require('web.rpc');
+import { _t } from "@web/core/l10n/translation";
+import { useService } from "@web/core/utils/hooks";
+import { PosComponent } from "point_of_sale.PosComponent";
+import Registries from "point_of_sale.Registries";
+import ProductScreen from "point_of_sale.ProductScreen";
 
-    // --- utilidades para localizar el POS en Odoo 16 (OWL) ---
-    function getPos() {
-        const dbg = (window.odoo && odoo.__DEBUG__ && odoo.__DEBUG__.services) || {};
-        return (
-            (window.odoo && (odoo.pos || (odoo.env && odoo.env.pos))) ||
-            dbg['point_of_sale.PosGlobalState'] ||
-            dbg['point_of_sale.PosService'] ||
-            dbg['point_of_sale.pos'] ||
-            null
-        );
-    }
-    function getOrder(pos) {
-        return (pos && (
-            pos.get_order?.() ||
-            (pos.env && pos.env.pos && pos.env.pos.get_order?.())
-        )) || null;
-    }
-    function getProductById(pos, id) {
-        // Soporta varias formas de cache interna según build
-        return (
-            pos?.db?.get_product_by_id?.(id) ||
-            (pos?.db?.product_by_id && pos.db.product_by_id[id]) ||
-            pos?.env?.pos?.db?.get_product_by_id?.(id) ||
-            (pos?.env?.pos?.db?.product_by_id && pos.env.pos.db.product_by_id[id]) ||
-            null
-        );
-    }
-    function getConfigId() {
-        const m = /[?&]config_id=(\d+)/.exec(location.search);
-        return m ? parseInt(m[1]) : null;
+class QrCouponButton extends PosComponent {
+    setup() {
+        super.setup();
+        this.orm = useService("orm");
     }
 
-    async function handleCoupon() {
-        const code = (window.prompt('Escanea o pega el código del cupón:') || '').trim();
-        if (!code) return;
+    async onClick() {
+        // 1) Pedir código (teclado/escáner)
+        const { confirmed, payload: code } = await this.showPopup("TextInputPopup", {
+            title: _t("Cupón QR"),
+            body: _t("Escribe o escanea el código del cupón."),
+            startingValue: "",
+            confirmText: _t("Validar"),
+        });
+        if (!confirmed || !code) return;
 
-        const pos_config_id = getConfigId();
+        // 2) Validar cupón en servidor
+        let data;
         try {
-            const data = await rpc.query({
-                model: 'liquidation.coupon',
-                method: 'pos_validate_coupon',
-                args: [code, pos_config_id],
+            data = await this.orm.call(
+                "liquidation.coupon",
+                "pos_validate_coupon",
+                [[], code, this.env.pos.config.id]
+            );
+        } catch (err) {
+            console.error(err);
+            await this.showPopup("ErrorPopup", {
+                title: _t("Cupón no válido"),
+                body: err.message || _t("No fue posible validar el cupón."),
             });
+            return;
+        }
 
-            // Normaliza campos por si vienen de forma distinta
-            const price = Number(data.price);
-            const productId = Array.isArray(data.product_id) ? data.product_id[0] : data.product_id;
-            const couponName = data.name || (Array.isArray(data.product_id) ? data.product_id[1] : '') || 'Cupón';
+        // 3) Buscar producto en caché del POS
+        const productId = (data.product_id && data.product_id.id) || data.product_id;
+        let product =
+            (this.env.pos.db && this.env.pos.db.get_product_by_id(productId)) ||
+            (this.env.pos.get_product_by_id && this.env.pos.get_product_by_id(productId));
 
-            const pos = getPos();
-            const product = pos ? getProductById(pos, productId) : null;
+        if (!product) {
+            await this.showPopup("ErrorPopup", {
+                title: _t("Cupón OK pero…"),
+                body: _t("El producto no está cargado en este PdV. Actualiza artículos."),
+            });
+            return;
+        }
 
-            if (pos && product) {
-                const order = getOrder(pos);
-                if (order) {
-                    order.add_product(product, { price, merge: false });
-                    const line = order.get_last_orderline?.();
-                    if (line) {
-                        line.set_unit_price?.(price);
-                        line.price_manually_set = true;          // para que no recalculen listas
-                        line.liq_coupon_id = data.coupon_id || data.coupon || null;
-                    }
-                    return;
+        // 4) Crear línea con precio del cupón y lote (si aplica)
+        const options = {
+            quantity: 1,
+            merge: false,
+            price: data.price,
+        };
+        if (data.requires_lot) {
+            options.draftPackLotLines = [{ lot_name: data.lot_name || "" }];
+        }
+
+        try {
+            this.currentOrder.add_product(product, options);
+
+            const line = this.currentOrder.get_last_orderline();
+            if (line) {
+                line.set_unit_price(data.price);
+                if (line.set_note) {
+                    line.set_note(`Cupón QR: ${data.info}`);
                 }
+                line.coupon_qr_code = code;
+                line.coupon_id = data.coupon_id;
             }
 
-            // Fallback: si no se añadió automáticamente
-            alert(`Cupón OK: ${couponName}\nPrecio: ${price}\n(El producto no pudo añadirse automáticamente)`);
-        } catch (e) {
-            const msg =
-                (e && e.message) ||
-                (e && e.data && (e.data.message || e.data.debug)) ||
-                'Cupón inválido o no autorizado.';
-            alert(msg);
+            await this.showPopup("ConfirmPopup", {
+                title: _t("Cupón aplicado"),
+                body: `${product.display_name} - $${data.price}`,
+            });
+        } catch (err) {
+            console.error(err);
+            await this.showPopup("ErrorPopup", {
+                title: _t("No se pudo añadir la línea"),
+                body: _t("El cupón es válido, pero el producto no pudo agregarse automáticamente."),
+            });
         }
     }
+}
+QrCouponButton.template = "QrCouponButton"; // Tu template ya lo define el archivo UX
 
-    function bindButton() {
-        // Nuestro botón con icono QR
-        const btn =
-            document.querySelector('.control-button i.fa-qrcode')?.closest('.control-button') ||
-            document.querySelector('.control-button i.fa-sticky-note')?.closest('.control-button');
-        if (!btn || btn.dataset.couponBound === '1') return;
-
-        btn.dataset.couponBound = '1';
-        btn.addEventListener('click', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            handleCoupon();
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', bindButton);
-    new MutationObserver(bindButton).observe(document.documentElement, { childList: true, subtree: true });
+ProductScreen.addControlButton({
+    component: QrCouponButton,
+    condition: () => true,
 });
+
+Registries.Component.add(QrCouponButton);
+
+export default QrCouponButton;
