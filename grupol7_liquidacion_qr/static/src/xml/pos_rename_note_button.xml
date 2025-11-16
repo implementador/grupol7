@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+  <!-- Reemplaza el label/icono del botón de Nota de cliente -->
+  <t t-name="grupol7_liquidacion_qr.OrderlineCustomerNoteButton"
+     t-extend="OrderlineCustomerNoteButton">
+    <t t-jquery="i" t-operation="replace">
+      <i class="fa fa-qrcode" role="img" aria-label="Cupón QR"/>
+    </t>
+    <t t-jquery="span" t-operation="replace">
+      <span class="control-button-label">Cupón QR</span>
+    </t>
+  </t>
+</templates>
