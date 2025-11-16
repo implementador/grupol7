@@ -8,3 +8,4 @@ from . import liquidation_coupon_reprint
 from . import liq_print_count
 from . import pos_coupon_scan
 from . import liq_coupon_pos_api
+from . import coupon_location
