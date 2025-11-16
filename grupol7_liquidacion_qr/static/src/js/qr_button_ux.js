@@ -7,21 +7,24 @@ odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
     const G7CouponPos = (ProductScreen) => class extends ProductScreen {
         mounted() {
             super.mounted();
-            // Ocultar el botón nativo "Customer Note" para evitar concatenaciones
-            const noteBtn = this.el.querySelector('button[aria-label="Customer Note"]');
-            if (noteBtn) noteBtn.style.display = 'none';
 
-            // Inyectar nuestro botón solo una vez
+            // 1) Oculta el botón nativo "Nota de cliente" para evitar confusión/concatenación
+            const nativeNote = this.el.querySelector('button[aria-label="Customer Note"], .control-button[aria-label="Customer Note"]');
+            if (nativeNote) nativeNote.style.display = 'none';
+
+            // 2) Inyecta nuestro botón solo si no existe
             if (!this.el.querySelector('.g7-coupon-btn')) {
                 const container =
                     this.el.querySelector('.control-buttons') ||
                     this.el.querySelector('.control-panel .buttons') ||
                     this.el;
+
                 if (container) {
-                    const btn = document.createElement('button');
-                    btn.className = 'button g7-coupon-btn';
+                    // Usa el mismo tipo que Odoo: control-button
+                    const btn = document.createElement('div');
+                    btn.className = 'control-button g7-coupon-btn';
                     btn.setAttribute('aria-label', 'Cupón QR');
-                    btn.innerHTML = '<i class="fa fa-qrcode"></i><span style="margin-left:6px">Cupón QR</span>';
+                    btn.innerHTML = '<i class="fa fa-qrcode"></i><span class="label">Cupón QR</span>';
                     btn.addEventListener('click', () => this._onClickCoupon());
                     container.appendChild(btn);
                 }
@@ -41,7 +44,7 @@ odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
             const code = (payload || '').trim();
             if (!code) return;
 
-            // Validación en backend
+            // Valida en backend
             let res;
             try {
                 res = await this.rpc({
@@ -79,7 +82,7 @@ odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
             } catch (e) {
                 this.showPopup('ErrorPopup', {
                     title: this.env._t('Cupón'),
-                    body: this.env._t('Se agregó la línea, pero no se logró marcar el cupón como usado. Revise el backend.'),
+                    body: this.env._t('Se agregó la línea, pero no se logró marcar el cupón como usado.'),
                 });
             }
         }

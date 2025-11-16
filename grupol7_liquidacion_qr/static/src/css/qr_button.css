@@ -1,0 +1,13 @@
+/* Fuerza que el texto del botón se vea como los nativos */
+.pos .control-buttons .g7-coupon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  min-width: 110px;          /* evita que colapse y oculte el texto */
+}
+
+.pos .control-buttons .g7-coupon-btn .label {
+  display: inline !important; /* algunos temas lo ocultan: forzamos visible */
+  white-space: nowrap;
+}
