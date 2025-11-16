@@ -3,7 +3,7 @@
     <field name="name">liquidation.coupon.form.loc</field>
     <field name="model">liquidation.coupon</field>
     <!-- Ajusta este inherit_id si tu ID real difiere -->
-    <field name="inherit_id" ref="grupol7_liquidacion_qr.view_liquidation_coupon_form"/>
+    <field name="inherit_id" ref="grupol7_liquidacion_qr.view_liq_coupon_form"/>
     <field name="arch" type="xml">
       <!-- Inserta dentro del grupo principal -->
       <xpath expr="//form/sheet/group" position="inside">

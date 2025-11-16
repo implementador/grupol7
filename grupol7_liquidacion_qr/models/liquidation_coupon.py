@@ -34,7 +34,7 @@ class LiquidationCoupon(models.Model):
     damage_note = fields.Char(string="Detalle de daño")
 
     clearance_price = fields.Monetary(
-        string="Precio liquidación", digits=(16, 4), required=True
+        string="Precio liquidación", required=True
     )
     currency_id = fields.Many2one(
         "res.currency", string="Moneda",
