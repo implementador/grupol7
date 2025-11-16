@@ -16,14 +16,15 @@
         # "data/barcode_rules.xml",
     ],
     "assets": {
-        "point_of_sale.assets": [
-            "grupol7_liquidacion_qr/static/src/js/qr_button_ux.js",
-            "grupol7_liquidacion_qr/static/src/js/qr_button_action.js",
-        "grupol7_liquidacion_qr/static/src/js/rename_note_button_dom_patch.js",
-            "grupol7_liquidacion_qr/static/src/js/liq_lock_price.js",
-"grupol7_liquidacion_qr/static/src/xml/qr_button.xml",
-            "grupol7_liquidacion_qr/static/src/xml/pos_rename_note_button.xml",
-        ],
+    "point_of_sale.assets": [
+        # 1) Template del botón
+        "grupol7_liquidacion_qr/static/src/xml/qr_button.xml",
+        # 2) ÚNICO JS del botón
+        "grupol7_liquidacion_qr/static/src/js/qr_button_ux.js",
+        # 3) (Opcional) bloqueo de precio si lo usas
+        "grupol7_liquidacion_qr/static/src/js/liq_lock_price.js",
+        # NO incluir nada más aquí
+    ],
     },
     "license": "LGPL-3",
     "installable": True,

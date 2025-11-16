@@ -1,18 +1,62 @@
-odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
-    'use strict';
+	/** @odoo-module **/
 
-    function desenhar() {
-        // Toma el botón original (icono de nota)
-        const noteIcon = document.querySelector('.control-button i.fa-sticky-note');
-        const btn = noteIcon ? noteIcon.closest('.control-button') : null;
-        if (!btn || btn.dataset.qrDecorated === '1') return;
+import { PosComponent } from 'point_of_sale.PosComponent';
+import { ProductScreen } from 'point_of_sale.ProductScreen';
+import Registries from 'point_of_sale.Registries';
+import { useService } from "@web/core/utils/hooks";
 
-        // Reemplaza el contenido por icono + texto (sin concatenaciones residuales)
-        btn.innerHTML = '<i class="fa fa-qrcode"></i><span>Cupón QR</span>';
-        btn.title = 'Leer cupón QR';
-        btn.dataset.qrDecorated = '1';
+class QrCouponButton extends PosComponent {
+    setup() {
+        super.setup();
+        this.orm = useService("orm");
     }
 
-    document.addEventListener('DOMContentLoaded', desenhar);
-    new MutationObserver(desenhar).observe(document.documentElement, { childList: true, subtree: true });
-});
+    async onClick() {
+        const { confirmed, payload: code } = await this.showPopup('TextInputPopup', {
+            title: this.env._t('Cupón QR'),
+            startingValue: '',
+            confirmText: this.env._t('Validar'),
+        });
+        if (!confirmed || !code) return;
+
+        let data;
+        try {
+            data = await this.orm.call(
+                'liquidation.coupon',
+                'pos_validate_coupon',
+                [code, this.env.pos.config.id],
+                {}
+            );
+        } catch (e) {
+            const msg = (e?.message) || (e?.data?.message) || this.env._t('Error al validar el cupón.');
+            await this.showPopup('ErrorPopup', { title: this.env._t('Cupón QR'), body: msg });
+            return;
+        }
+
+        const product = this.env.pos.db.get_product_by_id(data.product_id);
+        if (!product) {
+            await this.showPopup('ErrorPopup', {
+                title: this.env._t('Producto no cargado'),
+                body: this.env._t('Actualiza el POS e inténtalo de nuevo.'),
+            });
+            return;
+        }
+
+        const order = this.env.pos.get_order();
+        order.add_product(product, {
+            price: data.price,
+            extras: { liq_coupon_id: data.coupon_id, liq_coupon_info: data.info },
+        });
+
+        await this.showPopup('ConfirmPopup', {
+            title: this.env._t('Cupón OK'),
+            body: `${this.env._t('Precio')}: ${data.price}\n${data.info || ''}`.trim(),
+        });
+    }
+}
+QrCouponButton.template = 'QrCouponButton';
+Registries.Component.add(QrCouponButton);
+ProductScreen.addControlButton({ component: QrCouponButton, condition() { return true; }});
+
+export default QrCouponButton;
+
