@@ -1,49 +1,38 @@
-odoo.define('grupol7_liquidacion_qr.rename_note_button_dom_patch', function (require) {
+odoo.define('grupol7_liquidacion_qr.qr_dom_patch', function (require) {
     'use strict';
+    function patch() {
+        try {
+            const icon = document.querySelector('.control-button i.fa-sticky-note');
+            if (!icon) return;
+            const btn = icon.closest('.control-button');
+            if (!btn) return;
 
-    function patchOnce() {
-        const btns = document.querySelectorAll('.control-buttons button');
-        for (const btn of btns) {
-            if (btn.dataset.g7Renamed) continue;
+            // Icono a QR
+            try { icon.classList.remove('fa-sticky-note'); icon.classList.add('fa-qrcode'); } catch(e){}
 
-            // Botón original: icono .fa-sticky-note + span.control-button-label
-            const icon = btn.querySelector('i.fa-sticky-note, i.fa.fa-sticky-note');
-            const label = btn.querySelector('span.control-button-label');
+            // Quitar cualquier etiqueta previa (todo hijo directo que NO sea el contenedor del icono)
+            Array.from(btn.children).forEach(ch => {
+                if (!ch.querySelector || !ch.querySelector('i')) {
+                    btn.removeChild(ch);
+                }
+            });
 
-            // Aseguramos que sea el botón de Nota de cliente
-            const isNote = !!icon || (label && /nota de cliente|customer note/i.test(label.textContent || ''));
-            if (!isNote) continue;
+            // Poner nuestro label desde cero
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = 'Cupón QR';
+            btn.appendChild(label);
 
-            // Renombrar SIN concatenar (reemplazamos contenido exacto)
-            if (icon) {
-                icon.className = 'fa fa-qrcode';
-                icon.setAttribute('aria-label', 'Cupón QR');
+            // Click seguro: sólo alterna modo (aún sin validar cupon)
+            if (!btn.dataset.qrBound) {
+                btn.dataset.qrBound = '1';
+                btn.addEventListener('click', () => {
+                    window.__qr_mode = !window.__qr_mode;
+                    alert(window.__qr_mode ? 'Modo Cupón QR ACTIVADO' : 'Modo Cupón QR DESACTIVADO');
+                });
             }
-            if (label) {
-                label.textContent = 'Cupón QR';
-            }
-            btn.setAttribute('aria-label', 'Cupón QR');
-
-            // Marcar para que no se repita
-            btn.dataset.g7Renamed = '1';
-        }
+        } catch (e) {}
     }
-
-    function arm() {
-        patchOnce();
-        if (window.MutationObserver && document.body) {
-            try {
-                const mo = new MutationObserver(() => patchOnce());
-                mo.observe(document.body, { childList: true, subtree: true });
-            } catch (_) {}
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', arm, { once: true });
-    } else if (document.body) {
-        arm();
-    } else {
-        window.addEventListener('load', arm, { once: true });
-    }
+    document.addEventListener('DOMContentLoaded', patch);
+    new MutationObserver(patch).observe(document.documentElement, {childList:true, subtree:true});
 });

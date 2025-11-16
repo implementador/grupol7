@@ -2,89 +2,99 @@ odoo.define('grupol7_liquidacion_qr.qr_button_action', function (require) {
     'use strict';
 
     const rpc = require('web.rpc');
-    const Registries = require('point_of_sale.Registries');
 
-    let extendedOK = false;
-
-    // 1) Intento “oficial”: extender el componente del botón del POS
-    try {
-        const OrderlineCustomerNoteButton = require('point_of_sale.OrderlineCustomerNoteButton');
-
-        const G7CouponPatch = (OrderlineCustomerNoteButton_) => class extends OrderlineCustomerNoteButton_ {
-            async onClick() {
-                const code = window.prompt('Escanee o teclee el código del cupón');
-                if (!code) return;
-
-                const config_id = this.env.pos && this.env.pos.config && this.env.pos.config.id;
-                try {
-                    const res = await rpc.query({
-                        model: 'liquidation.coupon',
-                        method: 'pos_validate_coupon',
-                        args: [[], code, config_id],
-                    });
-                    const msg = 'Cupón OK: ' + (res.info || 'Cupón') +
-                                '\nPrecio: ' + res.price +
-                                (res.auto_added ? '' : '\n(El producto no pudo añadirse automáticamente)');
-                    this.showPopup('ConfirmPopup', { title: 'Cupón QR', body: msg });
-                } catch (err) {
-                    this.showPopup('ErrorPopup', { title: 'Cupón QR', body: err && err.message ? err.message : String(err) });
-                }
-            }
-        };
-
-        Registries.Component.extend(OrderlineCustomerNoteButton, G7CouponPatch);
-        extendedOK = true;
-    } catch (e) {
-        console.warn('G7 Coupon: fallback DOM listener (no se pudo extender el componente):', e);
+    // --- utilidades para localizar el POS en Odoo 16 (OWL) ---
+    function getPos() {
+        const dbg = (window.odoo && odoo.__DEBUG__ && odoo.__DEBUG__.services) || {};
+        return (
+            (window.odoo && (odoo.pos || (odoo.env && odoo.env.pos))) ||
+            dbg['point_of_sale.PosGlobalState'] ||
+            dbg['point_of_sale.PosService'] ||
+            dbg['point_of_sale.pos'] ||
+            null
+        );
+    }
+    function getOrder(pos) {
+        return (pos && (
+            pos.get_order?.() ||
+            (pos.env && pos.env.pos && pos.env.pos.get_order?.())
+        )) || null;
+    }
+    function getProductById(pos, id) {
+        // Soporta varias formas de cache interna según build
+        return (
+            pos?.db?.get_product_by_id?.(id) ||
+            (pos?.db?.product_by_id && pos.db.product_by_id[id]) ||
+            pos?.env?.pos?.db?.get_product_by_id?.(id) ||
+            (pos?.env?.pos?.db?.product_by_id && pos.env.pos.db.product_by_id[id]) ||
+            null
+        );
+    }
+    function getConfigId() {
+        const m = /[?&]config_id=(\d+)/.exec(location.search);
+        return m ? parseInt(m[1]) : null;
     }
 
-    // 2) Fallback: listener por DOM solo si no se pudo extender
-    if (!extendedOK) {
-        const once = () => {
-            const btn = document.querySelector('.control-buttons button[aria-label="Cupón QR"]');
-            if (!btn || btn.dataset.g7Bound) return;
-            btn.dataset.g7Bound = '1';
-            btn.addEventListener('click', async (ev) => {
-                ev.stopImmediatePropagation();
-                ev.stopPropagation();
-                ev.preventDefault();
+    async function handleCoupon() {
+        const code = (window.prompt('Escanea o pega el código del cupón:') || '').trim();
+        if (!code) return;
 
-                const code = window.prompt('Escanee o teclee el código del cupón');
-                if (!code) return;
+        const pos_config_id = getConfigId();
+        try {
+            const data = await rpc.query({
+                model: 'liquidation.coupon',
+                method: 'pos_validate_coupon',
+                args: [code, pos_config_id],
+            });
 
-                let config_id = null;
-                try { if (odoo.pos && odoo.pos.config) config_id = odoo.pos.config.id; } catch (e) {}
-                try {
-                    const res = await rpc.query({
-                        model: 'liquidation.coupon',
-                        method: 'pos_validate_coupon',
-                        args: [[], code, config_id],
-                    });
-                    window.alert(
-                        'Cupón OK: ' + (res.info || 'Cupón') +
-                        '\nPrecio: ' + res.price +
-                        (res.auto_added ? '' : '\n(El producto no pudo añadirse automáticamente)')
-                    );
-                } catch (err) {
-                    window.alert(err && err.message ? err.message : String(err));
+            // Normaliza campos por si vienen de forma distinta
+            const price = Number(data.price);
+            const productId = Array.isArray(data.product_id) ? data.product_id[0] : data.product_id;
+            const couponName = data.name || (Array.isArray(data.product_id) ? data.product_id[1] : '') || 'Cupón';
+
+            const pos = getPos();
+            const product = pos ? getProductById(pos, productId) : null;
+
+            if (pos && product) {
+                const order = getOrder(pos);
+                if (order) {
+                    order.add_product(product, { price, merge: false });
+                    const line = order.get_last_orderline?.();
+                    if (line) {
+                        line.set_unit_price?.(price);
+                        line.price_manually_set = true;          // para que no recalculen listas
+                        line.liq_coupon_id = data.coupon_id || data.coupon || null;
+                    }
+                    return;
                 }
-            }, { capture: true });
-        };
-
-        const arm = () => {
-            once();
-            if (window.MutationObserver && document.body) {
-                try {
-                    const mo = new MutationObserver(() => once());
-                    mo.observe(document.body, { childList: true, subtree: true });
-                } catch (_) {}
             }
-        };
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', arm, { once: true });
-        } else {
-            arm();
+            // Fallback: si no se añadió automáticamente
+            alert(`Cupón OK: ${couponName}\nPrecio: ${price}\n(El producto no pudo añadirse automáticamente)`);
+        } catch (e) {
+            const msg =
+                (e && e.message) ||
+                (e && e.data && (e.data.message || e.data.debug)) ||
+                'Cupón inválido o no autorizado.';
+            alert(msg);
         }
     }
+
+    function bindButton() {
+        // Nuestro botón con icono QR
+        const btn =
+            document.querySelector('.control-button i.fa-qrcode')?.closest('.control-button') ||
+            document.querySelector('.control-button i.fa-sticky-note')?.closest('.control-button');
+        if (!btn || btn.dataset.couponBound === '1') return;
+
+        btn.dataset.couponBound = '1';
+        btn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            handleCoupon();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', bindButton);
+    new MutationObserver(bindButton).observe(document.documentElement, { childList: true, subtree: true });
 });
