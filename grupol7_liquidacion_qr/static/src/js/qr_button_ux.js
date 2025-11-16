@@ -1,62 +1,61 @@
-	/** @odoo-module **/
+odoo.define('grupol7_liquidacion_qr.qr_button_dom', function (require) {
+    'use strict';
+    var rpc = require('web.rpc');
 
-import { PosComponent } from 'point_of_sale.PosComponent';
-import { ProductScreen } from 'point_of_sale.ProductScreen';
-import Registries from 'point_of_sale.Registries';
-import { useService } from "@web/core/utils/hooks";
-
-class QrCouponButton extends PosComponent {
-    setup() {
-        super.setup();
-        this.orm = useService("orm");
+    function findNoteBtn() {
+        var sels = [
+            '.control-buttons button[aria-label="Customer Note"]',
+            '.control-buttons button[aria-label="Nota de cliente"]',
+            '.control-buttons i.fa-sticky-note'
+        ];
+        for (var i = 0; i < sels.length; i++) {
+            var el = document.querySelector(sels[i]);
+            if (el) return el.closest('button') || el;
+        }
+        return null;
     }
 
-    async onClick() {
-        const { confirmed, payload: code } = await this.showPopup('TextInputPopup', {
-            title: this.env._t('Cupón QR'),
-            startingValue: '',
-            confirmText: this.env._t('Validar'),
-        });
-        if (!confirmed || !code) return;
-
-        let data;
-        try {
-            data = await this.orm.call(
-                'liquidation.coupon',
-                'pos_validate_coupon',
-                [code, this.env.pos.config.id],
-                {}
-            );
-        } catch (e) {
-            const msg = (e?.message) || (e?.data?.message) || this.env._t('Error al validar el cupón.');
-            await this.showPopup('ErrorPopup', { title: this.env._t('Cupón QR'), body: msg });
+    function patchOnce() {
+        var btn = findNoteBtn();
+        if (!btn) {
+            requestAnimationFrame(patchOnce);
             return;
         }
+        if (btn.dataset.g7CouponBound) return;
 
-        const product = this.env.pos.db.get_product_by_id(data.product_id);
-        if (!product) {
-            await this.showPopup('ErrorPopup', {
-                title: this.env._t('Producto no cargado'),
-                body: this.env._t('Actualiza el POS e inténtalo de nuevo.'),
-            });
-            return;
-        }
+        btn.dataset.g7CouponBound = '1';
+        btn.id = 'g7-coupon-btn';
+        btn.setAttribute('aria-label', 'Cupón QR');
+        var lbl = btn.querySelector('.control-button-label, .button-label, span');
+        if (lbl) lbl.textContent = 'Cupón QR';
 
-        const order = this.env.pos.get_order();
-        order.add_product(product, {
-            price: data.price,
-            extras: { liq_coupon_id: data.coupon_id, liq_coupon_info: data.info },
-        });
+        btn.addEventListener('click', async function () {
+            try {
+                var code = window.prompt('Escanee o teclee el código del cupón');
+                if (!code) return;
 
-        await this.showPopup('ConfirmPopup', {
-            title: this.env._t('Cupón OK'),
-            body: `${this.env._t('Precio')}: ${data.price}\n${data.info || ''}`.trim(),
+                var config_id = null;
+                try {
+                    if (odoo.pos && odoo.pos.config) config_id = odoo.pos.config.id;
+                    else if (odoo.__DEBUG__ && odoo.__DEBUG__.services && odoo.__DEBUG__.services.pos)
+                        config_id = odoo.__DEBUG__.services.pos.config_id;
+                } catch (_) {}
+
+                var res = await rpc.query({
+                    model: 'liquidation.coupon',
+                    method: 'pos_validate_coupon',
+                    args: [[], code, config_id],
+                });
+
+                var msg = 'Cupón OK: ' + (res.info || 'Cupón') +
+                          '\nPrecio: ' + res.price +
+                          (res.auto_added ? '' : '\n(El producto no pudo añadirse automáticamente)');
+                window.alert(msg);
+            } catch (e) {
+                window.alert(e && e.message ? e.message : String(e));
+            }
         });
     }
-}
-QrCouponButton.template = 'QrCouponButton';
-Registries.Component.add(QrCouponButton);
-ProductScreen.addControlButton({ component: QrCouponButton, condition() { return true; }});
 
-export default QrCouponButton;
-
+    patchOnce();
+});
