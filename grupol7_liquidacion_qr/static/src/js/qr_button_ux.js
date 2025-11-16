@@ -3,11 +3,9 @@ odoo.define('grupol7_liquidacion_qr.qr_button_dom', function (require) {
     const rpc = require('web.rpc');
 
     function getNoteButton() {
-        // ¿ya fue renombrado?
         const already = document.getElementById('g7-coupon-btn');
         if (already) return already;
 
-        // candidatos por aria-label o ícono sticky-note
         const selectors = [
             '.control-buttons button[aria-label="Customer Note"]',
             '.control-buttons button[aria-label="Nota de cliente"]',
@@ -17,7 +15,6 @@ odoo.define('grupol7_liquidacion_qr.qr_button_dom', function (require) {
             const el = document.querySelector(s);
             if (el) return el.closest('button') || el;
         }
-        // por texto visible
         const btns = document.querySelectorAll('.control-buttons button, .control-buttons .button');
         for (const b of btns) {
             const t = ((b.innerText||'') + ' ' + (b.getAttribute('aria-label')||'')).toLowerCase();
@@ -31,18 +28,24 @@ odoo.define('grupol7_liquidacion_qr.qr_button_dom', function (require) {
         btn.dataset.g7CouponBound = '1';
         btn.id = 'g7-coupon-btn';
 
-        // etiqueta
-        const label = btn.querySelector('.control-button-label, .button-label, span') || btn;
-        label.textContent = 'Cupón QR';
+        // Normaliza completamente el contenido para evitar concatenaciones
+        while (btn.firstChild) btn.removeChild(btn.firstChild);
+        btn.insertAdjacentHTML('afterbegin',
+            '<i class="fa fa-qrcode" aria-hidden="true"></i>' +
+            '<span class="control-button-label">Cupón QR</span>'
+        );
+        btn.setAttribute('aria-label', 'Cupón QR');
+        btn.title = 'Cupón QR';
 
-        // ícono
-        let icon = btn.querySelector('i');
-        if (!icon) { icon = document.createElement('i'); btn.prepend(icon); }
-        icon.className = 'fa fa-qrcode';
+        // Quita clases/residuos visuales si existieran
+        btn.classList.remove('o_pos_button_note');
 
-        // acción
+        // Acción: cancela cualquier handler previo de "Nota de cliente"
         btn.addEventListener('click', async (ev) => {
+            ev.stopImmediatePropagation();
             ev.stopPropagation();
+            ev.preventDefault();
+
             try {
                 const code = window.prompt('Escanee o teclee el código del cupón');
                 if (!code) return;
@@ -73,27 +76,17 @@ odoo.define('grupol7_liquidacion_qr.qr_button_dom', function (require) {
     }
 
     function start() {
-        // Espera segura a que exista document.body
         const kick = () => {
-            if (!document || !document.body) {
-                setTimeout(kick, 100);
-                return;
-            }
-            // Reintentos rápidos al cargar
+            if (!document || !document.body) { setTimeout(kick, 100); return; }
             let tries = 0;
             const iv = setInterval(() => {
                 if (tryPatch() || ++tries > 150) clearInterval(iv);
             }, 100);
-
-            // Observer solo si existe body y el API está disponible
             if (window.MutationObserver) {
                 try {
                     const mo = new MutationObserver(() => tryPatch());
                     mo.observe(document.body, { childList: true, subtree: true });
-                } catch (e) {
-                    // Silencioso si el body aún no estuviera listo
-                    // (los reintentos de arriba lo cubrirán)
-                }
+                } catch (e) {}
             }
         };
         kick();
