@@ -3,7 +3,7 @@ odoo.define('grupol7_liquidacion_qr.qr_button_dom', function (require) {
     const rpc = require('web.rpc');
 
     function getNoteButton() {
-        // si ya fue renombrado
+        // ¿ya fue renombrado?
         const already = document.getElementById('g7-coupon-btn');
         if (already) return already;
 
@@ -72,11 +72,36 @@ odoo.define('grupol7_liquidacion_qr.qr_button_dom', function (require) {
         return false;
     }
 
-    // reintentos rápidos al cargar
-    let tries = 0;
-    const iv = setInterval(() => { if (tryPatch() || ++tries > 100) clearInterval(iv); }, 100);
+    function start() {
+        // Espera segura a que exista document.body
+        const kick = () => {
+            if (!document || !document.body) {
+                setTimeout(kick, 100);
+                return;
+            }
+            // Reintentos rápidos al cargar
+            let tries = 0;
+            const iv = setInterval(() => {
+                if (tryPatch() || ++tries > 150) clearInterval(iv);
+            }, 100);
 
-    // vigila cambios de pantalla en POS
-    const mo = new MutationObserver(() => tryPatch());
-    mo.observe(document.body, { childList: true, subtree: true });
+            // Observer solo si existe body y el API está disponible
+            if (window.MutationObserver) {
+                try {
+                    const mo = new MutationObserver(() => tryPatch());
+                    mo.observe(document.body, { childList: true, subtree: true });
+                } catch (e) {
+                    // Silencioso si el body aún no estuviera listo
+                    // (los reintentos de arriba lo cubrirán)
+                }
+            }
+        };
+        kick();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start, { once: true });
+    } else {
+        start();
+    }
 });
