@@ -89,7 +89,7 @@ class QrCouponButton extends PosComponent {
         }
     }
 }
-QrCouponButton.template = "QrCouponButton"; // Tu template ya lo define el archivo UX
+QrCouponButton.template = "QrCouponButton";
 
 ProductScreen.addControlButton({
     component: QrCouponButton,
