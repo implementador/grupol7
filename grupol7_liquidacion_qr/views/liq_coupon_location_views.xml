@@ -1,0 +1,17 @@
+<odoo>
+  <record id="view_liquidation_coupon_form_inherit_loc" model="ir.ui.view">
+    <field name="name">liquidation.coupon.form.loc</field>
+    <field name="model">liquidation.coupon</field>
+    <!-- Ajusta este inherit_id si tu ID real difiere -->
+    <field name="inherit_id" ref="grupol7_liquidacion_qr.view_liquidation_coupon_form"/>
+    <field name="arch" type="xml">
+      <!-- Inserta dentro del grupo principal -->
+      <xpath expr="//form/sheet/group" position="inside">
+        <group string="Stock">
+          <field name="location_id"/>
+          <field name="qty_at_location" readonly="1"/>
+        </group>
+      </xpath>
+    </field>
+  </record>
+</odoo>

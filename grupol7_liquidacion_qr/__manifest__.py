@@ -6,6 +6,7 @@
     "author": "Grupo L7 / Implementación",
     "depends": ["base", "sale", "point_of_sale", "stock", "barcodes"],
     "data": [
+        "views/liq_coupon_location_views.xml",
         "security/ir.model.access.csv",
         "report/liquidation_labels.xml",
         "views/liquidation_coupon_views.xml",
