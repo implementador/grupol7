@@ -1,100 +1,88 @@
-odoo.define('grupol7_liquidacion_qr.qr_button_dom', function (require) {
-    'use strict';
-    const rpc = require('web.rpc');
+odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
+    "use strict";
 
-    function getNoteButton() {
-        const already = document.getElementById('g7-coupon-btn');
-        if (already) return already;
+    const Registries = require('point_of_sale.Registries');
+    const ProductScreen = require('point_of_sale.ProductScreen');
 
-        const selectors = [
-            '.control-buttons button[aria-label="Customer Note"]',
-            '.control-buttons button[aria-label="Nota de cliente"]',
-            '.control-buttons i.fa-sticky-note'
-        ];
-        for (let s of selectors) {
-            const el = document.querySelector(s);
-            if (el) return el.closest('button') || el;
+    const G7CouponPos = (ProductScreen) => class extends ProductScreen {
+        mounted() {
+            super.mounted();
+            // Ocultar el botón nativo "Customer Note" para evitar concatenaciones
+            const noteBtn = this.el.querySelector('button[aria-label="Customer Note"]');
+            if (noteBtn) noteBtn.style.display = 'none';
+
+            // Inyectar nuestro botón solo una vez
+            if (!this.el.querySelector('.g7-coupon-btn')) {
+                const container =
+                    this.el.querySelector('.control-buttons') ||
+                    this.el.querySelector('.control-panel .buttons') ||
+                    this.el;
+                if (container) {
+                    const btn = document.createElement('button');
+                    btn.className = 'button g7-coupon-btn';
+                    btn.setAttribute('aria-label', 'Cupón QR');
+                    btn.innerHTML = '<i class="fa fa-qrcode"></i><span style="margin-left:6px">Cupón QR</span>';
+                    btn.addEventListener('click', () => this._onClickCoupon());
+                    container.appendChild(btn);
+                }
+            }
         }
-        const btns = document.querySelectorAll('.control-buttons button, .control-buttons .button');
-        for (const b of btns) {
-            const t = ((b.innerText||'') + ' ' + (b.getAttribute('aria-label')||'')).toLowerCase();
-            if (t.includes('nota de cliente') || t.includes('customer note')) return b;
-        }
-        return null;
-    }
 
-    function bind(btn) {
-        if (!btn || btn.dataset.g7CouponBound) return;
-        btn.dataset.g7CouponBound = '1';
-        btn.id = 'g7-coupon-btn';
+        async _onClickCoupon() {
+            const { confirmed, payload } = await this.showPopup('TextInputPopup', {
+                title: this.env._t('Cupón QR'),
+                startingValue: '',
+                confirmText: this.env._t('Aplicar'),
+                cancelText: this.env._t('Cancelar'),
+                placeholder: this.env._t('Escanee o escriba el código del cupón'),
+            });
+            if (!confirmed) return;
 
-        // Normaliza completamente el contenido para evitar concatenaciones
-        while (btn.firstChild) btn.removeChild(btn.firstChild);
-        btn.insertAdjacentHTML('afterbegin',
-            '<i class="fa fa-qrcode" aria-hidden="true"></i>' +
-            '<span class="control-button-label">Cupón QR</span>'
-        );
-        btn.setAttribute('aria-label', 'Cupón QR');
-        btn.title = 'Cupón QR';
+            const code = (payload || '').trim();
+            if (!code) return;
 
-        // Quita clases/residuos visuales si existieran
-        btn.classList.remove('o_pos_button_note');
-
-        // Acción: cancela cualquier handler previo de "Nota de cliente"
-        btn.addEventListener('click', async (ev) => {
-            ev.stopImmediatePropagation();
-            ev.stopPropagation();
-            ev.preventDefault();
-
+            // Validación en backend
+            let res;
             try {
-                const code = window.prompt('Escanee o teclee el código del cupón');
-                if (!code) return;
-
-                let config_id = null;
-                try { if (odoo.pos && odoo.pos.config) config_id = odoo.pos.config.id; } catch (e) {}
-
-                const res = await rpc.query({
+                res = await this.rpc({
                     model: 'liquidation.coupon',
                     method: 'pos_validate_coupon',
-                    args: [[], code, config_id],
+                    args: [code, this.env.pos.config.id],
                 });
-
-                const msg = 'Cupón OK: ' + (res.info || 'Cupón') +
-                            '\nPrecio: ' + res.price +
-                            (res.auto_added ? '' : '\n(El producto no pudo añadirse automáticamente)');
-                window.alert(msg);
             } catch (e) {
-                window.alert(e && e.message ? e.message : String(e));
+                return this.showPopup('ErrorPopup', {
+                    title: this.env._t('Cupón'),
+                    body: e?.data?.message || this.env._t('No fue posible validar el cupón.'),
+                });
             }
-        }, { capture: true });
-    }
 
-    function tryPatch() {
-        const btn = getNoteButton();
-        if (btn) { bind(btn); return true; }
-        return false;
-    }
-
-    function start() {
-        const kick = () => {
-            if (!document || !document.body) { setTimeout(kick, 100); return; }
-            let tries = 0;
-            const iv = setInterval(() => {
-                if (tryPatch() || ++tries > 150) clearInterval(iv);
-            }, 100);
-            if (window.MutationObserver) {
-                try {
-                    const mo = new MutationObserver(() => tryPatch());
-                    mo.observe(document.body, { childList: true, subtree: true });
-                } catch (e) {}
+            const product = this.env.pos.db.get_product_by_id(res.product_id);
+            if (!product) {
+                return this.showPopup('ErrorPopup', {
+                    title: this.env._t('Cupón'),
+                    body: this.env._t('El producto del cupón no está disponible en este PdV.'),
+                });
             }
-        };
-        kick();
-    }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', start, { once: true });
-    } else {
-        start();
-    }
+            const order = this.currentOrder;
+            const line = order.add_product(product, {
+                price: res.price,
+                extras: { coupon_id: res.coupon_id, coupon_code: code },
+            });
+
+            try {
+                await this.rpc({
+                    model: 'liquidation.coupon',
+                    method: 'pos_redeem_coupon',
+                    args: [code, order.uid, line.id],
+                });
+            } catch (e) {
+                this.showPopup('ErrorPopup', {
+                    title: this.env._t('Cupón'),
+                    body: this.env._t('Se agregó la línea, pero no se logró marcar el cupón como usado. Revise el backend.'),
+                });
+            }
+        }
+    };
+    Registries.Component.extend(ProductScreen, G7CouponPos);
 });
