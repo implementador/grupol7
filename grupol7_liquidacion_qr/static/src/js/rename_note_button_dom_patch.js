@@ -1,37 +1,47 @@
-/**
- * Renombra el botón "Nota de cliente" -> "Cupón QR" sin concatenar.
- * Seguro ante recargas/OWL re-renders gracias a MutationObserver.
- * No toca la acción ni los handlers originales.
- */
-(function () {
-  function renameOnce(root) {
-    (root || document).querySelectorAll('.control-buttons .control-button').forEach((btn) => {
-      const label = btn.querySelector('span') || btn.querySelector('.control-button-label');
-      if (!label) return;
+/** @odoo-module **/
 
-      const txt = (label.textContent || '').trim();
-      const isNote = txt === 'Nota de cliente' || txt === 'Note';
+// Renombra "Nota de cliente" -> "Cupón QR" sin concatenar (una vez)
+odoo.define('grupol7_liquidacion_qr.rename_note_button_dom_patch', function (require) {
+    "use strict";
 
-      if (isNote && btn.dataset.g7renamed !== '1') {
-        label.textContent = 'Cupón QR';   // <-- REEMPLAZA (no "+=")
-        btn.dataset.g7renamed = '1';
-      }
-    });
-  }
+    const LABEL = "Cupón QR";
+    const ICON_CLASS = "fa fa-qrcode"; // si FontAwesome está disponible en POS
 
-  // Al cargar
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => renameOnce(document));
-  } else {
-    renameOnce(document);
-  }
+    function patchOnce() {
+        const container = document.querySelector('.control-buttons');
+        if (!container) return;
 
-  // Ante cambios en el DOM del POS
-  try {
-    const mo = new MutationObserver(() => renameOnce(document));
-    mo.observe(document.body, { childList: true, subtree: true });
-  } catch (e) {
-    // En caso extremo, un fallback cada 1.5s (no debería ser necesario)
-    setInterval(() => renameOnce(document), 1500);
-  }
-})();
+        // Busca el botón por texto (nota / note) para Odoo 16
+        const btn = [...container.querySelectorAll('.control-button')].find((b) => {
+            const t = (b.querySelector('span')?.textContent || '').trim().toLowerCase();
+            return /nota|note/.test(t);
+        });
+        if (!btn || btn.dataset.g7Patched === "1") return;
+
+        // Sustituir el contenido de texto SIN concatenar
+        const span = btn.querySelector('span');
+        if (span) span.textContent = LABEL;
+
+        // (Opcional) icono QR al inicio si no existe
+        if (!btn.querySelector('i')) {
+            const i = document.createElement('i');
+            i.className = ICON_CLASS;
+            i.style.marginRight = '6px';
+            btn.insertBefore(i, btn.firstChild);
+        }
+
+        // Marca para no repetir
+        btn.dataset.g7Patched = "1";
+    }
+
+    // Intenta ya y observa cambios futuros del DOM
+    function start() {
+        patchOnce();
+        const root = document.querySelector('.pos-content') || document.body;
+        const obs = new MutationObserver(() => patchOnce());
+        obs.observe(root, { childList: true, subtree: true });
+    }
+
+    if (document.readyState !== 'loading') start();
+    else window.addEventListener('DOMContentLoaded', start);
+});
