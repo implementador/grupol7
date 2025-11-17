@@ -1,12 +1,7 @@
-.pos .control-buttons .g7-coupon-patched {
+.pos .control-buttons .g7-coupon {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 8px 10px;
-  min-width: 110px;
 }
-.pos .control-buttons .g7-coupon-patched .label,
-.pos .control-buttons .g7-coupon-patched span {
-  display: inline !important;
-  white-space: nowrap;
-}
+.pos .control-buttons .g7-coupon .label { display: inline !important; white-space: nowrap; }

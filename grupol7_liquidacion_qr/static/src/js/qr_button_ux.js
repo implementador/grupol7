@@ -1,47 +1,97 @@
 odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
     "use strict";
+
     const Registries = require('point_of_sale.Registries');
     const ProductScreen = require('point_of_sale.ProductScreen');
+
+    function log(){ try{ console.warn('[G7 Coupon]:', ...arguments); } catch(_){} }
 
     const G7CouponPatch = (ProductScreen) => class extends ProductScreen {
         mounted() {
             super.mounted();
-            // Parchea el botón nativo "Nota de cliente" -> "Cupón QR"
-            this._patchCouponButton();
+            log('mounted ProductScreen');
+            // Intenta de inmediato y también observa cambios de DOM
+            this._ensureCouponButton();
+            this._attachObserver();
         }
 
-        _patchCouponButton() {
+        willUnmount() {
+            super.willUnmount();
+            if (this._g7Observer) {
+                this._g7Observer.disconnect();
+                this._g7Observer = null;
+            }
+        }
+
+        _attachObserver() {
+            const root = this.el;
+            if (!root || this._g7Observer) return;
+            this._g7Observer = new MutationObserver(() => this._ensureCouponButton());
+            this._g7Observer.observe(root, { childList: true, subtree: true });
+            log('MutationObserver attached');
+        }
+
+        _ensureCouponButton() {
             const root = this.el;
             if (!root) return;
 
-            // Localiza el botón nativo por icono o aria-label (depende del idioma/tema)
-            const nativeBtn =
-                  root.querySelector('.control-buttons .control-button i.fa-comment')?.closest('.control-button') ||
-                  root.querySelector('.control-buttons .control-button[aria-label="Customer Note"]') ||
-                  root.querySelector('.control-buttons .control-button[aria-label="Nota de cliente"]');
+            // ¿Ya está parcheado?
+            if (root.querySelector('.control-buttons .control-button.g7-coupon')) return;
 
-            if (!nativeBtn || nativeBtn.classList.contains('g7-coupon-patched')) return;
+            // 1) Intentar renombrar botón nativo (nota de cliente)
+            const candidates = Array.from(root.querySelectorAll('.control-buttons .control-button'));
+            let found = null;
+            for (const btn of candidates) {
+                const lbl = (btn.querySelector('.label,span')?.textContent || '').trim().toLowerCase();
+                const aria = (btn.getAttribute('aria-label') || '').trim().toLowerCase();
+                const hasCommentIcon = !!btn.querySelector('i.fa-comment, i.fa-comment-o');
+                if (['nota de cliente','customer note'].includes(lbl) || ['nota de cliente','customer note'].includes(aria) || hasCommentIcon) {
+                    found = btn;
+                    break;
+                }
+            }
 
-            // Clona para quitar listeners OWL y reemplaza
-            const clone = nativeBtn.cloneNode(true);
+            if (found) {
+                // Clona para quitar listeners previos
+                const clone = found.cloneNode(true);
+                const icon = clone.querySelector('i');
+                if (icon) icon.className = 'fa fa-qrcode';
+                const label = clone.querySelector('.label') || clone.querySelector('span') || document.createElement('span');
+                label.textContent = 'Cupón QR';
+                label.classList.add('label');
+                if (!clone.querySelector('.label')) clone.appendChild(label);
 
-            // Cambia icono y etiqueta
-            const icon = clone.querySelector('i');
-            if (icon) icon.className = 'fa fa-qrcode';
-            const label = clone.querySelector('.label') || clone.querySelector('span');
-            if (label) label.textContent = 'Cupón QR';
+                clone.setAttribute('aria-label', 'Cupón QR');
+                clone.classList.add('g7-coupon');
 
-            clone.setAttribute('aria-label', 'Cupón QR');
-            clone.classList.add('g7-coupon-patched');
+                // Reemplazo
+                found.replaceWith(clone);
 
-            // Reemplaza el botón original por el clonado (sin listeners previos)
-            nativeBtn.replaceWith(clone);
+                // Click → flujo del cupón
+                clone.addEventListener('click', () => this._onClickCoupon());
+                log('Renombrado botón nativo a "Cupón QR"');
+                return;
+            }
 
-            // Nuestro click -> abre popup, valida y agrega línea
-            clone.addEventListener('click', () => this._onClickCoupon());
+            // 2) Fallback: crear nuestro botón “Cupón QR” y anexarlo
+            const bar = root.querySelector('.control-buttons');
+            if (bar && !bar.querySelector('.g7-coupon')) {
+                const btn = document.createElement('div');
+                btn.className = 'control-button g7-coupon';
+                btn.setAttribute('aria-label','Cupón QR');
+
+                const i = document.createElement('i'); i.className = 'fa fa-qrcode';
+                const s = document.createElement('span'); s.className = 'label'; s.textContent = 'Cupón QR';
+                btn.appendChild(i); btn.appendChild(s);
+
+                btn.addEventListener('click', () => this._onClickCoupon());
+                bar.appendChild(btn);
+                log('Botón “Cupón QR” creado (fallback)');
+            }
         }
 
         async _onClickCoupon() {
+            log('Click Cupón QR');
             const { confirmed, payload } = await this.showPopup('TextInputPopup', {
                 title: this.env._t('Cupón QR'),
                 startingValue: '',
@@ -53,7 +103,6 @@ odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
             const code = (payload || '').trim();
             if (!code) return;
 
-            // 1) Validación en backend
             let res;
             try {
                 res = await this.rpc({
@@ -61,14 +110,15 @@ odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
                     method: 'pos_validate_coupon',
                     args: [code, this.env.pos.config.id],
                 });
+                log('Validación OK', res);
             } catch (e) {
+                log('Validación fallo', e);
                 return this.showPopup('ErrorPopup', {
                     title: this.env._t('Cupón'),
                     body: e?.data?.message || this.env._t('No fue posible validar el cupón.'),
                 });
             }
 
-            // 2) Producto y precio del cupón
             const product = this.env.pos.db.get_product_by_id(res.product_id);
             if (!product) {
                 return this.showPopup('ErrorPopup', {
@@ -83,14 +133,15 @@ odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
                 extras: { coupon_id: res.coupon_id, coupon_code: code },
             });
 
-            // 3) Marcar cupón como usado
             try {
                 await this.rpc({
                     model: 'liquidation.coupon',
                     method: 'pos_redeem_coupon',
                     args: [code, order.uid, line.id],
                 });
+                log('Redención OK');
             } catch (e) {
+                log('Redención fallo', e);
                 this.showPopup('ErrorPopup', {
                     title: this.env._t('Cupón'),
                     body: this.env._t('Se agregó la línea, pero no se logró marcar el cupón como usado.'),
@@ -98,5 +149,7 @@ odoo.define('grupol7_liquidacion_qr.qr_button_ux', function (require) {
             }
         }
     };
+
     Registries.Component.extend(ProductScreen, G7CouponPatch);
+    log('Módulo cargado');
 });
