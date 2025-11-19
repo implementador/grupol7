@@ -1,7 +1,4 @@
 {'application': False,
- 'assets': {'point_of_sale.assets': ['grupol7_liquidacion_qr/static/src/js/pos_coupon_boot.js',
-                                     'grupol7_liquidacion_qr/static/src/js/liq_lock_price.js'],
-            'web.assets_backend': ['grupol7_liquidacion_qr/static/src/js/pos_coupon_boot.js']},
  'author': 'Grupo L7 / Implementación',
  'data': ['security/ir.model.access.csv',
           'report/liquidation_labels.xml',
@@ -15,4 +12,4 @@
  'license': 'LGPL-3',
  'name': 'Liquidación con QR (Cupones por pieza)',
  'summary': 'Cupones QR para liquidación: valida producto y precio, un solo uso, POS y Ventas, reporte por PdV.',
- 'version': '16.0.1.61'}
+ 'version': '16.0.1.62'}
