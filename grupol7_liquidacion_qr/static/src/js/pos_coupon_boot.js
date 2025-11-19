@@ -3,206 +3,136 @@
 (function () {
   const LOG = (...a) => console.log('[G7][POS-Coupon]', ...a);
 
-  // Aquí centralizamos qué hacer con el texto leído del QR
-  function handleQrText(qrText) {
-    LOG('QR detectado (handleQrText):', qrText);
-    alert('QR leído:\n\n' + qrText);
-    // TODO: aplicar cupón al pedido actual usando el texto del QR.
-  }
+  // ---------------------------------------------------------------------------
+  // BACKEND: detectar el cupón de liquidación abierto y guardarlo en localStorage
+  // ---------------------------------------------------------------------------
+  function captureCouponFromBackend() {
+    const form = document.querySelector('.o_form_view');
+    if (!form) return;
 
-  function startQrScan() {
-    LOG('Iniciando escaneo QR');
+    // Evitar repetir en el mismo formulario
+    if (form.dataset.g7CouponPrepared === '1') return;
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      alert('Este navegador no permite usar la cámara (getUserMedia). Prueba en Chrome/Edge actualizados.');
+    // Heurística: sólo si estamos en "Cupones de liquidación"
+    const breadcrumb = document.querySelector('.o_breadcrumb');
+    const bcText = (breadcrumb && breadcrumb.textContent) ? breadcrumb.textContent.trim() : '';
+    if (!/Cupon(es)?\s+de\s+liquid/i.test(bcText)) {
       return;
     }
 
-    const video = document.createElement('video');
-    video.setAttribute('autoplay', '');
-    video.setAttribute('playsinline', '');
+    // Tomar el código: normalmente será name o code
+    const codeEl = form.querySelector('[name="code"], [name="name"]');
+    if (!codeEl) {
+      LOG('No se encontró campo [name="code"] ni [name="name"] en el formulario.');
+      return;
+    }
 
-    // Overlay oscuro encima del POS
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.background = 'rgba(0, 0, 0, 0.75)';
-    overlay.style.zIndex = '999999';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'center';
+    const rawCode = (codeEl.textContent || codeEl.value || '').trim();
+    if (!rawCode) {
+      LOG('El campo de código está vacío.');
+      return;
+    }
 
-    const label = document.createElement('div');
-    label.textContent = 'Apunta la cámara al código QR';
-    label.style.color = 'white';
-    label.style.marginBottom = '12px';
-    label.style.fontSize = '18px';
-
-    const closeBtn = document.createElement('button');
-    closeBtn.textContent = 'Cancelar';
-    closeBtn.style.marginTop = '12px';
-    closeBtn.style.padding = '6px 16px';
-    closeBtn.style.fontSize = '16px';
-
-    video.style.maxWidth = '90vw';
-    video.style.maxHeight = '60vh';
-    video.style.borderRadius = '8px';
-    video.style.background = 'black';
-
-    overlay.appendChild(label);
-    overlay.appendChild(video);
-    overlay.appendChild(closeBtn);
-    document.body.appendChild(overlay);
-
-    let stream = null;
-    let scanning = true;
-
-    const stopScanning = function () {
-      scanning = false;
-      if (stream) {
-        try {
-          stream.getTracks().forEach(function (t) { t.stop(); });
-        } catch (e) {
-          console.error('[G7][POS-Coupon] Error al detener la cámara:', e);
-        }
-      }
-      overlay.remove();
+    const resId = form.getAttribute('data-res-id') || null;
+    const payload = {
+      id: resId ? parseInt(resId, 10) || resId : null,
+      code: rawCode,
+      ts: Date.now(),
     };
 
-    closeBtn.addEventListener('click', function () {
-      LOG('Escaneo cancelado por el usuario');
-      stopScanning();
-    });
-
-    navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
-    }).then(function (s) {
-      stream = s;
-      video.srcObject = stream;
-
-      const hasNativeDetector = 'BarcodeDetector' in window;
-      let detector = null;
-      if (hasNativeDetector) {
-        try {
-          detector = new BarcodeDetector({ formats: ['qr_code'] });
-        } catch (e) {
-          console.error('[G7][POS-Coupon] Error creando BarcodeDetector:', e);
-          detector = null;
-        }
-      }
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      // Escaneo usando la API nativa (si existe)
-      const scanLoopNative = function () {
-        if (!scanning || !detector) {
-          return;
-        }
-        detector.detect(video).then(function (barcodes) {
-          if (barcodes && barcodes.length > 0) {
-            const qrText = barcodes[0].rawValue || '';
-            handleQrText(qrText);
-            stopScanning();
-            return;
-          }
-          requestAnimationFrame(scanLoopNative);
-        }).catch(function (err) {
-          console.error('[G7][POS-Coupon] Error en detector QR (nativo):', err);
-          requestAnimationFrame(scanLoopNative);
-        });
-      };
-
-      // Escaneo usando jsQR (fallback cuando no hay BarcodeDetector)
-      const scanLoopJsQr = function () {
-        if (!scanning || !window.jsQR) {
-          return;
-        }
-
-        try {
-          if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-            requestAnimationFrame(scanLoopJsQr);
-            return;
-          }
-
-          const vw = video.videoWidth || 640;
-          const vh = video.videoHeight || 480;
-          if (!vw || !vh) {
-            requestAnimationFrame(scanLoopJsQr);
-            return;
-          }
-
-          canvas.width = vw;
-          canvas.height = vh;
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-          const code = window.jsQR(imageData.data, canvas.width, canvas.height);
-          if (code && code.data) {
-            const qrText = code.data;
-            handleQrText(qrText);
-            stopScanning();
-            return;
-          }
-        } catch (err) {
-          console.error('[G7][POS-Coupon] Error en scanLoopJsQr:', err);
-        }
-
-        requestAnimationFrame(scanLoopJsQr);
-      };
-
-      const startScanning = function () {
-        if (detector) {
-          LOG('Usando BarcodeDetector nativo para QR');
-          requestAnimationFrame(scanLoopNative);
-        } else if (window.jsQR) {
-          LOG('Usando jsQR ya cargado');
-          requestAnimationFrame(scanLoopJsQr);
-        } else {
-          LOG('Cargando librería jsQR desde CDN');
-          const script = document.createElement('script');
-          script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
-          script.async = true;
-          script.onload = function () {
-            LOG('Librería jsQR cargada');
-            if (!scanning) {
-              return;
-            }
-            requestAnimationFrame(scanLoopJsQr);
-          };
-          script.onerror = function () {
-            console.error('[G7][POS-Coupon] No se pudo cargar jsQR');
-            alert('No se pudo cargar la librería de lectura QR (jsQR).');
-            stopScanning();
-          };
-          document.head.appendChild(script);
-        }
-      };
-
-      video.onloadedmetadata = function () {
-        video.play();
-        startScanning();
-      };
-    }).catch(function (err) {
-      console.error('[G7][POS-Coupon] Error al acceder a la cámara:', err);
-      alert('No se pudo abrir la cámara: ' + (err && err.message ? err.message : err));
-      stopScanning();
-    });
+    try {
+      localStorage.setItem('g7_liquidation_coupon', JSON.stringify(payload));
+      form.dataset.g7CouponPrepared = '1';
+      LOG('Cupón de liquidación preparado para POS:', payload);
+    } catch (e) {
+      console.error('[G7][POS-Coupon] Error guardando en localStorage:', e);
+    }
   }
 
-  // Parchear el botón del POS (antes "Nota de cliente")
-  function patchButton() {
+  function initBackendWatcher() {
+    const body = document.body;
+    if (!body) return;
+
+    if (body.dataset.g7CouponBackendWatcher === '1') return;
+    body.dataset.g7CouponBackendWatcher = '1';
+
+    const mo = new MutationObserver(() => {
+      captureCouponFromBackend();
+    });
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+
+    window.addEventListener('load', captureCouponFromBackend);
+    setTimeout(captureCouponFromBackend, 50);
+    setTimeout(captureCouponFromBackend, 300);
+    setTimeout(captureCouponFromBackend, 1200);
+
+    LOG('Observador backend de cupones iniciado');
+  }
+
+  // ---------------------------------------------------------------------------
+  // POS: leer el cupón guardado en localStorage y usarlo al hacer clic en Cupón QR
+  // ---------------------------------------------------------------------------
+  function getPreparedCoupon() {
+    try {
+      const raw = localStorage.getItem('g7_liquidation_coupon');
+      if (!raw) {
+        LOG('No hay "g7_liquidation_coupon" en localStorage.');
+        return null;
+      }
+      const data = JSON.parse(raw);
+      if (!data || !data.code) {
+        LOG('Dato de cupón inválido en localStorage:', data);
+        return null;
+      }
+      return data;
+    } catch (e) {
+      console.error('[G7][POS-Coupon] Error leyendo localStorage:', e);
+      return null;
+    }
+  }
+
+  function useCouponInPos() {
+    const coupon = getPreparedCoupon();
+    if (!coupon) {
+      alert(
+        'No hay ningún Cupón de liquidación preparado.\n\n' +
+        'Abre primero el cupón en Odoo (menú de "Cupones de liquidación"), ' +
+        'espera a que cargue y luego vuelve a este POS.'
+      );
+      return;
+    }
+
+    const lines = [
+      'Cupón de liquidación encontrado',
+      '',
+      'Código: ' + coupon.code,
+    ];
+    if (coupon.id) {
+      lines.push('ID: ' + coupon.id);
+    }
+    if (coupon.ts) {
+      const fecha = new Date(coupon.ts);
+      lines.push('Preparado: ' + fecha.toLocaleString());
+    }
+
+    // Por ahora sólo mostramos la info.
+    // Después aquí aplicaremos el cupón a la orden del POS.
+    alert(lines.join('\n'));
+
+    LOG('Cupón utilizado en POS:', coupon);
+  }
+
+  // ---------------------------------------------------------------------------
+  // POS: parchear el botón "Nota de cliente" -> "Cupón QR" y enganchar clic
+  // ---------------------------------------------------------------------------
+  function patchPosButton() {
     const holder = document.querySelector('.control-buttons');
     if (!holder) return;
 
-    const btn = [].slice.call(holder.querySelectorAll('.control-button'))
-      .find(function (b) {
-        return /Nota\s+de\s+cliente/i.test((b.textContent || '').trim());
-      });
+    const btn = [].slice.call(holder.querySelectorAll('.control-button')).find(function (b) {
+      const txt = (b.textContent || '').trim();
+      return /Nota\s+de\s+cliente/i.test(txt) || /Cup[oó]n\s*QR/i.test(txt);
+    });
     if (!btn) return;
 
     if (btn.dataset.g7Patched === '1') return;
@@ -225,30 +155,43 @@
     }
     label.textContent = 'Cupón QR';
 
-    LOG('Botón parcheado');
+    LOG('Botón POS parcheado');
   }
 
-  // Re-parchar en re-render
-  const mo = new MutationObserver(function () {
-    patchButton();
-  });
-  mo.observe(document.documentElement, { childList: true, subtree: true });
+  function initPosButtonWatcher() {
+    const mo = new MutationObserver(() => patchPosButton());
+    mo.observe(document.documentElement, { childList: true, subtree: true });
 
-  window.addEventListener('load', patchButton);
-  setTimeout(patchButton, 50);
-  setTimeout(patchButton, 300);
-  setTimeout(patchButton, 1200);
+    window.addEventListener('load', patchPosButton);
+    setTimeout(patchPosButton, 50);
+    setTimeout(patchPosButton, 300);
+    setTimeout(patchPosButton, 1200);
 
-  // Capturar clic del botón
-  document.addEventListener('click', function (e) {
-    const el = e.target && e.target.closest('.control-buttons .control-button[data-g7-coupon-button="1"]');
-    if (!el) return;
-    e.preventDefault();
-    e.stopPropagation();
-    LOG('CLICK Cupón QR capturado');
-    startQrScan();
-  }, { capture: true });
+    document.addEventListener('click', function (e) {
+      const el = e.target && e.target.closest('.control-buttons .control-button[data-g7-coupon-button="1"]');
+      if (!el) return;
+      e.preventDefault();
+      e.stopPropagation();
+      LOG('CLICK Cupón QR capturado');
+      useCouponInPos();
+    }, { capture: true });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Inicialización
+  // ---------------------------------------------------------------------------
+  try {
+    initBackendWatcher();
+  } catch (e) {
+    console.error('[G7][POS-Coupon] Error iniciando watcher backend:', e);
+  }
+
+  try {
+    initPosButtonWatcher();
+  } catch (e) {
+    console.error('[G7][POS-Coupon] Error iniciando watcher POS:', e);
+  }
 
   window.G7_POS_COUPON_ASSET = 'OK';
-  LOG('Asset cargado (G7_PROBE)');
+  LOG('Asset cargado (G7_PROBE v-backend-bridge)');
 })();
