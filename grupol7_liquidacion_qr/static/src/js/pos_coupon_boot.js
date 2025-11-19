@@ -15,11 +15,9 @@
     for (const name in services) {
       const srv = services[name];
       if (!srv) continue;
-      // OWL POS suele tener env.services.pos
       if (srv.env && srv.env.services && srv.env.services.pos) {
         return srv.env.services.pos;
       }
-      // Por si algún servicio expone directamente .pos
       if (srv.pos && typeof srv.pos.get_order === "function") {
         return srv.pos;
       }
@@ -30,19 +28,41 @@
   function findProductInPos(pos, productId) {
     if (!pos) return null;
 
-    // POS clásico: pos.db.get_product_by_id
     if (pos.db && typeof pos.db.get_product_by_id === "function") {
       const p = pos.db.get_product_by_id(productId);
       if (p) return p;
     }
 
-    // Otros casos: lista de productos en alguna propiedad
     if (Array.isArray(pos.products)) {
       const found = pos.products.find((p) => p && p.id === productId);
       if (found) return found;
     }
 
     return null;
+  }
+
+  // Detectar el precio de liquidación correcto desde el cupón
+  function getLiquidationPrice(coupon) {
+    let price =
+      coupon.price_liquidation ||
+      coupon.liquidation_price ||
+      coupon.price ||
+      0;
+
+    // Si sigue en 0, intentamos encontrar un campo numérico que contenga "liquid"
+    if (!price) {
+      for (const key in coupon) {
+        if (!Object.prototype.hasOwnProperty.call(coupon, key)) continue;
+        const lk = key.toLowerCase();
+        if (lk.includes("liquid") && typeof coupon[key] === "number") {
+          price = coupon[key];
+          LOG("Precio detectado desde campo", key, "=>", price);
+          break;
+        }
+      }
+    }
+
+    return price;
   }
 
   function applyCouponToCurrentOrder(coupon) {
@@ -52,7 +72,7 @@
         "Cupón válido, pero no se pudo acceder al POS internamente.\n" +
           "Reporta este mensaje al administrador."
       );
-    LOG("No se encontró servicio POS en odoo.__DEBUG__.services");
+      LOG("No se encontró servicio POS en odoo.__DEBUG__.services");
       return;
     }
 
@@ -75,11 +95,14 @@
       return;
     }
 
-    const price =
-      coupon.price_liquidation ||
-      coupon.liquidation_price ||
-      coupon.price ||
-      0;
+    const price = getLiquidationPrice(coupon);
+    if (!price) {
+      alert(
+        "Cupón válido, pero no se pudo determinar el Precio de liquidación.\n" +
+          "Revisa la configuración del cupón."
+      );
+      return;
+    }
 
     const product = findProductInPos(pos, productId);
     if (!product) {
@@ -94,7 +117,6 @@
     LOG("Aplicando cupón sobre producto", productId, "precio", price);
 
     try {
-      // Intento 1: pasar precio directamente
       order.add_product(product, { quantity: 1, price: price });
     } catch (err1) {
       console.warn(
@@ -332,15 +354,17 @@
       // -------- Validar que NO esté canjeado --------
       const redeemedFlag =
         coupon.redeemed || coupon.is_redeemed || coupon.canjeado;
-      const badStates = ["used", "done", "cancel", "expired"];
+      const state = coupon.state || "";
+      const allowedStates = ["new", "draft", ""]; // sólo estos se consideran "no canjeado"
+
       if (redeemedFlag) {
         msg.textContent = "Este cupón ya fue canjeado.";
         msg.style.color = "red";
         return;
       }
-      if (coupon.state && badStates.indexOf(coupon.state) !== -1) {
+      if (state && !allowedStates.includes(state)) {
         msg.textContent =
-          "Este cupón no está disponible (estado: " + coupon.state + ").";
+          "Este cupón no está disponible (estado: " + state + ").";
         msg.style.color = "red";
         return;
       }
@@ -390,7 +414,6 @@
     if (btn.dataset.g7Patched === "1") return;
     btn.dataset.g7Patched = "1";
 
-    // Limpiamos el contenido para evitar “Cupón QRNota de cliente”
     btn.innerHTML = "";
     btn.setAttribute("data-g7-coupon-button", "1");
 
@@ -433,5 +456,5 @@
   );
 
   window.G7_POS_COUPON_ASSET = "OK";
-  LOG("Asset POS cargado (aplica cupón en la orden)");
+  LOG("Asset POS cargado (precio liquidación + estado)");
 })();
