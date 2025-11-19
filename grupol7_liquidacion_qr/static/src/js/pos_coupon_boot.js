@@ -4,6 +4,157 @@
   const LOG = (...args) => console.log('[G7][POS-Coupon][POS]', ...args);
 
   // -------------------------------------------------------------
+  // Helpers para acceder al POS y al producto
+  // -------------------------------------------------------------
+  function findPosService() {
+    const o = window.odoo;
+    if (!o || !o.__DEBUG__ || !o.__DEBUG__.services) {
+      return null;
+    }
+    const services = o.__DEBUG__.services;
+    for (const name in services) {
+      const srv = services[name];
+      if (!srv) continue;
+      // OWL POS suele tener env.services.pos
+      if (srv.env && srv.env.services && srv.env.services.pos) {
+        return srv.env.services.pos;
+      }
+      // Por si algún servicio expone directamente .pos
+      if (srv.pos && typeof srv.pos.get_order === "function") {
+        return srv.pos;
+      }
+    }
+    return null;
+  }
+
+  function findProductInPos(pos, productId) {
+    if (!pos) return null;
+
+    // POS clásico: pos.db.get_product_by_id
+    if (pos.db && typeof pos.db.get_product_by_id === "function") {
+      const p = pos.db.get_product_by_id(productId);
+      if (p) return p;
+    }
+
+    // Otros casos: lista de productos en alguna propiedad
+    if (Array.isArray(pos.products)) {
+      const found = pos.products.find((p) => p && p.id === productId);
+      if (found) return found;
+    }
+
+    return null;
+  }
+
+  function applyCouponToCurrentOrder(coupon) {
+    const pos = findPosService();
+    if (!pos) {
+      alert(
+        "Cupón válido, pero no se pudo acceder al POS internamente.\n" +
+          "Reporta este mensaje al administrador."
+      );
+    LOG("No se encontró servicio POS en odoo.__DEBUG__.services");
+      return;
+    }
+
+    const order = pos.get_order && pos.get_order();
+    if (!order) {
+      alert("Cupón válido, pero no hay una orden activa.");
+      return;
+    }
+
+    const productField = coupon.product_id || coupon.product;
+    let productId = null;
+    let productName = "";
+    if (Array.isArray(productField)) {
+      productId = productField[0];
+      productName = productField[1] || "";
+    }
+
+    if (!productId) {
+      alert("Cupón válido, pero no tiene producto asociado.");
+      return;
+    }
+
+    const price =
+      coupon.price_liquidation ||
+      coupon.liquidation_price ||
+      coupon.price ||
+      0;
+
+    const product = findProductInPos(pos, productId);
+    if (!product) {
+      alert(
+        "Cupón válido, pero el producto no está cargado en este POS.\n" +
+          "Id de producto: " +
+          productId
+      );
+      return;
+    }
+
+    LOG("Aplicando cupón sobre producto", productId, "precio", price);
+
+    try {
+      // Intento 1: pasar precio directamente
+      order.add_product(product, { quantity: 1, price: price });
+    } catch (err1) {
+      console.warn(
+        "[G7][POS-Coupon][POS] add_product con price falló, probamos set_unit_price:",
+        err1
+      );
+      try {
+        order.add_product(product, { quantity: 1 });
+        const line =
+          order.get_last_orderline && order.get_last_orderline();
+        if (line && typeof line.set_unit_price === "function") {
+          line.set_unit_price(price);
+        }
+      } catch (err2) {
+        console.error(
+          "[G7][POS-Coupon][POS] Error al agregar producto a la orden:",
+          err2
+        );
+        alert(
+          "Error al agregar el producto del cupón al carrito.\n" +
+            "Revisa la consola del navegador."
+        );
+        return;
+      }
+    }
+
+    const lastLine = order.get_last_orderline && order.get_last_orderline();
+    try {
+      if (lastLine && typeof lastLine.set_note === "function") {
+        const prev =
+          (typeof lastLine.get_note === "function" &&
+            lastLine.get_note()) ||
+          "";
+        const note =
+          (prev ? prev + " | " : "") +
+          "Cupón liquidación: " +
+          (coupon.name || coupon.code || "");
+        lastLine.set_note(note);
+      }
+    } catch (e) {
+      console.warn("[G7][POS-Coupon][POS] No se pudo poner nota en la línea:", e);
+    }
+
+    const displayName =
+      productName ||
+      product.display_name ||
+      product.name ||
+      "Producto " + productId;
+
+    alert(
+      "Cupón aplicado.\n\n" +
+        "Producto: " +
+        displayName +
+        "\n" +
+        "Precio liquidación: " +
+        price
+    );
+  }
+
+  // -------------------------------------------------------------
   // RPC helper: buscar cupón por código (campo name)
   // -------------------------------------------------------------
   async function searchCouponByCode(code) {
@@ -15,23 +166,24 @@
         method: "search_read",
         args: [],
         kwargs: {
-          // IMPORTANTE: sólo usamos 'name', porque 'code' no existe
           domain: [["name", "=", code]],
-          // sin "fields": así Odoo devuelve todos los campos del modelo
           limit: 1,
         },
       },
       id: Date.now(),
     };
 
-    const resp = await fetch("/web/dataset/call_kw/liquidation.coupon/search_read", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(payload),
-    });
+    const resp = await fetch(
+      "/web/dataset/call_kw/liquidation.coupon/search_read",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    );
 
     if (!resp.ok) {
       throw new Error("HTTP " + resp.status);
@@ -205,39 +357,9 @@
         }
       }
 
-      // -------- Mostrar información del cupón (por ahora) --------
-      let detail = "Cupón válido.\n\n";
-      const codeText = coupon.name || coupon.code || code;
-      detail += "Código: " + codeText + "\n";
-
-      if (coupon.product_id) {
-        const prodName = Array.isArray(coupon.product_id)
-          ? coupon.product_id[1]
-          : coupon.product_id;
-        detail += "Producto: " + prodName + "\n";
-      }
-
-      const price =
-        coupon.price_liquidation ||
-        coupon.liquidation_price ||
-        coupon.price ||
-        "";
-      if (price !== "") {
-        detail += "Precio liquidación: " + price + "\n";
-      }
-
-      if (coupon.location_id) {
-        const locName = Array.isArray(coupon.location_id)
-          ? coupon.location_id[1]
-          : coupon.location_id;
-        detail += "Ubicación POS: " + locName + "\n";
-      }
-
-      alert(detail);
+      // Cupón válido: cerramos ventana y aplicamos sobre la orden
       closeDialog();
-
-      // TODO: aquí, en lugar del alert, agregaremos el producto a la orden
-      // con el precio de liquidación y marcaremos el cupón como canjeado.
+      applyCouponToCurrentOrder(coupon);
     });
 
     setTimeout(() => {
@@ -268,7 +390,7 @@
     if (btn.dataset.g7Patched === "1") return;
     btn.dataset.g7Patched = "1";
 
-    // Limpiamos el contenido para evitar "Cupón QRNota de cliente"
+    // Limpiamos el contenido para evitar “Cupón QRNota de cliente”
     btn.innerHTML = "";
     btn.setAttribute("data-g7-coupon-button", "1");
 
@@ -311,5 +433,5 @@
   );
 
   window.G7_POS_COUPON_ASSET = "OK";
-  LOG("Asset POS cargado (buscar por name)");
+  LOG("Asset POS cargado (aplica cupón en la orden)");
 })();
