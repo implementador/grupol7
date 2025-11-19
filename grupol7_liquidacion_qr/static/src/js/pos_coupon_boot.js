@@ -4,7 +4,7 @@
   const LOG = (...args) => console.log('[G7][POS-Coupon][POS]', ...args);
 
   // -------------------------------------------------------------
-  // RPC helper: buscar cupón por código
+  // RPC helper: buscar cupón por código (campo name)
   // -------------------------------------------------------------
   async function searchCouponByCode(code) {
     const payload = {
@@ -15,21 +15,9 @@
         method: "search_read",
         args: [],
         kwargs: {
-          domain: ["|", ["name", "=", code], ["code", "=", code]],
-          fields: [
-            "name",
-            "code",
-            "product_id",
-            "price_liquidation",
-            "liquidation_price",
-            "price",
-            "state",
-            "pos_ids",
-            "location_id",
-            "redeemed",
-            "is_redeemed",
-            "canjeado",
-          ],
+          // IMPORTANTE: sólo usamos 'name', porque 'code' no existe
+          domain: [["name", "=", code]],
+          // sin "fields": así Odoo devuelve todos los campos del modelo
           limit: 1,
         },
       },
@@ -51,7 +39,9 @@
     const json = await resp.json();
     if (json.error) {
       const msg =
-        (json.error.data && json.error.data.message) || json.error.message || "Error RPC";
+        (json.error.data && json.error.data.message) ||
+        json.error.message ||
+        "Error RPC";
       throw new Error(msg);
     }
     return json.result || [];
@@ -165,7 +155,6 @@
       msg.textContent = "Buscando cupón...";
       msg.style.color = "#333";
 
-      // id del PdV actual, para validar PdV permitidos
       const urlParams = new URLSearchParams(window.location.search || "");
       const posConfigId = parseInt(urlParams.get("config_id") || "0", 10) || 0;
 
@@ -218,7 +207,7 @@
 
       // -------- Mostrar información del cupón (por ahora) --------
       let detail = "Cupón válido.\n\n";
-      const codeText = coupon.code || coupon.name || code;
+      const codeText = coupon.name || coupon.code || code;
       detail += "Código: " + codeText + "\n";
 
       if (coupon.product_id) {
@@ -279,21 +268,17 @@
     if (btn.dataset.g7Patched === "1") return;
     btn.dataset.g7Patched = "1";
 
+    // Limpiamos el contenido para evitar "Cupón QRNota de cliente"
+    btn.innerHTML = "";
     btn.setAttribute("data-g7-coupon-button", "1");
 
-    let icon = btn.querySelector("i.fa, i");
-    if (!icon) {
-      icon = document.createElement("i");
-      btn.prepend(icon);
-    }
+    const icon = document.createElement("i");
     icon.className = "fa fa-qrcode";
+    btn.appendChild(icon);
 
-    let label = btn.querySelector("span");
-    if (!label) {
-      label = document.createElement("span");
-      btn.appendChild(label);
-    }
+    const label = document.createElement("span");
     label.textContent = "Cupón QR";
+    btn.appendChild(label);
 
     LOG("Botón POS parcheado");
   }
@@ -326,5 +311,5 @@
   );
 
   window.G7_POS_COUPON_ASSET = "OK";
-  LOG("Asset POS cargado (ventana + búsqueda cupón vía fetch)");
+  LOG("Asset POS cargado (buscar por name)");
 })();
