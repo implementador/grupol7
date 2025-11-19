@@ -1,39 +1,38 @@
 odoo.define('grupol7_liquidacion_qr.rename_note_button_dom_patch', function (require) {
     'use strict';
+    const domReady = require('web.dom_ready');
 
-    function patchOnce() {
-        const buttons = document.querySelectorAll('.control-buttons .control-button');
-        for (const btn of buttons) {
-            const label = btn.querySelector('.button-text');
-            if (!label) continue;
-
-            const text = (label.textContent || '').trim();
-            const isNote = /^nota de cliente$/i.test(text);
-            const isAlready = /^cupón qr$/i.test(text);
-
-            if (isNote || isAlready) {
-                // Texto y icono
-                label.textContent = 'Cupón QR';
-                const icon = btn.querySelector('i');
-                if (icon) icon.className = 'fa fa-qrcode';
-
-                // Marca que este es nuestro botón
-                btn.dataset.g7CouponButton = '1';
-                btn.setAttribute('title', 'Escanear cupón QR');
-            }
+    function patchOnce(area) {
+        // Busca el botón "Nota de cliente"
+        const btn = [...area.querySelectorAll('.control-button')].find(
+            (b) => /Nota\s+de\s+cliente/i.test(b.textContent.trim())
+        );
+        if (!btn || btn.dataset.g7CouponButton === '1') {
+            return;
         }
+        // Marcas internas para que no se repita
+        btn.dataset.g7CouponButton = '1';
+        btn.classList.add('g7-coupon-button');
+
+        // Ícono
+        const icon = btn.querySelector('i') || btn.querySelector('.fa');
+        if (icon) icon.className = 'fa fa-qrcode';
+
+        // Texto (REEMPLAZO, NO concatenar)
+        // El texto suele ir en un <span>, pero si no, usamos el botón directo
+        const label = btn.querySelector('span') || btn;
+        label.textContent = 'Cupón QR';
     }
 
-    function start() {
-        // Ejecuta ya y durante unos segundos (por si POS re-renderiza)
-        patchOnce();
-        const id = setInterval(patchOnce, 800);
-        setTimeout(() => clearInterval(id), 15000);
+    function init() {
+        const area = document.querySelector('.control-buttons');
+        if (!area) return;
+        // Primer intento inmediato
+        patchOnce(area);
+        // Y observar cambios del DOM
+        const obs = new MutationObserver(() => patchOnce(area));
+        obs.observe(area, { childList: true, subtree: true });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', start, { once: true });
-    } else {
-        start();
-    }
+    domReady(init);
 });
