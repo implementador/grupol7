@@ -1,47 +1,34 @@
 odoo.define('grupol7_liquidacion_qr.rename_note_button_dom_patch', function (require) {
     'use strict';
 
-    const NEW_LABEL = 'Cupón QR';
+    function patchOnce() {
+        const buttons = document.querySelectorAll('.control-buttons .control-button');
+        for (const btn of buttons) {
+            const label = btn.querySelector('.button-text');
+            if (!label) continue;
 
-    function looksLikeNoteLabel(text) {
-        const t = (text || '').trim().toLowerCase();
-        return /^nota de cliente$|^customer note$|^note client$|kundenhinweis|cliente note|nota.*cliente|customer.*note/.test(t);
-    }
+            const text = (label.textContent || '').trim();
+            const isNote = /^nota de cliente$/i.test(text);
+            const isAlready = /^cupón qr$/i.test(text);
 
-    function decorateButton(btn) {
-        if (!btn || btn.dataset.g7Renamed === '1') return;
-        const label = btn.querySelector('.label') || btn;
+            if (isNote || isAlready) {
+                // Texto y icono
+                label.textContent = 'Cupón QR';
+                const icon = btn.querySelector('i');
+                if (icon) icon.className = 'fa fa-qrcode';
 
-        // 1) Texto exacto (sin concatenar)
-        while (label.firstChild) label.removeChild(label.firstChild);
-        const icon = document.createElement('i');
-        icon.className = 'fa fa-qrcode';
-        icon.style.marginRight = '6px';
-        label.appendChild(icon);
-        label.appendChild(document.createTextNode(NEW_LABEL));
-
-        // 2) Marcar para nuestro handler
-        btn.dataset.g7Renamed = '1';
-        btn.dataset.g7CouponButton = '1';
-        // Evitar que el "nota de cliente" original se dispare
-        btn.onclick = null;
-    }
-
-    function renameOnce() {
-        document.querySelectorAll('.control-buttons .control-button').forEach((btn) => {
-            const label = btn.querySelector('.label') || btn;
-            const txt = (label.textContent || '').trim();
-            if (looksLikeNoteLabel(txt) || btn.dataset.g7CouponButton === '1') {
-                decorateButton(btn);
+                // Marca que este es nuestro botón
+                btn.dataset.g7CouponButton = '1';
+                btn.setAttribute('title', 'Escanear cupón QR');
             }
-        });
+        }
     }
 
     function start() {
-        renameOnce();
-        if (!window.__g7CouponRenameInterval) {
-            window.__g7CouponRenameInterval = setInterval(renameOnce, 1000);
-        }
+        // Ejecuta ya y durante unos segundos (por si POS re-renderiza)
+        patchOnce();
+        const id = setInterval(patchOnce, 800);
+        setTimeout(() => clearInterval(id), 15000);
     }
 
     if (document.readyState === 'loading') {
