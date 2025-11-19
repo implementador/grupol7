@@ -43,7 +43,7 @@
 
   // Detectar el precio de liquidación correcto desde el cupón
   function getLiquidationPrice(coupon) {
-    // prioridad: clearance_price (nombre técnico que me mostraste), luego los demás
+    // prioridad: clearance_price (nombre técnico), luego otros por si acaso
     const fieldsPriority = [
       "clearance_price",
       "price_liquidation",
@@ -66,6 +66,56 @@
     return price;
   }
 
+  // Marcar cupón como canjeado en el backend
+  async function markCouponRedeemed(coupon) {
+    if (!coupon || !coupon.id) {
+      LOG("No se puede marcar canjeado: cupón sin id", coupon);
+      return;
+    }
+
+    const vals = {
+      // En tu selección, el valor técnico para "Usado" es "used"
+      state: "used",
+    };
+
+    const payload = {
+      jsonrpc: "2.0",
+      method: "call",
+      params: {
+        model: "liquidation.coupon",
+        method: "write",
+        args: [[coupon.id], vals],
+        kwargs: {},
+      },
+      id: Date.now(),
+    };
+
+    const resp = await fetch(
+      "/web/dataset/call_kw/liquidation.coupon/write",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!resp.ok) {
+      throw new Error("HTTP " + resp.status);
+    }
+    const json = await resp.json();
+    if (json.error) {
+      const msg =
+        (json.error.data && json.error.data.message) ||
+        json.error.message ||
+        "Error RPC write";
+      throw new Error(msg);
+    }
+    LOG("Cupón marcado como canjeado (state=used) en backend:", coupon.id);
+  }
+
   function applyCouponToCurrentOrder(coupon) {
     const pos = findPosService();
     if (!pos) {
@@ -74,13 +124,13 @@
           "Reporta este mensaje al administrador."
       );
       LOG("No se encontró servicio POS en odoo.__DEBUG__.services");
-      return;
+      return false;
     }
 
     const order = pos.get_order && pos.get_order();
     if (!order) {
       alert("Cupón válido, pero no hay una orden activa.");
-      return;
+      return false;
     }
 
     const productField = coupon.product_id || coupon.product;
@@ -93,7 +143,7 @@
 
     if (!productId) {
       alert("Cupón válido, pero no tiene producto asociado.");
-      return;
+      return false;
     }
 
     const price = getLiquidationPrice(coupon);
@@ -103,7 +153,7 @@
           "Revisa la configuración del cupón."
       );
       LOG("Cupón sin precio de liquidación usable:", coupon);
-      return;
+      return false;
     }
 
     const product = findProductInPos(pos, productId);
@@ -113,7 +163,7 @@
           "Id de producto: " +
           productId
       );
-      return;
+      return false;
     }
 
     LOG("Aplicando cupón sobre producto", productId, "precio", price);
@@ -141,7 +191,7 @@
           "Error al agregar el producto del cupón al carrito.\n" +
             "Revisa la consola del navegador."
         );
-        return;
+        return false;
       }
     }
 
@@ -176,6 +226,8 @@
         "Precio liquidación: " +
         price
     );
+
+    return true;
   }
 
   // -------------------------------------------------------------
@@ -383,9 +435,19 @@
         }
       }
 
-      // Cupón válido: cerramos ventana y aplicamos sobre la orden
+      // Cupón válido: aplicamos en orden y si todo sale bien lo marcamos canjeado
       closeDialog();
-      applyCouponToCurrentOrder(coupon);
+      const ok = applyCouponToCurrentOrder(coupon);
+      if (ok) {
+        try {
+          await markCouponRedeemed(coupon);
+        } catch (e) {
+          console.error(
+            "[G7][POS-Coupon][POS] Error al marcar cupón como canjeado:",
+            e
+          );
+        }
+      }
     });
 
     setTimeout(() => {
@@ -458,5 +520,5 @@
   );
 
   window.G7_POS_COUPON_ASSET = "OK";
-  LOG("Asset POS cargado (precio clearance_price + estado)");
+  LOG("Asset POS cargado (clearance_price + estado + marcar used)");
 })();
