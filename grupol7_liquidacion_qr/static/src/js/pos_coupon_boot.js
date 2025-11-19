@@ -43,20 +43,21 @@
 
   // Detectar el precio de liquidación correcto desde el cupón
   function getLiquidationPrice(coupon) {
-    let price =
-      coupon.price_liquidation ||
-      coupon.liquidation_price ||
-      coupon.price ||
-      0;
+    // prioridad: clearance_price (nombre técnico que me mostraste), luego los demás
+    const fieldsPriority = [
+      "clearance_price",
+      "price_liquidation",
+      "liquidation_price",
+      "price",
+    ];
+    let price = 0;
 
-    // Si sigue en 0, intentamos encontrar un campo numérico que contenga "liquid"
-    if (!price) {
-      for (const key in coupon) {
-        if (!Object.prototype.hasOwnProperty.call(coupon, key)) continue;
-        const lk = key.toLowerCase();
-        if (lk.includes("liquid") && typeof coupon[key] === "number") {
-          price = coupon[key];
-          LOG("Precio detectado desde campo", key, "=>", price);
+    for (const fname of fieldsPriority) {
+      if (coupon[fname] !== undefined && coupon[fname] !== null) {
+        const value = Number(coupon[fname]);
+        if (!isNaN(value) && value !== 0) {
+          price = value;
+          LOG("Precio detectado desde campo", fname, "=>", price);
           break;
         }
       }
@@ -101,6 +102,7 @@
         "Cupón válido, pero no se pudo determinar el Precio de liquidación.\n" +
           "Revisa la configuración del cupón."
       );
+      LOG("Cupón sin precio de liquidación usable:", coupon);
       return;
     }
 
@@ -456,5 +458,5 @@
   );
 
   window.G7_POS_COUPON_ASSET = "OK";
-  LOG("Asset POS cargado (precio liquidación + estado)");
+  LOG("Asset POS cargado (precio clearance_price + estado)");
 })();
