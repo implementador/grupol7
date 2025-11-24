@@ -46,7 +46,7 @@
     if (!pos) {
       alert(
         "Cupón válido, pero no se pudo acceder al POS internamente.\n" +
-        "Reporta este mensaje al administrador."
+          "Reporta este mensaje al administrador."
       );
       LOG("No se encontró servicio POS en odoo.__DEBUG__.services");
       return;
@@ -72,8 +72,6 @@
     }
 
     const price =
-      coupon.public_clearance_price ||
-      coupon.clearance_price ||
       coupon.price_liquidation ||
       coupon.liquidation_price ||
       coupon.price ||
@@ -83,7 +81,8 @@
     if (!product) {
       alert(
         "Cupón válido, pero el producto no está cargado en este POS.\n" +
-        "Id de producto: " + productId
+          "Id de producto: " +
+          productId
       );
       return;
     }
@@ -110,7 +109,7 @@
         );
         alert(
           "Error al agregar el producto del cupón al carrito.\n" +
-          "Revisa la consola del navegador."
+            "Revisa la consola del navegador."
         );
         return;
       }
@@ -120,8 +119,7 @@
     try {
       if (lastLine && typeof lastLine.set_note === "function") {
         const prev =
-          (typeof lastLine.get_note === "function" &&
-            lastLine.get_note()) ||
+          (typeof lastLine.get_note === "function" && lastLine.get_note()) ||
           "";
         const note =
           (prev ? prev + " | " : "") +
@@ -141,8 +139,11 @@
 
     alert(
       "Cupón aplicado.\n\n" +
-      "Producto: " + displayName + "\n" +
-      "Precio liquidación: " + price
+        "Producto: " +
+        displayName +
+        "\n" +
+        "Precio liquidación: " +
+        price
     );
   }
 
@@ -301,6 +302,7 @@
 
       const urlParams = new URLSearchParams(window.location.search || "");
       const posConfigId = parseInt(urlParams.get("config_id") || "0", 10) || 0;
+      LOG("PdV actual (config_id):", posConfigId);
 
       let records = [];
       try {
@@ -319,14 +321,11 @@
       }
 
       const coupon = records[0];
-      LOG("Cupón encontrado:", coupon);
-      LOG("Campos del cupón:", Object.keys(coupon));
+      LOG("Campos del cupón:", coupon);
 
       // -------- Validar que NO esté canjeado --------
       const redeemedFlag =
-        coupon.redeemed ||
-        coupon.is_redeemed ||
-        coupon.canjeado;
+        coupon.redeemed || coupon.is_redeemed || coupon.canjeado;
       const badStates = ["used", "done", "cancel", "expired"];
       if (redeemedFlag) {
         msg.textContent = "Este cupón ya fue canjeado.";
@@ -340,86 +339,52 @@
         return;
       }
 
-      // -------- Detectar PdV permitidos --------
-      LOG("PdV actual (config_id):", posConfigId);
-
-      let allowedIds = [];
-      let usedField = null;
-
-      // Candidatos Many2many: [[id, name], ...]  o [id1, id2, ...]
-      const m2mCandidates = [
+      // -------- PdV permitidos: intentamos varios nombres de campo --------
+      const pdvFieldCandidates = [
+        "pos_allowed_ids",  // el que muestras en Studio
         "pos_ids",
-        "pos_config_ids",
-        "allowed_pos_ids",
+        "pdv_allowed_ids",
         "pdv_ids",
-        "allowed_pos_config_ids",
       ];
 
-      for (const fieldName of m2mCandidates) {
-        const val = coupon[fieldName];
-        if (!val) continue;
-
-        let tmp = [];
-        if (Array.isArray(val)) {
-          if (val.length && Array.isArray(val[0])) {
-            // [[id, name], ...]
-            tmp = val.map((p) => p[0]);
-          } else {
-            // [id1, id2, ...]
-            tmp = val;
-          }
-        }
-        if (tmp.length) {
-          allowedIds = tmp.map((x) => parseInt(x, 10)).filter((x) => x);
-          usedField = fieldName;
+      let raw = null;
+      let usedFieldName = null;
+      for (const fname of pdvFieldCandidates) {
+        if (Object.prototype.hasOwnProperty.call(coupon, fname)) {
+          raw = coupon[fname];
+          usedFieldName = fname;
           break;
         }
       }
 
-      // Candidatos Many2one: [id, name]
-      if (!allowedIds.length) {
-        const m2oCandidates = [
-          "pos_id",
-          "pos_config_id",
-          "pdv_id",
-          "allowed_pos_id",
-        ];
-        for (const fieldName of m2oCandidates) {
-          const val = coupon[fieldName];
-          if (!val) continue;
-          if (Array.isArray(val) && val.length) {
-            const id = parseInt(val[0], 10);
-            if (id) {
-              allowedIds = [id];
-              usedField = fieldName;
-              break;
-            }
+      let allowedIds = [];
+      if (raw != null) {
+        if (Array.isArray(raw)) {
+          if (raw.length && Array.isArray(raw[0])) {
+            allowedIds = raw.map((p) => p[0]);
+          } else {
+            allowedIds = raw.slice();
           }
+        } else if (typeof raw === "number") {
+          allowedIds = [raw];
         }
       }
 
       LOG(
-        "PdV permitidos detectados (campo=",
-        usedField,
-        "):",
+        "PdV permitidos encontrados en campo",
+        usedFieldName,
+        "=>",
         allowedIds
       );
 
-      if (posConfigId && allowedIds.length) {
-        if (allowedIds.indexOf(posConfigId) === -1) {
-          msg.textContent =
-            "Este cupón no es válido para este Punto de Venta.";
-          msg.style.color = "red";
-          return;
-        }
-      } else {
-        LOG(
-          "Cupón sin PdV permitidos explícitos (lista vacía o sin campo conocido). " +
-          "Se permite en todos los PdV."
-        );
+      // Si HAY PdV configurados, validar que el actual esté en la lista.
+      if (posConfigId && allowedIds.length && !allowedIds.includes(posConfigId)) {
+        msg.textContent = "Este cupón no es válido para este Punto de Venta.";
+        msg.style.color = "red";
+        return;
       }
 
-      // Cupón válido para este PdV: cerramos ventana y aplicamos sobre la orden
+      // Cupón válido: cerramos ventana y aplicamos sobre la orden
       closeDialog();
       applyCouponToCurrentOrder(coupon);
     });
