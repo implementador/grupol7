@@ -1,11 +1,19 @@
 from odoo import models
+import re
 
-class LiquidationCouponQrReport(models.Model):
-    _inherit = 'liquidation.coupon'
+
+class LiquidationCoupon(models.Model):
+    _inherit = "liquidation.coupon"
 
     def action_print_qr(self):
-        """Usar el nuevo reporte QR (layout corregido y precio con IVA)."""
         self.ensure_one()
-        return self.env.ref(
-            'grupol7_liquidacion_qr.action_liq_coupon_qr_label2'
-        ).report_action(self)
+        action = self.env.ref("grupol7_liquidacion_qr.action_liq_coupon_qr_label2")
+        res = action.report_action(self)
+
+        # Nombre del archivo: Cupon_<codigo>.pdf solo con letras/números/guiones
+        base = "Cupon_%s" % (self.name or "")
+        safe = re.sub(r"[^A-Za-z0-9_-]+", "_", base)
+        ctx = dict(res.get("context") or {})
+        ctx["download_filename"] = safe
+        res["context"] = ctx
+        return res
