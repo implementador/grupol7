@@ -1,67 +1,88 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data>
 
-    <!-- Acción de reporte para cupones de liquidación (QR) -->
-    <report
-        id="action_liq_coupon_qr_label2"
-        model="liquidation.coupon"
-        string="Cupón de liquidación QR"
-        report_type="qweb-pdf"
-        name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-        file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-        print_report_name="'LIQ_' + (object.name or '')"
-    />
+  <!-- Plantilla de una sola etiqueta -->
+  <template id="liq_coupon_single_label">
+    <t t-set="precio" t-value="o.clearance_price or o.price_liquidation or 0.0"/>
 
-    <!-- Plantilla QWeb: diseño tipo etiqueta (como tu segunda imagen) -->
-    <template id="report_liq_coupon_qr_label2">
-      <t t-call="web.html_container">
-        <t t-foreach="docs" t-as="o">
-          <div class="page">
-            <div style="width:8cm; height:4cm; font-size:11px; font-family: Arial, sans-serif;">
-              <div style="display:flex;">
-                <!-- QR con SOLO el código del cupón (name) -->
-                <div style="width:2.5cm;">
-                  <img t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=200&amp;height=200' % (o.name or '')"
-                       style="width:2.5cm; height:2.5cm;"/>
-                </div>
+    <div class="g7-liq-label-inner">
+      <div class="g7-liq-qr">
+        <img
+          t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=200&amp;height=200' % (o.name or '')"
+          style="width:90px; height:90px;"/>
+      </div>
+      <div class="g7-liq-info">
+        <!-- Código del cupón (ya sin caracteres especiales) -->
+        <div class="g7-liq-code" t-esc="o.name or ''"/>
+        <!-- Nombre del producto -->
+        <div class="g7-liq-product" t-esc="o.product_id.display_name or ''"/>
+        <!-- Precio con IVA -->
+        <div class="g7-liq-price">
+          <span>$ </span>
+          <span t-esc="'%0.2f' % (precio or 0.0)"/>
+        </div>
+      </div>
+    </div>
+  </template>
 
-                <!-- Datos a la derecha -->
-                <div style="padding-left:0.2cm; flex:1;">
-                  <!-- Código del cupón -->
-                  <div style="font-size:11px; font-weight:bold;">
-                    <t t-esc="o.name"/>
-                  </div>
-
-                  <!-- Producto [código] nombre -->
-                  <div style="font-size:10px; margin-top:2px;">
-                    [<t t-esc="o.product_id.default_code or ''"/>]
-                    <t t-esc="o.product_id.display_name or o.product_id.name or ''"/>
-                  </div>
-
-                  <!-- Precio con IVA: clearance_price (si no, cae a price_liquidation) -->
-                  <div style="font-size:14px; font-weight:bold; margin-top:6px;">
-                    <t t-esc="'$ %0.2f' % ((o.clearance_price or o.price_liquidation or 0.0))"/>
-                  </div>
-
-                  <!-- Pie pequeño: creado por / fecha -->
-                  <div style="font-size:8px; margin-top:4px;">
-                    Creado: <span t-field="o.create_date"/> por <span t-field="o.create_uid"/>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Línea y textos Fecha / Firma -->
-              <div style="margin-top:8px; border-top:1px solid #000;"></div>
-              <div style="margin-top:2px; font-size:8px; display:flex; justify-content:space-between;">
-                <span>Fecha</span>
-                <span>Firma</span>
-              </div>
-            </div>
-          </div>
-        </t>
+  <!-- Reporte: 2 etiquetas por página -->
+  <template id="report_liq_coupons_labels">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="o">
+        <div class="page">
+          <table class="g7-liq-label-table">
+            <tr>
+              <td class="g7-liq-label">
+                <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
+              </td>
+              <td class="g7-liq-label">
+                <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
+              </td>
+            </tr>
+          </table>
+        </div>
       </t>
-    </template>
+    </t>
+  </template>
 
-  </data>
+  <!-- Estilos del reporte (sin fecha ni firma) -->
+  <template id="report_liq_coupons_labels_styles" inherit_id="web.external_layout">
+    <xpath expr="//head" position="inside">
+      <style type="text/css">
+        .g7-liq-label-table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        .g7-liq-label {
+          width: 50%;
+          padding: 8px 12px;
+          vertical-align: top;
+        }
+        .g7-liq-label-inner {
+          display: flex;
+          align-items: flex-start;
+          font-size: 10pt;
+        }
+        .g7-liq-qr img {
+          border: 0;
+        }
+        .g7-liq-info {
+          margin-left: 8px;
+        }
+        .g7-liq-code {
+          font-weight: bold;
+          margin-bottom: 3px;
+        }
+        .g7-liq-product {
+          font-size: 9pt;
+          margin-bottom: 6px;
+        }
+        .g7-liq-price {
+          font-size: 11pt;
+          font-weight: bold;
+        }
+      </style>
+    </xpath>
+  </template>
+
 </odoo>
