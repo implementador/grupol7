@@ -15,9 +15,11 @@
     for (const name in services) {
       const srv = services[name];
       if (!srv) continue;
+      // OWL POS suele tener env.services.pos
       if (srv.env && srv.env.services && srv.env.services.pos) {
         return srv.env.services.pos;
       }
+      // Por si algún servicio expone directamente .pos
       if (srv.pos && typeof srv.pos.get_order === "function") {
         return srv.pos;
       }
@@ -28,92 +30,19 @@
   function findProductInPos(pos, productId) {
     if (!pos) return null;
 
+    // POS clásico: pos.db.get_product_by_id
     if (pos.db && typeof pos.db.get_product_by_id === "function") {
       const p = pos.db.get_product_by_id(productId);
       if (p) return p;
     }
 
+    // Otros casos: lista de productos en alguna propiedad
     if (Array.isArray(pos.products)) {
       const found = pos.products.find((p) => p && p.id === productId);
       if (found) return found;
     }
 
     return null;
-  }
-
-  // Detectar el precio de liquidación correcto desde el cupón
-  function getLiquidationPrice(coupon) {
-    // prioridad: clearance_price (nombre técnico), luego otros por si acaso
-    const fieldsPriority = [
-      "clearance_price",
-      "price_liquidation",
-      "liquidation_price",
-      "price",
-    ];
-    let price = 0;
-
-    for (const fname of fieldsPriority) {
-      if (coupon[fname] !== undefined && coupon[fname] !== null) {
-        const value = Number(coupon[fname]);
-        if (!isNaN(value) && value !== 0) {
-          price = value;
-          LOG("Precio detectado desde campo", fname, "=>", price);
-          break;
-        }
-      }
-    }
-
-    return price;
-  }
-
-  // Marcar cupón como canjeado en el backend
-  async function markCouponRedeemed(coupon) {
-    if (!coupon || !coupon.id) {
-      LOG("No se puede marcar canjeado: cupón sin id", coupon);
-      return;
-    }
-
-    const vals = {
-      // En tu selección, el valor técnico para "Usado" es "used"
-      state: "used",
-    };
-
-    const payload = {
-      jsonrpc: "2.0",
-      method: "call",
-      params: {
-        model: "liquidation.coupon",
-        method: "write",
-        args: [[coupon.id], vals],
-        kwargs: {},
-      },
-      id: Date.now(),
-    };
-
-    const resp = await fetch(
-      "/web/dataset/call_kw/liquidation.coupon/write",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      }
-    );
-
-    if (!resp.ok) {
-      throw new Error("HTTP " + resp.status);
-    }
-    const json = await resp.json();
-    if (json.error) {
-      const msg =
-        (json.error.data && json.error.data.message) ||
-        json.error.message ||
-        "Error RPC write";
-      throw new Error(msg);
-    }
-    LOG("Cupón marcado como canjeado (state=used) en backend:", coupon.id);
   }
 
   function applyCouponToCurrentOrder(coupon) {
@@ -124,13 +53,13 @@
           "Reporta este mensaje al administrador."
       );
       LOG("No se encontró servicio POS en odoo.__DEBUG__.services");
-      return false;
+      return;
     }
 
     const order = pos.get_order && pos.get_order();
     if (!order) {
       alert("Cupón válido, pero no hay una orden activa.");
-      return false;
+      return;
     }
 
     const productField = coupon.product_id || coupon.product;
@@ -143,18 +72,16 @@
 
     if (!productId) {
       alert("Cupón válido, pero no tiene producto asociado.");
-      return false;
+      return;
     }
 
-    const price = getLiquidationPrice(coupon);
-    if (!price) {
-      alert(
-        "Cupón válido, pero no se pudo determinar el Precio de liquidación.\n" +
-          "Revisa la configuración del cupón."
-      );
-      LOG("Cupón sin precio de liquidación usable:", coupon);
-      return false;
-    }
+    const price =
+      coupon.price_liquidation ||
+      coupon.liquidation_price ||
+      coupon.price ||
+      coupon.clearance_price ||
+      coupon.public_clearance_price ||
+      0;
 
     const product = findProductInPos(pos, productId);
     if (!product) {
@@ -163,12 +90,13 @@
           "Id de producto: " +
           productId
       );
-      return false;
+      return;
     }
 
     LOG("Aplicando cupón sobre producto", productId, "precio", price);
 
     try {
+      // Intento 1: pasar precio directamente
       order.add_product(product, { quantity: 1, price: price });
     } catch (err1) {
       console.warn(
@@ -191,7 +119,7 @@
           "Error al agregar el producto del cupón al carrito.\n" +
             "Revisa la consola del navegador."
         );
-        return false;
+        return;
       }
     }
 
@@ -226,8 +154,50 @@
         "Precio liquidación: " +
         price
     );
+  }
 
-    return true;
+  // -------------------------------------------------------------
+  // Helpers para detectar PdV permitidos en el registro del cupón
+  // -------------------------------------------------------------
+  function extractMany2ManyIds(value) {
+    if (!Array.isArray(value) || !value.length) return null;
+
+    // Formato típico: [[id, "Nombre"], [id2, "Nombre2"], ...]
+    if (Array.isArray(value[0]) && value[0].length) {
+      const ids = value
+        .map((v) => (Array.isArray(v) ? v[0] : null))
+        .filter((id) => typeof id === "number");
+      return ids.length ? ids : null;
+    }
+
+    // Por si viniera como [id1, id2, ...]
+    if (typeof value[0] === "number") {
+      return value;
+    }
+
+    return null;
+  }
+
+  function getAllowedPosIds(coupon) {
+    if (!coupon || typeof coupon !== "object") return [];
+
+    // 1) Intentar con el nombre clásico pos_ids
+    if (coupon.pos_ids) {
+      const ids = extractMany2ManyIds(coupon.pos_ids);
+      if (ids) return ids;
+    }
+
+    // 2) Buscar el primer campo que "parezca" Many2many (Studio, etc.)
+    for (const key in coupon) {
+      if (!Object.prototype.hasOwnProperty.call(coupon, key)) continue;
+      const ids = extractMany2ManyIds(coupon[key]);
+      if (ids) {
+        LOG("Detectado campo PdV para cupón:", key, "=>", ids);
+        return ids;
+      }
+    }
+
+    return [];
   }
 
   // -------------------------------------------------------------
@@ -408,46 +378,32 @@
       // -------- Validar que NO esté canjeado --------
       const redeemedFlag =
         coupon.redeemed || coupon.is_redeemed || coupon.canjeado;
-      const state = coupon.state || "";
-      const allowedStates = ["new", "draft", ""]; // sólo estos se consideran "no canjeado"
-
+      const badStates = ["used", "done", "cancel", "expired"];
       if (redeemedFlag) {
         msg.textContent = "Este cupón ya fue canjeado.";
         msg.style.color = "red";
         return;
       }
-      if (state && !allowedStates.includes(state)) {
+      if (coupon.state && badStates.indexOf(coupon.state) !== -1) {
         msg.textContent =
-          "Este cupón no está disponible (estado: " + state + ").";
+          "Este cupón no está disponible (estado: " + coupon.state + ").";
         msg.style.color = "red";
         return;
       }
 
-      // -------- Validar PdV permitidos (campo pos_ids) --------
-      if (posConfigId && Array.isArray(coupon.pos_ids) && coupon.pos_ids.length) {
-        const allowedIds = coupon.pos_ids.map(function (p) {
-          return Array.isArray(p) ? p[0] : p;
-        });
-        if (allowedIds.indexOf(posConfigId) === -1) {
-          msg.textContent = "Este cupón no es válido para este Punto de Venta.";
-          msg.style.color = "red";
-          return;
-        }
+      // -------- Validar PdV permitidos (cualquier campo M2M de PdV) --------
+      const allowedIds = getAllowedPosIds(coupon);
+      LOG("PdV actual:", posConfigId, "PdV permitidos detectados:", allowedIds);
+
+      if (posConfigId && allowedIds.length && allowedIds.indexOf(posConfigId) === -1) {
+        msg.textContent = "Este cupón no es válido para este Punto de Venta.";
+        msg.style.color = "red";
+        return;
       }
 
-      // Cupón válido: aplicamos en orden y si todo sale bien lo marcamos canjeado
+      // Cupón válido: cerramos ventana y aplicamos sobre la orden
       closeDialog();
-      const ok = applyCouponToCurrentOrder(coupon);
-      if (ok) {
-        try {
-          await markCouponRedeemed(coupon);
-        } catch (e) {
-          console.error(
-            "[G7][POS-Coupon][POS] Error al marcar cupón como canjeado:",
-            e
-          );
-        }
-      }
+      applyCouponToCurrentOrder(coupon);
     });
 
     setTimeout(() => {
@@ -478,6 +434,7 @@
     if (btn.dataset.g7Patched === "1") return;
     btn.dataset.g7Patched = "1";
 
+    // Limpiamos el contenido para evitar “Cupón QRNota de cliente”
     btn.innerHTML = "";
     btn.setAttribute("data-g7-coupon-button", "1");
 
@@ -520,5 +477,5 @@
   );
 
   window.G7_POS_COUPON_ASSET = "OK";
-  LOG("Asset POS cargado (clearance_price + estado + marcar used)");
+  LOG("Asset POS cargado (aplica cupón en la orden)");
 })();

@@ -13,4 +13,4 @@
  'license': 'LGPL-3',
  'name': 'Liquidación con QR (Cupones por pieza)',
  'summary': 'Cupones QR para liquidación: valida producto y precio, un solo uso, POS y Ventas, reporte por PdV.',
- 'version': '16.0.1.74'}
+ 'version': '16.0.1.75'}
