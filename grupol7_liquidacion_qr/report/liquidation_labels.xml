@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+  <!-- Acción de reporte usada por el botón IMPRIMIR QR -->
+  <report
+      id="action_liq_coupon_qr_label2"
+      model="liquidation.coupon"
+      string="Cupones de liquidación (QR)"
+      report_type="qweb-pdf"
+      name="grupol7_liquidacion_qr.report_liq_coupons_labels"
+      file="grupol7_liquidacion_qr.report_liq_coupons_labels"
+  />
+
   <!-- Plantilla de una sola etiqueta -->
   <template id="liq_coupon_single_label">
-    <t t-set="precio" t-value="o.clearance_price or o.price_liquidation or 0.0"/>
+    <!-- Precio con IVA si existe, si no, precio de liquidación normal -->
+    <t t-set="precio"
+       t-value="o.public_clearance_price or o.clearance_price or o.price_liquidation or 0.0"/>
 
     <div class="g7-liq-label-inner">
       <div class="g7-liq-qr">
@@ -16,7 +28,7 @@
         <div class="g7-liq-code" t-esc="o.name or ''"/>
         <!-- Nombre del producto -->
         <div class="g7-liq-product" t-esc="o.product_id.display_name or ''"/>
-        <!-- Precio con IVA (clearance_price) -->
+        <!-- Precio mostrado -->
         <div class="g7-liq-price">
           <span>$ </span>
           <span t-esc="'%0.2f' % (precio or 0.0)"/>
@@ -29,7 +41,7 @@
   <template id="report_liq_coupons_labels">
     <t t-call="web.html_container">
 
-      <!-- Estilos embebidos (SIN heredar external_layout) -->
+      <!-- Estilos embebidos -->
       <style type="text/css">
         .g7-liq-label-table {
           width: 100%;
