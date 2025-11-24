@@ -1,6 +1,3 @@
-cd ~/src/user/grupol7_liquidacion_qr
-
-cat > models/pos_order_liquidacion_coupon.py <<'PY'
 from odoo import api, models
 from odoo.exceptions import ValidationError
 
@@ -168,4 +165,3 @@ class PosOrderLiquidationCoupon(models.Model):
                 coupon.write({'state': 'used'})
             else:
                 coupon.write({'state': 'used'})
-PY
