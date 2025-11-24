@@ -1,289 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+  <data>
 
-  <!-- Papel 30x25 mm -->
-  <record id="paperformat_liq_label_30x25" model="report.paperformat">
-    <field name="name">LIQ 30x25</field>
-    <field name="format">custom</field>
-    <field name="page_width">30</field>
-    <field name="page_height">25</field>
-    <field name="margin_top">2</field>
-    <field name="margin_bottom">2</field>
-    <field name="margin_left">2</field>
-    <field name="margin_right">2</field>
-    <field name="orientation">Portrait</field>
-  </record>
+    <!-- Acción de reporte para cupones de liquidación (QR) -->
+    <report
+        id="action_liq_coupon_qr_label2"
+        model="liquidation.coupon"
+        string="Cupón de liquidación QR"
+        report_type="qweb-pdf"
+        name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
+        file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
+        print_report_name="'LIQ_' + (object.name or '')"
+    />
 
-  <!-- Template: QR -->
-  <template id="liq_label_qr_doc">
-    <t t-call="web.basic_layout">
-      <div class="page" style="width:30mm;height:25mm;box-sizing:border-box;padding:1mm;font-size:9pt;">
+    <!-- Plantilla QWeb: diseño tipo etiqueta (como tu segunda imagen) -->
+    <template id="report_liq_coupon_qr_label2">
+      <t t-call="web.html_container">
         <t t-foreach="docs" t-as="o">
-          <div style="text-align:center;page-break-inside:avoid;display:inline-block;width:28mm;height:23mm">
-            <img t-att-src="'/report/barcode/QR/' + ('LIQ/' + o.name) + '?width=260&amp;height=260'"
-                 style="width:22mm;height:22mm"/>
-            <div style="font-size:8pt" t-esc="'LIQ/' + o.name"/>
-            <div style="font-size:7pt" t-esc="(o.product_id.display_name or '')[:32]"/>
-            <div style="font-size:8pt"><b t-esc="('$ %0.2f' % o.clearance_price)"/></div>
+          <div class="page">
+            <div style="width:8cm; height:4cm; font-size:11px; font-family: Arial, sans-serif;">
+              <div style="display:flex;">
+                <!-- QR con SOLO el código del cupón (name) -->
+                <div style="width:2.5cm;">
+                  <img t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=200&amp;height=200' % (o.name or '')"
+                       style="width:2.5cm; height:2.5cm;"/>
+                </div>
 
-            <div style="font-size:6.5pt;margin-top:0.8mm;white-space:nowrap;">
-              <t t-esc="'Creado: %s por %s' % ((o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''), o.create_uid.name)"/>
-            </div>
-            <div style="margin-top:0.6mm;height:7mm;border:0.25mm solid #000;border-radius:1mm;"></div>
-            <div style="text-align:center;font-size:6pt;line-height:1;">Firma</div>
+                <!-- Datos a la derecha -->
+                <div style="padding-left:0.2cm; flex:1;">
+                  <!-- Código del cupón -->
+                  <div style="font-size:11px; font-weight:bold;">
+                    <t t-esc="o.name"/>
+                  </div>
 
-          </div>
-        </t>
-      </div>
-    </t>
-  </template>
+                  <!-- Producto [código] nombre -->
+                  <div style="font-size:10px; margin-top:2px;">
+                    [<t t-esc="o.product_id.default_code or ''"/>]
+                    <t t-esc="o.product_id.display_name or o.product_id.name or ''"/>
+                  </div>
 
-  <record id="action_liq_coupon_print_label_qr" model="ir.actions.report">
-    <field name="name">Etiqueta LIQ (QR)</field>
-    <field name="model">liquidation.coupon</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">grupol7_liquidacion_qr.liq_label_qr_doc</field>
-    <field name="report_file">grupol7_liquidacion_qr.liq_label_qr_doc</field>
-    <field name="paperformat_id" ref="grupol7_liquidacion_qr.paperformat_liq_label_30x25"/>
-    <field name="print_report_name">'Etiqueta_LIQ_QR_%s' % (object.name)</field>
-  </record>
+                  <!-- Precio con IVA: clearance_price (si no, cae a price_liquidation) -->
+                  <div style="font-size:14px; font-weight:bold; margin-top:6px;">
+                    <t t-esc="'$ %0.2f' % ((o.clearance_price or o.price_liquidation or 0.0))"/>
+                  </div>
 
-  <!-- Template: Code128 -->
-  <template id="liq_label_code128_doc">
-    <t t-call="web.basic_layout">
-      <div class="page" style="width:30mm;height:25mm;box-sizing:border-box;padding:1mm;font-size:9pt;">
-        <t t-foreach="docs" t-as="o">
-          <div style="text-align:center;page-break-inside:avoid;display:inline-block;width:28mm;height:23mm">
-            <img t-att-src="'/report/barcode/Code128/' + ('LIQ/' + o.name) + '?width=260&amp;height=80'"
-                 style="width:28mm;height:8mm"/>
-            <div style="font-size:8pt;margin-top:1mm" t-esc="'LIQ/' + o.name"/>
-            <div style="font-size:7pt" t-esc="(o.product_id.display_name or '')[:32]"/>
-            <div style="font-size:8pt"><b t-esc="('$ %0.2f' % o.clearance_price)"/></div>
+                  <!-- Pie pequeño: creado por / fecha -->
+                  <div style="font-size:8px; margin-top:4px;">
+                    Creado: <span t-field="o.create_date"/> por <span t-field="o.create_uid"/>
+                  </div>
+                </div>
+              </div>
 
-            <div style="font-size:6.5pt;margin-top:0.8mm;white-space:nowrap;">
-              <t t-esc="'Creado: %s por %s' % ((o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''), o.create_uid.name)"/>
-            </div>
-            <div style="margin-top:0.6mm;height:7mm;border:0.25mm solid #000;border-radius:1mm;"></div>
-            <div style="text-align:center;font-size:6pt;line-height:1;">Firma</div>
-
-          </div>
-        </t>
-      </div>
-    </t>
-  </template>
-
-  <record id="action_liq_coupon_print_label_code128" model="ir.actions.report">
-    <field name="name">Etiqueta LIQ (Code128)</field>
-    <field name="model">liquidation.coupon</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">grupol7_liquidacion_qr.liq_label_code128_doc</field>
-    <field name="report_file">grupol7_liquidacion_qr.liq_label_code128_doc</field>
-    <field name="paperformat_id" ref="grupol7_liquidacion_qr.paperformat_liq_label_30x25"/>
-    <field name="print_report_name">'Etiqueta_LIQ_Code128_%s' % (object.name)</field>
-  </record>
-
-
-  <!-- Papel 60x50 mm -->
-  <record id="paperformat_liq_label_60x50" model="report.paperformat">
-    <field name="name">LIQ 60x50</field>
-    <field name="format">custom</field>
-    <field name="page_width">60</field>
-    <field name="page_height">50</field>
-    <field name="margin_top">3</field>
-    <field name="margin_bottom">3</field>
-    <field name="margin_left">3</field>
-    <field name="margin_right">3</field>
-    <field name="orientation">Portrait</field>
-  </record>
-
-  <!-- Template: QR 60x50 con fecha, usuario y firma -->
-  <template id="liq_label_qr_doc_big">
-    <t t-call="web.basic_layout">
-      <div class="page" style="width:60mm;height:50mm;box-sizing:border-box;padding:2mm;">
-        <t t-foreach="docs" t-as="o">
-          <div style="text-align:center;page-break-inside:avoid;display:inline-block;width:56mm;height:46mm">
-            <img t-att-src="'/report/barcode/QR/' + ('LIQ/' + o.name) + '?width=520&amp;height=520'"
-                 style="width:42mm;height:42mm"/>
-            <div style="font-size:12pt;margin-top:1mm" t-esc="'LIQ/' + o.name"/>
-            <div style="font-size:10pt" t-esc="(o.product_id.display_name or '')[:48]"/>
-            <div style="font-size:12pt"><b t-esc="'$ %0.2f' % (o.clearance_price or 0.0)"/></div>
-
-            <div style="font-size:9pt;margin-top:1mm"
-                 t-esc="'Fec.: ' + (o.create_date.strftime('%d/%m/%Y') if o.create_date else '')"/>
-            <div style="font-size:9pt" t-esc="'Gen.: ' + (o.create_uid.name or '')"/>
-
-            <div style="border-top:1px solid #000;margin:3mm auto 0;width:40mm"></div>
-            <div style="font-size:8pt">Firma</div>
-          </div>
-        </t>
-      </div>
-    </t>
-  </template>
-
-  <record id="action_liq_coupon_print_label_qr_big" model="ir.actions.report">
-    <field name="name">Etiqueta LIQ (QR) 60x50</field>
-    <field name="model">liquidation.coupon</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">grupol7_liquidacion_qr.liq_label_qr_doc_big</field>
-    <field name="report_file">grupol7_liquidacion_qr.liq_label_qr_doc_big</field>
-    <field name="paperformat_id" ref="grupol7_liquidacion_qr.paperformat_liq_label_60x50"/>
-    <field name="print_report_name">'Etiqueta_LIQ_QR_60x50_%s' % (object.name)</field>
-  </record>
-
-  <!-- Template: Code128 60x50 con fecha, usuario y firma -->
-  <template id="liq_label_code128_doc_big">
-    <t t-call="web.basic_layout">
-      <div class="page" style="width:60mm;height:50mm;box-sizing:border-box;padding:2mm;">
-        <t t-foreach="docs" t-as="o">
-          <div style="text-align:center;page-break-inside:avoid;display:inline-block;width:56mm;height:46mm">
-            <img t-att-src="'/report/barcode/Code128/' + ('LIQ/' + o.name) + '?width=520&amp;height=160'"
-                 style="width:52mm;height:16mm"/>
-            <div style="font-size:12pt;margin-top:1mm" t-esc="'LIQ/' + o.name"/>
-            <div style="font-size:10pt" t-esc="(o.product_id.display_name or '')[:48]"/>
-            <div style="font-size:12pt"><b t-esc="'$ %0.2f' % (o.clearance_price or 0.0)"/></div>
-
-            <div style="font-size:9pt;margin-top:1mm"
-                 t-esc="'Fec.: ' + (o.create_date.strftime('%d/%m/%Y') if o.create_date else '')"/>
-            <div style="font-size:9pt" t-esc="'Gen.: ' + (o.create_uid.name or '')"/>
-
-            <div style="border-top:1px solid #000;margin:3mm auto 0;width:40mm"></div>
-            <div style="font-size:8pt">Firma</div>
-          </div>
-        </t>
-      </div>
-    </t>
-  </template>
-
-  <record id="action_liq_coupon_print_label_code128_big" model="ir.actions.report">
-    <field name="name">Etiqueta LIQ (Code128) 60x50</field>
-    <field name="model">liquidation.coupon</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">grupol7_liquidacion_qr.liq_label_code128_doc_big</field>
-    <field name="report_file">grupol7_liquidacion_qr.liq_label_code128_doc_big</field>
-    <field name="paperformat_id" ref="grupol7_liquidacion_qr.paperformat_liq_label_60x50"/>
-    <field name="print_report_name">'Etiqueta_LIQ_Code128_60x50_%s' % (object.name)</field>
-  </record>
-
-
-  <!-- ========================= -->
-  <!-- Papel 205x105 mm (20.5x10.5 cm) -->
-  <record id="paperformat_liq_label_205x105" model="report.paperformat">
-    <field name="name">LIQ 205x105</field>
-    <field name="format">custom</field>
-    <field name="page_width">205</field>
-    <field name="page_height">105</field>
-    <field name="margin_top">5</field>
-    <field name="margin_bottom">5</field>
-    <field name="margin_left">6</field>
-    <field name="margin_right">6</field>
-    <field name="orientation">Landscape</field>
-  </record>
-
-  <!-- ============ Code128 x2 en la misma hoja ============ -->
-  <template id="liq_label_code128_205x105_double_doc">
-    <t t-call="web.basic_layout">
-      <t t-foreach="docs" t-as="o">
-        <div class="page" style="width:205mm;height:105mm;box-sizing:border-box;padding:6mm;">
-          <t t-set="code_text">'LIQ/' + o.name</t>
-          <t t-set="price_text">'$ %0.2f' % (o.clearance_price or 0.0)"></t>
-
-          <!-- Panel 1 (arriba) -->
-          <div style="height:48%;border-bottom:1px dashed #999;display:flex;flex-direction:column;justify-content:center;">
-            <img t-att-src="'/report/barcode/Code128/' + code_text + '?width=1000&amp;height=160'"
-                 style="width:100%;height:16mm;object-fit:contain;"/>
-            <div style="font-size:18pt;text-align:center;margin-top:2mm;" t-esc="code_text"/>
-            <div style="font-size:14pt;text-align:center;margin-top:1mm;" t-esc="o.product_id.display_name or ''"/>
-            <div style="font-size:18pt;text-align:center;margin-top:2mm;"><b t-esc="price_text"/></div>
-            <div style="font-size:10pt;text-align:center;margin-top:1mm;"
-                 t-esc="'Creado: %s por %s' % ((o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''), (o.create_uid and o.create_uid.name or ''))"/>
-            <div style="margin-top:3mm;display:flex;gap:8mm;justify-content:center;align-items:flex-end;">
-              <div style="width:70mm;border-top:1px solid #000;text-align:center;font-size:10pt;padding-top:1mm;">Firma</div>
-              <div style="width:40mm;border-top:1px solid #000;text-align:center;font-size:10pt;padding-top:1mm;">Fecha</div>
-            </div>
-          </div>
-
-          <!-- Panel 2 (abajo) -->
-          <div style="height:48%;display:flex;flex-direction:column;justify-content:center;">
-            <img t-att-src="'/report/barcode/Code128/' + code_text + '?width=1000&amp;height=160'"
-                 style="width:100%;height:16mm;object-fit:contain;"/>
-            <div style="font-size:18pt;text-align:center;margin-top:2mm;" t-esc="code_text"/>
-            <div style="font-size:14pt;text-align:center;margin-top:1mm;" t-esc="o.product_id.display_name or ''"/>
-            <div style="font-size:18pt;text-align:center;margin-top:2mm;"><b t-esc="price_text"/></div>
-            <div style="font-size:10pt;text-align:center;margin-top:1mm;"
-                 t-esc="'Creado: %s por %s' % ((o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''), (o.create_uid and o.create_uid.name or ''))"/>
-            <div style="margin-top:3mm;display:flex;gap:8mm;justify-content:center;align-items:flex-end;">
-              <div style="width:70mm;border-top:1px solid #000;text-align:center;font-size:10pt;padding-top:1mm;">Firma</div>
-              <div style="width:40mm;border-top:1px solid #000;text-align:center;font-size:10pt;padding-top:1mm;">Fecha</div>
-            </div>
-          </div>
-        </div>
-      </t>
-    </t>
-  </template>
-
-  <record id="action_liq_coupon_print_label_code128_205x105_double" model="ir.actions.report">
-    <field name="name">Etiqueta LIQ 205x105 (Code128 x2)</field>
-    <field name="model">liquidation.coupon</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">grupol7_liquidacion_qr.liq_label_code128_205x105_double_doc</field>
-    <field name="report_file">grupol7_liquidacion_qr.liq_label_code128_205x105_double_doc</field>
-    <field name="paperformat_id" ref="grupol7_liquidacion_qr.paperformat_liq_label_205x105"/>
-    <field name="print_report_name">'Etiqueta_LIQ_205x105_Code128_%s' % (object.name)</field>
-  </record>
-
-  <!-- ============ QR x2 en la misma hoja ============ -->
-  <template id="liq_label_qr_205x105_double_doc">
-    <t t-call="web.basic_layout">
-      <t t-foreach="docs" t-as="o">
-        <div class="page" style="width:205mm;height:105mm;box-sizing:border-box;padding:6mm;">
-          <t t-set="code_text">'LIQ/' + o.name</t>
-          <t t-set="price_text">'$ %0.2f' % (o.clearance_price or 0.0)"></t>
-
-          <!-- Panel 1 -->
-          <div style="height:48%;border-bottom:1px dashed #999;display:grid;grid-template-columns:45mm 1fr;gap:6mm;align-items:center;">
-            <img t-att-src="'/report/barcode/QR/' + code_text + '?width=420&amp;height=420'"
-                 style="width:45mm;height:45mm;"/>
-            <div>
-              <div style="font-size:18pt;margin-bottom:2mm;" t-esc="code_text"/>
-              <div style="font-size:14pt;" t-esc="o.product_id.display_name or ''"/>
-              <div style="font-size:18pt;margin-top:2mm;"><b t-esc="price_text"/></div>
-              <div style="font-size:10pt;margin-top:1mm;"
-                   t-esc="'Creado: %s por %s' % ((o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''), (o.create_uid and o.create_uid.name or ''))"/>
-              <div style="margin-top:4mm;display:flex;gap:8mm;align-items:flex-end;">
-                <div style="width:70mm;border-top:1px solid #000;text-align:center;font-size:10pt;padding-top:1mm;">Firma</div>
-                <div style="width:40mm;border-top:1px solid #000;text-align:center;font-size:10pt;padding-top:1mm;">Fecha</div>
+              <!-- Línea y textos Fecha / Firma -->
+              <div style="margin-top:8px; border-top:1px solid #000;"></div>
+              <div style="margin-top:2px; font-size:8px; display:flex; justify-content:space-between;">
+                <span>Fecha</span>
+                <span>Firma</span>
               </div>
             </div>
           </div>
-
-          <!-- Panel 2 -->
-          <div style="height:48%;display:grid;grid-template-columns:45mm 1fr;gap:6mm;align-items:center;">
-            <img t-att-src="'/report/barcode/QR/' + code_text + '?width=420&amp;height=420'"
-                 style="width:45mm;height:45mm;"/>
-            <div>
-              <div style="font-size:18pt;margin-bottom:2mm;" t-esc="code_text"/>
-              <div style="font-size:14pt;" t-esc="o.product_id.display_name or ''"/>
-              <div style="font-size:18pt;margin-top:2mm;"><b t-esc="price_text"/></div>
-              <div style="font-size:10pt;margin-top:1mm;"
-                   t-esc="'Creado: %s por %s' % ((o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''), (o.create_uid and o.create_uid.name or ''))"/>
-              <div style="margin-top:4mm;display:flex;gap:8mm;align-items:flex-end;">
-                <div style="width:70mm;border-top:1px solid #000;text-align:center;font-size:10pt;padding-top:1mm;">Firma</div>
-                <div style="width:40mm;border-top:1px solid #000;text-align:center;font-size:10pt;padding-top:1mm;">Fecha</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </t>
       </t>
-    </t>
-  </template>
+    </template>
 
-  <record id="action_liq_coupon_print_label_qr_205x105_double" model="ir.actions.report">
-    <field name="name">Etiqueta LIQ 205x105 (QR x2)</field>
-    <field name="model">liquidation.coupon</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">grupol7_liquidacion_qr.liq_label_qr_205x105_double_doc</field>
-    <field name="report_file">grupol7_liquidacion_qr.liq_label_qr_205x105_double_doc</field>
-    <field name="paperformat_id" ref="grupol7_liquidacion_qr.paperformat_liq_label_205x105"/>
-    <field name="print_report_name">'Etiqueta_LIQ_205x105_QR_%s' % (object.name)</field>
-  </record>
-
+  </data>
 </odoo>
