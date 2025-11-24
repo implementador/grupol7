@@ -1,124 +1,105 @@
 <odoo>
 
-  <!-- Plantilla principal del reporte de etiquetas QR (2 por hoja) -->
-  <template id="report_liq_coupon_qr_label2">
-    <t t-name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2">
-      <t t-call="web.html_container">
-
-        <style type="text/css">
-          /* Contenedor general de la hoja */
-          .g7_coupon_sheet {
-            width: 10cm;
-            margin: 0 auto;
-            font-family: Arial, sans-serif;
-            font-size: 9pt;
-          }
-
-          /* Cada etiqueta: 10 x 20 cm, sin bordes raros */
-          .g7_coupon_label {
-            width: 10cm;
-            height: 20cm;
-            box-sizing: border-box;
-            padding: 0.3cm;
-            page-break-inside: avoid;
-          }
-
-          /* Separador entre la etiqueta 1 y la 2 */
-          .g7_coupon_label + .g7_coupon_label {
-            border-top: 1px dotted #000;
-          }
-
-          .g7_coupon_row {
-            display: table;
-            width: 100%;
-          }
-
-          .g7_coupon_qr_cell,
-          .g7_coupon_text_cell {
-            display: table-cell;
-            vertical-align: top;
-          }
-
-          .g7_coupon_qr_cell {
-            width: 4cm;
-          }
-
-          .g7_coupon_qr_cell img {
-            width: 4cm;
-            height: 4cm;
-          }
-
-          .g7_coupon_text_code {
-            font-weight: bold;
-          }
-
-          .g7_coupon_text_product {
-            font-size: 8pt;
-          }
-
-          .g7_coupon_text_price {
-            margin-top: 0.2cm;
-            font-weight: bold;
-            font-size: 11pt;
-          }
-        </style>
-
-        <div class="g7_coupon_sheet">
-          <t t-foreach="docs" t-as="o">
-
-            <!-- Primera etiqueta -->
-            <div class="g7_coupon_label">
-              <div class="g7_coupon_row">
-                <div class="g7_coupon_qr_cell">
-                  <!-- QR: se ve como imagen -->
-                  <img t-att-src="'/report/barcode/?type=QR&amp;value=' + (o.name or '') + '&amp;width=200&amp;height=200'"
-                       alt="QR"/>
-                </div>
-                <div class="g7_coupon_text_cell">
-                  <div class="g7_coupon_text_code" t-esc="o.name or ''"/>
-                  <div class="g7_coupon_text_product" t-esc="o.product_id.display_name or ''"/>
-                  <div class="g7_coupon_text_price">
-                    <span>$ </span>
-                    <span t-esc="'%0.2f' % (o.clearance_price_tax or 0.0)"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Segunda etiqueta (idéntica) -->
-            <div class="g7_coupon_label">
-              <div class="g7_coupon_row">
-                <div class="g7_coupon_qr_cell">
-                  <img t-att-src="'/report/barcode/?type=QR&amp;value=' + (o.name or '') + '&amp;width=200&amp;height=200'"
-                       alt="QR"/>
-                </div>
-                <div class="g7_coupon_text_cell">
-                  <div class="g7_coupon_text_code" t-esc="o.name or ''"/>
-                  <div class="g7_coupon_text_product" t-esc="o.product_id.display_name or ''"/>
-                  <div class="g7_coupon_text_price">
-                    <span>$ </span>
-                    <span t-esc="'%0.2f' % (o.clearance_price_tax or 0.0)"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </t>
-        </div>
-
-      </t>
-    </t>
-  </template>
-
-  <!-- Acción del reporte que usa la plantilla anterior -->
+  <!-- Acción del reporte PDF -->
   <report
       id="action_liq_coupon_qr_label2"
       model="liquidation.coupon"
-      string="Etiquetas Cupón QR (10x20, 2 por hoja)"
+      string="Cupón de liquidación (QR)"
       report_type="qweb-pdf"
       name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
       file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-      print_report_name="'Cupon_' + (object.name or '')"
+      print_report_name="'QR_' + (object and object[0].name or '')"
   />
+
+  <!-- Plantilla QWeb del reporte -->
+  <template id="report_liq_coupon_qr_label2" t-name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2">
+    <t t-call="web.html_container">
+      <t t-set="docs" t-value="docs"/>
+
+      <style type="text/css">
+        @page {
+          /* 10 cm x 20 cm */
+          size: 100mm 200mm;
+          margin: 4mm;
+        }
+
+        .g7_label_page {
+          width: 92mm;
+          height: 192mm;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between; /* una etiqueta arriba y otra abajo */
+          font-family: Arial, sans-serif;
+        }
+
+        .g7_coupon_label {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+        }
+
+        .g7_coupon_qr {
+          width: 35mm;
+          height: 35mm;
+          margin-right: 4mm;
+        }
+
+        .g7_coupon_text {
+          font-size: 9pt;
+        }
+
+        .g7_coupon_name {
+          font-weight: bold;
+        }
+
+        .g7_coupon_product {
+          font-size: 8pt;
+        }
+
+        .g7_coupon_price {
+          margin-top: 2mm;
+          font-size: 10pt;
+          font-weight: bold;
+        }
+      </style>
+
+      <!-- Una página por cupón -->
+      <t t-foreach="docs" t-as="o">
+        <div class="g7_label_page">
+
+          <!-- Primera etiqueta (arriba) -->
+          <div class="g7_coupon_label">
+            <img t-att-src="'/report/barcode/QR/%s' % (o.name or '')"
+                 class="g7_coupon_qr"/>
+            <div class="g7_coupon_text">
+              <div class="g7_coupon_name" t-esc="o.name"/>
+              <div class="g7_coupon_product" t-esc="o.product_id.display_name"/>
+              <div class="g7_coupon_price">
+                <span>$ </span>
+                <span t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Segunda etiqueta (abajo) -->
+          <div class="g7_coupon_label">
+            <img t-att-src="'/report/barcode/QR/%s' % (o.name or '')"
+                 class="g7_coupon_qr"/>
+            <div class="g7_coupon_text">
+              <div class="g7_coupon_name" t-esc="o.name"/>
+              <div class="g7_coupon_product" t-esc="o.product_id.display_name"/>
+              <div class="g7_coupon_price">
+                <span>$ </span>
+                <span t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- salto de página para el siguiente cupón -->
+          <div style="page-break-after: always;"></div>
+        </div>
+      </t>
+    </t>
+  </template>
 
 </odoo>
