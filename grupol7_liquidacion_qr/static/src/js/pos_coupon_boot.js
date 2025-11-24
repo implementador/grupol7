@@ -157,7 +157,7 @@
   }
 
   // -------------------------------------------------------------
-  // Helpers para detectar PdV permitidos en el registro del cupón
+  // Helpers PdV permitidos
   // -------------------------------------------------------------
   function extractMany2ManyIds(value) {
     if (!Array.isArray(value) || !value.length) return null;
@@ -198,6 +198,41 @@
     }
 
     return [];
+  }
+
+  async function fetchPosConfig(posConfigId) {
+    const payload = {
+      jsonrpc: "2.0",
+      method: "call",
+      params: {
+        model: "pos.config",
+        method: "read",
+        args: [[posConfigId]],
+        kwargs: { fields: ["id", "branch_id"] },
+      },
+      id: Date.now(),
+    };
+
+    const resp = await fetch("/web/dataset/call_kw/pos.config/read", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+      throw new Error("HTTP " + resp.status);
+    }
+    const json = await resp.json();
+    if (json.error) {
+      const msg =
+        (json.error.data && json.error.data.message) ||
+        json.error.message ||
+        "Error RPC pos.config.read";
+      throw new Error(msg);
+    }
+    const rows = json.result || [];
+    return rows.length ? rows[0] : null;
   }
 
   // -------------------------------------------------------------
@@ -391,14 +426,33 @@
         return;
       }
 
-      // -------- Validar PdV permitidos (cualquier campo M2M de PdV) --------
+      // -------- Validar PdV permitidos --------
       const allowedIds = getAllowedPosIds(coupon);
-      LOG("PdV actual:", posConfigId, "PdV permitidos detectados:", allowedIds);
+      LOG("PdV actual (config_id):", posConfigId, "PdV permitidos detectados:", allowedIds);
 
-      if (posConfigId && allowedIds.length && allowedIds.indexOf(posConfigId) === -1) {
-        msg.textContent = "Este cupón no es válido para este Punto de Venta.";
-        msg.style.color = "red";
-        return;
+      if (posConfigId && allowedIds.length) {
+        let branchId = 0;
+        try {
+          const cfg = await fetchPosConfig(posConfigId);
+          if (cfg && Array.isArray(cfg.branch_id) && cfg.branch_id.length) {
+            branchId = cfg.branch_id[0];
+          } else if (cfg && typeof cfg.branch_id === "number") {
+            branchId = cfg.branch_id;
+          }
+          LOG("branch_id del POS:", branchId);
+        } catch (e) {
+          console.warn("[G7][POS-Coupon][POS] No se pudo leer pos.config:", e);
+        }
+
+        const matchConfig = allowedIds.indexOf(posConfigId) !== -1;
+        const matchBranch = branchId && allowedIds.indexOf(branchId) !== -1;
+
+        if (!matchConfig && !matchBranch) {
+          msg.textContent =
+            "Este cupón no es válido para este Punto de Venta.";
+          msg.style.color = "red";
+          return;
+        }
       }
 
       // Cupón válido: cerramos ventana y aplicamos sobre la orden
