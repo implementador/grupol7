@@ -12,11 +12,11 @@
           style="width:90px; height:90px;"/>
       </div>
       <div class="g7-liq-info">
-        <!-- Código del cupón (ya sin caracteres especiales) -->
+        <!-- Código del cupón -->
         <div class="g7-liq-code" t-esc="o.name or ''"/>
         <!-- Nombre del producto -->
         <div class="g7-liq-product" t-esc="o.product_id.display_name or ''"/>
-        <!-- Precio con IVA -->
+        <!-- Precio con IVA (clearance_price) -->
         <div class="g7-liq-price">
           <span>$ </span>
           <span t-esc="'%0.2f' % (precio or 0.0)"/>
@@ -28,26 +28,8 @@
   <!-- Reporte: 2 etiquetas por página -->
   <template id="report_liq_coupons_labels">
     <t t-call="web.html_container">
-      <t t-foreach="docs" t-as="o">
-        <div class="page">
-          <table class="g7-liq-label-table">
-            <tr>
-              <td class="g7-liq-label">
-                <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
-              </td>
-              <td class="g7-liq-label">
-                <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </t>
-    </t>
-  </template>
 
-  <!-- Estilos del reporte (sin fecha ni firma) -->
-  <template id="report_liq_coupons_labels_styles" inherit_id="web.external_layout">
-    <xpath expr="//head" position="inside">
+      <!-- Estilos embebidos (SIN heredar external_layout) -->
       <style type="text/css">
         .g7-liq-label-table {
           width: 100%;
@@ -82,7 +64,22 @@
           font-weight: bold;
         }
       </style>
-    </xpath>
+
+      <t t-foreach="docs" t-as="o">
+        <div class="page">
+          <table class="g7-liq-label-table">
+            <tr>
+              <td class="g7-liq-label">
+                <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
+              </td>
+              <td class="g7-liq-label">
+                <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </t>
+    </t>
   </template>
 
 </odoo>
