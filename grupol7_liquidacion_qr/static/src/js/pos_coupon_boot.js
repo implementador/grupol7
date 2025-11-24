@@ -159,80 +159,59 @@
   // -------------------------------------------------------------
   // Helpers PdV permitidos
   // -------------------------------------------------------------
-  function extractMany2ManyIds(value) {
-    if (!Array.isArray(value) || !value.length) return null;
+  function extractIdsFromO2MOrM2M(value) {
+    if (!Array.isArray(value) || !value.length) return [];
 
-    // Formato típico: [[id, "Nombre"], [id2, "Nombre2"], ...]
-    if (Array.isArray(value[0]) && value[0].length) {
-      const ids = value
+    // Many2many clásico: [[id, "Nombre"], ...]
+    if (Array.isArray(value[0])) {
+      return value
         .map((v) => (Array.isArray(v) ? v[0] : null))
         .filter((id) => typeof id === "number");
-      return ids.length ? ids : null;
     }
 
-    // Por si viniera como [id1, id2, ...]
+    // Many2one estilo [id, "Nombre"]
     if (typeof value[0] === "number") {
-      return value;
+      return [value[0]];
     }
 
-    return null;
+    // Lista simple [id1, id2, ...]
+    return value.filter((v) => typeof v === "number");
   }
 
   function getAllowedPosIds(coupon) {
     if (!coupon || typeof coupon !== "object") return [];
 
-    // 1) Intentar con el nombre clásico pos_ids
+    // 1) Campos más probables
     if (coupon.pos_ids) {
-      const ids = extractMany2ManyIds(coupon.pos_ids);
-      if (ids) return ids;
+      const ids = extractIdsFromO2MOrM2M(coupon.pos_ids);
+      if (ids.length) return ids;
+    }
+    if (coupon.pos_config_id) {
+      const ids = extractIdsFromO2MOrM2M(coupon.pos_config_id);
+      if (ids.length) return ids;
+    }
+    if (coupon.pos_config_ids) {
+      const ids = extractIdsFromO2MOrM2M(coupon.pos_config_ids);
+      if (ids.length) return ids;
     }
 
-    // 2) Buscar el primer campo que "parezca" Many2many (Studio, etc.)
+    // 2) Buscar algún campo que "huela" a POS config (por si fue creado con Studio)
     for (const key in coupon) {
       if (!Object.prototype.hasOwnProperty.call(coupon, key)) continue;
-      const ids = extractMany2ManyIds(coupon[key]);
-      if (ids) {
-        LOG("Detectado campo PdV para cupón:", key, "=>", ids);
-        return ids;
+      const lower = key.toLowerCase();
+      if (
+        lower.includes("pos") &&
+        (lower.includes("config") || lower.includes("pdv"))
+      ) {
+        const ids = extractIdsFromO2MOrM2M(coupon[key]);
+        if (ids.length) {
+          LOG("Detectado campo PdV para cupón:", key, "=>", ids);
+          return ids;
+        }
       }
     }
 
     return [];
-  }
-
-  async function fetchPosConfig(posConfigId) {
-    const payload = {
-      jsonrpc: "2.0",
-      method: "call",
-      params: {
-        model: "pos.config",
-        method: "read",
-        args: [[posConfigId]],
-        kwargs: { fields: ["id", "branch_id"] },
-      },
-      id: Date.now(),
-    };
-
-    const resp = await fetch("/web/dataset/call_kw/pos.config/read", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(payload),
-    });
-
-    if (!resp.ok) {
-      throw new Error("HTTP " + resp.status);
-    }
-    const json = await resp.json();
-    if (json.error) {
-      const msg =
-        (json.error.data && json.error.data.message) ||
-        json.error.message ||
-        "Error RPC pos.config.read";
-      throw new Error(msg);
-    }
-    const rows = json.result || [];
-    return rows.length ? rows[0] : null;
   }
 
   // -------------------------------------------------------------
@@ -426,30 +405,27 @@
         return;
       }
 
-      // -------- Validar PdV permitidos --------
+      // -------- Validar PdV permitidos (solo por config_id) --------
       const allowedIds = getAllowedPosIds(coupon);
-      LOG("PdV actual (config_id):", posConfigId, "PdV permitidos detectados:", allowedIds);
+      LOG(
+        "PdV actual (config_id):",
+        posConfigId,
+        "PdV permitidos detectados:",
+        allowedIds
+      );
 
       if (posConfigId && allowedIds.length) {
-        let branchId = 0;
-        try {
-          const cfg = await fetchPosConfig(posConfigId);
-          if (cfg && Array.isArray(cfg.branch_id) && cfg.branch_id.length) {
-            branchId = cfg.branch_id[0];
-          } else if (cfg && typeof cfg.branch_id === "number") {
-            branchId = cfg.branch_id;
-          }
-          LOG("branch_id del POS:", branchId);
-        } catch (e) {
-          console.warn("[G7][POS-Coupon][POS] No se pudo leer pos.config:", e);
-        }
+        const numericAllowed = allowedIds.map((x) => parseInt(x, 10)).filter(Boolean);
+        const okHere = numericAllowed.includes(posConfigId);
 
-        const matchConfig = allowedIds.indexOf(posConfigId) !== -1;
-        const matchBranch = branchId && allowedIds.indexOf(branchId) !== -1;
-
-        if (!matchConfig && !matchBranch) {
+        if (!okHere) {
           msg.textContent =
-            "Este cupón no es válido para este Punto de Venta.";
+            "Este cupón no es válido para este Punto de Venta.\n" +
+            "(POS actual: " +
+            posConfigId +
+            ", permitidos: " +
+            numericAllowed.join(", ") +
+            ")";
           msg.style.color = "red";
           return;
         }
