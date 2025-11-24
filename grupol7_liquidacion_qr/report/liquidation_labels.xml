@@ -2,17 +2,40 @@
 <odoo>
   <data>
 
-    <!-- Reporte: 2 etiquetas por cupón, una debajo de otra -->
+    <!-- Plantilla: 2 etiquetas por cupón, una debajo de otra -->
     <template id="report_liq_coupon_qr_label2">
-      <t t-call="web.external_layout">
-        <div class="page" style="margin:0; padding:0;">
-          <t t-foreach="docs" t-as="o">
+      <!-- Odoo espera un <main> para poder generar el PDF -->
+      <main class="o_report_layout" style="margin:0; padding:0;">
+        <t t-foreach="docs" t-as="o">
+          <!-- Una página por cupón -->
+          <div class="page" style="margin:0; padding:0;">
 
-            <!-- PRIMERA ETIQUETA (10 x ~9.5 cm) -->
-            <div style="width:100mm; height:95mm; margin:0 auto 10mm auto; padding:0;">
+            <!-- PRIMERA ETIQUETA (aprox 100mm x 90mm) -->
+            <div style="width:100mm; height:90mm; margin:0 auto; padding:0;">
+              <div style="display:flex; flex-direction:row; align-items:flex-start;">
+                <!-- QR: solo el código del cupón -->
+                <div style="width:38mm;">
+                  <img
+                    t-att-src="'/report/barcode/QR/%s' % ((o.name or '').strip())"
+                    style="width:36mm; height:36mm;"
+                  />
+                </div>
+                <!-- Texto -->
+                <div style="padding-left:4mm; font-size:9pt; line-height:1.2;">
+                  <div style="font-weight:bold; font-size:9pt;" t-esc="o.name"/>
+                  <div style="font-size:8pt;" t-esc="o.product_id.display_name or ''"/>
+                  <div style="margin-top:2mm; font-weight:bold; font-size:10pt;">
+                    <span>$ </span>
+                    <span t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SEGUNDA ETIQUETA (misma info, separada hacia abajo) -->
+            <div style="width:100mm; height:90mm; margin:15mm auto 0 auto; padding:0;">
               <div style="display:flex; flex-direction:row; align-items:flex-start;">
                 <div style="width:38mm;">
-                  <!-- QR solo con el código del cupón -->
                   <img
                     t-att-src="'/report/barcode/QR/%s' % ((o.name or '').strip())"
                     style="width:36mm; height:36mm;"
@@ -29,31 +52,9 @@
               </div>
             </div>
 
-            <!-- SEGUNDA ETIQUETA (misma info) -->
-            <div style="width:100mm; height:95mm; margin:0 auto 10mm auto; padding:0;">
-              <div style="display:flex; flex-direction:row; align-items:flex-start;">
-                <div style="width:38mm;">
-                  <img
-                    t-att-src="'/report/barcode/QR/%s' % ((o.name or '').strip())"
-                    style="width:36mm; height:36mm;"
-                  />
-                </div>
-                <div style="padding-left:4mm; font-size:9pt; line-height:1.2;">
-                  <div style="font-weight:bold; font-size:9pt;" t-esc="o.name"/>
-                  <div style="font-size:8pt;" t-esc="o.product_id.display_name or ''"/>
-                  <div style="margin-top:2mm; font-weight:bold; font-size:10pt;">
-                    <span>$ </span>
-                    <span t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Salto de página después de las 2 etiquetas -->
-            <div style="page-break-after:always;"/>
-          </t>
-        </div>
-      </t>
+          </div>
+        </t>
+      </main>
     </template>
 
     <!-- Acción del reporte -->
