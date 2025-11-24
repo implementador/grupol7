@@ -1,10 +1,10 @@
 /** @odoo-module **/
 /* G7_PROBE_COUPON_ASSET (POS) */
 (function () {
-  const LOG = (...args) => console.log('[G7][POS-Coupon][POS]', ...args);
+  const LOG = (...args) => console.log("[G7][POS-Coupon][POS]", ...args);
 
   // -------------------------------------------------------------
-  // Helpers para acceder al POS y al producto
+  // Helpers POS
   // -------------------------------------------------------------
   function findPosService() {
     const o = window.odoo;
@@ -41,6 +41,9 @@
     return null;
   }
 
+  // -------------------------------------------------------------
+  // Aplicar cupón a la orden actual
+  // -------------------------------------------------------------
   function applyCouponToCurrentOrder(coupon) {
     const pos = findPosService();
     if (!pos) {
@@ -71,11 +74,17 @@
       return;
     }
 
-    const price =
+    // Primero intentamos usar el precio con IVA (public_clearance_price)
+    const basePrice =
+      coupon.public_clearance_price ||
+      coupon.clearance_price ||
       coupon.price_liquidation ||
       coupon.liquidation_price ||
       coupon.price ||
       0;
+
+    // Redondear a 2 decimales
+    const price = Math.round((Number(basePrice) + Number.EPSILON) * 100) / 100;
 
     const product = findProductInPos(pos, productId);
     if (!product) {
@@ -87,7 +96,14 @@
       return;
     }
 
-    LOG("Aplicando cupón sobre producto", productId, "precio", price);
+    LOG(
+      "Aplicando cupón sobre producto",
+      productId,
+      "precio base",
+      basePrice,
+      "precio usado",
+      price
+    );
 
     try {
       order.add_product(product, { quantity: 1, price: price });
@@ -128,7 +144,10 @@
         lastLine.set_note(note);
       }
     } catch (e) {
-      console.warn("[G7][POS-Coupon][POS] No se pudo poner nota en la línea:", e);
+      console.warn(
+        "[G7][POS-Coupon][POS] No se pudo poner nota en la línea:",
+        e
+      );
     }
 
     const displayName =
@@ -148,7 +167,7 @@
   }
 
   // -------------------------------------------------------------
-  // RPC helper: buscar cupón por código (campo name)
+  // RPC helper: buscar cupón por código
   // -------------------------------------------------------------
   async function searchCouponByCode(code) {
     const payload = {
@@ -193,7 +212,7 @@
   }
 
   // -------------------------------------------------------------
-  // Ventana para capturar / escanear código de cupón
+  // Ventana de captura de cupón
   // -------------------------------------------------------------
   function openCouponDialog() {
     LOG("Abriendo ventana de Cupón de liquidación");
@@ -301,7 +320,8 @@
       msg.style.color = "#333";
 
       const urlParams = new URLSearchParams(window.location.search || "");
-      const posConfigId = parseInt(urlParams.get("config_id") || "0", 10) || 0;
+      const posConfigId =
+        parseInt(urlParams.get("config_id") || "0", 10) || 0;
       LOG("PdV actual (config_id):", posConfigId);
 
       let records = [];
@@ -321,7 +341,7 @@
       }
 
       const coupon = records[0];
-      LOG("Campos del cupón:", coupon);
+      LOG("Cupón encontrado:", coupon);
 
       // -------- Validar que NO esté canjeado --------
       const redeemedFlag =
@@ -339,52 +359,28 @@
         return;
       }
 
-      // -------- PdV permitidos: intentamos varios nombres de campo --------
-      const pdvFieldCandidates = [
-        "pos_allowed_ids",  // el que muestras en Studio
-        "pos_ids",
-        "pdv_allowed_ids",
-        "pdv_ids",
-      ];
+      // -------- Validar PdV permitidos --------
+      const allowedField = coupon.pos_allowed_ids || coupon.pos_ids || [];
+      LOG("Campos del cupón para PdV:", allowedField);
 
-      let raw = null;
-      let usedFieldName = null;
-      for (const fname of pdvFieldCandidates) {
-        if (Object.prototype.hasOwnProperty.call(coupon, fname)) {
-          raw = coupon[fname];
-          usedFieldName = fname;
-          break;
+      if (posConfigId && Array.isArray(allowedField) && allowedField.length) {
+        const allowedIds = allowedField.map(function (p) {
+          return Array.isArray(p) ? p[0] : p;
+        });
+        LOG("PdV permitidos detectados:", allowedIds);
+        if (!allowedIds.includes(posConfigId)) {
+          msg.textContent =
+            "Este cupón no es válido para este Punto de Venta.";
+          msg.style.color = "red";
+          return;
         }
+      } else {
+        LOG(
+          "Lista vacía o sin campo pos_allowed_ids/pos_ids: se permite en todos los PdV."
+        );
       }
 
-      let allowedIds = [];
-      if (raw != null) {
-        if (Array.isArray(raw)) {
-          if (raw.length && Array.isArray(raw[0])) {
-            allowedIds = raw.map((p) => p[0]);
-          } else {
-            allowedIds = raw.slice();
-          }
-        } else if (typeof raw === "number") {
-          allowedIds = [raw];
-        }
-      }
-
-      LOG(
-        "PdV permitidos encontrados en campo",
-        usedFieldName,
-        "=>",
-        allowedIds
-      );
-
-      // Si HAY PdV configurados, validar que el actual esté en la lista.
-      if (posConfigId && allowedIds.length && !allowedIds.includes(posConfigId)) {
-        msg.textContent = "Este cupón no es válido para este Punto de Venta.";
-        msg.style.color = "red";
-        return;
-      }
-
-      // Cupón válido: cerramos ventana y aplicamos sobre la orden
+      // Cupón válido
       closeDialog();
       applyCouponToCurrentOrder(coupon);
     });
@@ -396,7 +392,7 @@
   }
 
   // -------------------------------------------------------------
-  // Parchear el botón del POS (Nota de cliente -> Cupón QR)
+  // Parchear botón del POS
   // -------------------------------------------------------------
   function patchButton() {
     const holder = document.querySelector(".control-buttons");

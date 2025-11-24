@@ -89,4 +89,17 @@
 
   <!-- Wizard: Generar cupones -->
 
+
+  <!-- Campo precio liquidación con IVA debajo de clearance_price -->
+  <record id="view_liq_coupon_form_public_price" model="ir.ui.view">
+    <field name="name">liquidation.coupon.form.public_price</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="inherit_id" ref="grupol7_liquidacion_qr.view_liq_coupon_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='clearance_price']" position="after">
+        <field name="public_clearance_price" readonly="1"/>
+      </xpath>
+    </field>
+  </record>
+
 </odoo>
