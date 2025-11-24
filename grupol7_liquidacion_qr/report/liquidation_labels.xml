@@ -1,71 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <data>
 
-    <!-- Plantilla: 2 etiquetas por cupón, una debajo de otra -->
-    <template id="report_liq_coupon_qr_label2">
-      <!-- Odoo espera un <main> para poder generar el PDF -->
-      <main class="o_report_layout" style="margin:0; padding:0;">
-        <t t-foreach="docs" t-as="o">
-          <!-- Una página por cupón -->
-          <div class="page" style="margin:0; padding:0;">
+  <!-- Estilos específicos para las etiquetas 10x20 (2 por hoja, una debajo de otra) -->
+  <template id="report_liq_coupons_labels_styles" inherit_id="web.external_layout">
+    <xpath expr="//head" position="inside">
+      <style type="text/css">
+        /* Hoja de 10x20 cm centrada */
+        .g7_coupon_page {
+          width: 100mm;        /* 10 cm */
+          margin: 0 auto;
+        }
 
-            <!-- PRIMERA ETIQUETA (aprox 100mm x 90mm) -->
-            <div style="width:100mm; height:90mm; margin:0 auto; padding:0;">
-              <div style="display:flex; flex-direction:row; align-items:flex-start;">
-                <!-- QR: solo el código del cupón -->
-                <div style="width:38mm;">
-                  <img
-                    t-att-src="'/report/barcode/QR/%s' % ((o.name or '').strip())"
-                    style="width:36mm; height:36mm;"
-                  />
-                </div>
-                <!-- Texto -->
-                <div style="padding-left:4mm; font-size:9pt; line-height:1.2;">
-                  <div style="font-weight:bold; font-size:9pt;" t-esc="o.name"/>
-                  <div style="font-size:8pt;" t-esc="o.product_id.display_name or ''"/>
-                  <div style="margin-top:2mm; font-weight:bold; font-size:10pt;">
-                    <span>$ </span>
-                    <span t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/>
-                  </div>
-                </div>
+        /* Cada etiqueta ocupa ~9 cm de alto, con 1 cm de separación */
+        .g7_coupon_label {
+          width: 100mm;
+          height: 90mm;
+          margin: 0 0 10mm 0;  /* separación vertical entre las dos etiquetas */
+          display: flex;
+          flex-direction: row;
+          font-size: 9pt;
+        }
+
+        .g7_coupon_qr {
+          width: 40mm;
+        }
+
+        .g7_coupon_qr img {
+          width: 40mm;
+          height: 40mm;
+        }
+
+        .g7_coupon_info {
+          padding-left: 3mm;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+        }
+
+        .g7_coupon_code {
+          font-weight: bold;
+          margin-bottom: 1mm;
+        }
+
+        .g7_coupon_product {
+          max-width: 55mm;
+        }
+
+        .g7_coupon_price {
+          margin-top: 3mm;
+          font-weight: bold;
+        }
+      </style>
+    </xpath>
+  </template>
+
+  <!-- Reporte: 2 etiquetas por cupón, una debajo de otra -->
+  <template id="report_liq_coupon_qr_label2">
+    <!-- IMPORTANTE: usamos web.external_layout para que exista <main> y wkhtmltopdf sea feliz -->
+    <t t-call="web.external_layout">
+      <t t-foreach="docs" t-as="o">
+        <div class="g7_coupon_page">
+
+          <!-- Etiqueta 1 -->
+          <div class="g7_coupon_label">
+            <div class="g7_coupon_qr">
+              <!-- QR: solo el código del cupón (letras y números) -->
+              <img t-att-src="'/report/barcode/?type=QR&value=%s&width=256&height=256' % (o.name or '')"/>
+            </div>
+            <div class="g7_coupon_info">
+              <div class="g7_coupon_code">
+                <span t-esc="o.name"/>
+              </div>
+              <div class="g7_coupon_product">
+                <span t-esc="o.product_id.display_name"/>
+              </div>
+              <div class="g7_coupon_price">
+                <span>$ </span>
+                <span t-esc="'%0.2f' % (o.public_clearance_price or 0.0)"/>
               </div>
             </div>
-
-            <!-- SEGUNDA ETIQUETA (misma info, separada hacia abajo) -->
-            <div style="width:100mm; height:90mm; margin:15mm auto 0 auto; padding:0;">
-              <div style="display:flex; flex-direction:row; align-items:flex-start;">
-                <div style="width:38mm;">
-                  <img
-                    t-att-src="'/report/barcode/QR/%s' % ((o.name or '').strip())"
-                    style="width:36mm; height:36mm;"
-                  />
-                </div>
-                <div style="padding-left:4mm; font-size:9pt; line-height:1.2;">
-                  <div style="font-weight:bold; font-size:9pt;" t-esc="o.name"/>
-                  <div style="font-size:8pt;" t-esc="o.product_id.display_name or ''"/>
-                  <div style="margin-top:2mm; font-weight:bold; font-size:10pt;">
-                    <span>$ </span>
-                    <span t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
-        </t>
-      </main>
-    </template>
 
-    <!-- Acción del reporte -->
-    <report
-        id="action_liq_coupon_qr_label2"
-        model="liquidation.coupon"
-        string="Etiquetas de cupones de liquidación (QR)"
-        report_type="qweb-pdf"
-        name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-        file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-        print_report_name="'Cupones_QR_%s' % (object.name or '')"
-    />
-  </data>
+          <!-- Etiqueta 2 (idéntica, debajo) -->
+          <div class="g7_coupon_label">
+            <div class="g7_coupon_qr">
+              <img t-att-src="'/report/barcode/?type=QR&value=%s&width=256&height=256' % (o.name or '')"/>
+            </div>
+            <div class="g7_coupon_info">
+              <div class="g7_coupon_code">
+                <span t-esc="o.name"/>
+              </div>
+              <div class="g7_coupon_product">
+                <span t-esc="o.product_id.display_name"/>
+              </div>
+              <div class="g7_coupon_price">
+                <span>$ </span>
+                <span t-esc="'%0.2f' % (o.public_clearance_price or 0.0)"/>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Cada cupón usa una página (10x20 con 2 etiquetas) -->
+        <div style="page-break-after:always;"></div>
+      </t>
+    </t>
+  </template>
+
+  <!-- Acción del reporte -->
+  <report
+      id="action_liq_coupon_qr_label2"
+      model="liquidation.coupon"
+      string="Etiquetas Cupón de liquidación (QR)"
+      report_type="qweb-pdf"
+      name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
+      file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
+      print_report_name="'Cupon_QR_%s' % (object.name or '')"
+  />
 </odoo>
