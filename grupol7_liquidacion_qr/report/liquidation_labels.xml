@@ -1,153 +1,139 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
 
-        <!-- Solo estilos del reporte -->
-        <template id="report_liq_coupons_labels_styles">
-            <t>
+        <!-- Estilos del reporte: sin cabecera/footers y layout de etiquetas -->
+        <template id="report_liq_coupons_labels_styles" inherit_id="web.report_layout">
+            <xpath expr="//head" position="inside">
                 <style type="text/css">
-                    .g7-sheet {
-                        width: 18cm;
+                    .header, .footer {
+                        display: none !important;
+                    }
+
+                    .qr-label-page {
+                        width: 100mm;
+                        height: 200mm;
                         margin: 0 auto;
-                        font-family: "Helvetica", "Arial", sans-serif;
-                    }
-                    .g7-label {
-                        width: 18cm;
-                        height: 9cm;
-                        border: 1px solid #000;
+                        padding: 4mm;
                         box-sizing: border-box;
-                        padding: 0.7cm 0.9cm;
-                        margin-bottom: 0.7cm;
-                    }
-                    .g7-label-inner {
-                        display: flex;
-                        flex-direction: row;
-                    }
-                    .g7-qr-box {
-                        width: 6cm;
-                        text-align: center;
-                        font-size: 10pt;
-                    }
-                    .g7-qr-img {
-                        border: 1px solid #000;
-                        width: 5cm;
-                        height: 5cm;
-                        margin: 0.2cm auto 0.2cm auto;
-                    }
-                    .g7-qr-code {
+                        font-family: "Helvetica", "Arial", sans-serif;
                         font-size: 9pt;
                     }
-                    .g7-info {
+
+                    .qr-label {
+                        box-sizing: border-box;
+                        border: 0.5pt solid #000;
+                        width: 100%;
+                        height: 50%;
+                        padding: 4mm 5mm;
+                        display: flex;
+                        flex-direction: row;
+                        align-items: flex-start;
+                    }
+
+                    .qr-label + .qr-label {
+                        margin-top: 5mm;
+                    }
+
+                    .qr-left {
+                        width: 40mm;
+                        text-align: center;
+                    }
+
+                    .qr-left-title {
+                        font-size: 8pt;
+                        margin-bottom: 1mm;
+                    }
+
+                    .qr-left img {
+                        width: 35mm;
+                        height: 35mm;
+                        border: 0.5pt solid #000;
+                    }
+
+                    .qr-code-text {
+                        margin-top: 1mm;
+                        font-size: 8pt;
+                    }
+
+                    .qr-right {
                         flex: 1;
-                        padding-left: 0.7cm;
+                        padding-left: 5mm;
                     }
-                    .g7-prod-name {
-                        font-size: 16pt;
+
+                    .qr-product {
+                        font-size: 13pt;
                         font-weight: bold;
-                        line-height: 1.15;
-                        margin-bottom: 0.8cm;
+                        line-height: 1.25;
                     }
-                    .g7-price-row {
-                        margin-top: 0.5cm;
+
+                    .qr-price {
+                        margin-top: 6mm;
                         font-size: 14pt;
                         font-weight: bold;
                     }
-                    .g7-price-row span.g7-legend {
+
+                    .qr-price span.label {
+                        font-size: 10pt;
                         font-weight: normal;
-                        font-size: 11pt;
-                        margin-left: 0.2cm;
+                        margin-left: 2mm;
                     }
-                    .g7-meta {
-                        margin-top: 0.5cm;
-                        font-size: 9pt;
-                    }
-                    .g7-meta span {
-                        white-space: nowrap;
+
+                    .qr-meta {
+                        margin-top: 4mm;
+                        font-size: 7pt;
                     }
                 </style>
-            </t>
+            </xpath>
         </template>
 
-        <!-- Una etiqueta completa (se usa dos veces en la misma hoja) -->
+        <!-- Una etiqueta -->
         <template id="liq_coupon_single_label">
-            <t t-call="grupol7_liquidacion_qr.report_liq_coupons_labels_styles"/>
-            <div class="g7-sheet">
-                <!-- Primera etiqueta -->
-                <div class="g7-label">
-                    <div class="g7-label-inner">
-                        <div class="g7-qr-box">
-                            <div>QR</div>
-                            <div class="g7-qr-img">
-                                <img t-att-src="'/report/barcode/QR/%s?width=256&amp;height=256' % (o.name or '')"
-                                     style="width: 100%; height: 100%;"/>
-                            </div>
-                            <div class="g7-qr-code" t-esc="o.name"/>
-                        </div>
-                        <div class="g7-info">
-                            <div class="g7-prod-name" t-esc="o.product_id.display_name"/>
-                            <div class="g7-price-row">
-                                <span>$ <t t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/></span>
-                                <span class="g7-legend">precio al p&amp;uacute;blico</span>
-                            </div>
-                            <div class="g7-meta">
-                                <span t-if="o.create_date">
-                                    Creado: <t t-esc="o.create_date"/> por
-                                    <t t-esc="o.create_uid.name or ''"/>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+            <div class="qr-label">
+                <div class="qr-left">
+                    <div class="qr-left-title">QR</div>
+                    <img t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=256&amp;height=256' % ((o.name or '').strip())"/>
+                    <div class="qr-code-text" t-esc="o.name or ''"/>
                 </div>
-
-                <!-- Segunda etiqueta (misma info) -->
-                <div class="g7-label">
-                    <div class="g7-label-inner">
-                        <div class="g7-qr-box">
-                            <div>QR</div>
-                            <div class="g7-qr-img">
-                                <img t-att-src="'/report/barcode/QR/%s?width=256&amp;height=256' % (o.name or '')"
-                                     style="width: 100%; height: 100%;"/>
-                            </div>
-                            <div class="g7-qr-code" t-esc="o.name"/>
-                        </div>
-                        <div class="g7-info">
-                            <div class="g7-prod-name" t-esc="o.product_id.display_name"/>
-                            <div class="g7-price-row">
-                                <span>$ <t t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/></span>
-                                <span class="g7-legend">precio al p&amp;uacute;blico</span>
-                            </div>
-                            <div class="g7-meta">
-                                <span t-if="o.create_date">
-                                    Creado: <t t-esc="o.create_date"/> por
-                                    <t t-esc="o.create_uid.name or ''"/>
-                                </span>
-                            </div>
-                        </div>
+                <div class="qr-right">
+                    <div class="qr-product" t-esc="o.product_id.display_name or ''"/>
+                    <div class="qr-price">
+                        <span>
+                            $ <t t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/>
+                        </span>
+                        <span class="label">precio al p&#250;blico</span>
+                    </div>
+                    <div class="qr-meta">
+                        <t t-set="dt" t-value="o.create_date"/>
+                        <span>Creado: </span>
+                        <span t-esc="dt and dt.strftime('%d/%m/%Y %H:%M') or ''"/>
+                        <span> por </span>
+                        <span t-esc="o.create_uid and o.create_uid.name or ''"/>
                     </div>
                 </div>
             </div>
         </template>
 
-        <!-- Plantilla principal del reporte (envuelve en <main> sin membrete) -->
+        <!-- Reporte principal: 2 etiquetas por página -->
         <template id="report_liq_coupon_qr_label2">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
-                    <div class="page">
+                    <div class="page qr-label-page">
+                        <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
                         <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
                     </div>
                 </t>
             </t>
         </template>
 
-        <!-- Acción del reporte -->
-        <record id="action_liq_coupon_qr_label2" model="ir.actions.report">
-            <field name="name">Etiqueta QR</field>
-            <field name="model">liquidation.coupon</field>
-            <field name="report_type">qweb-pdf</field>
-            <field name="report_name">grupol7_liquidacion_qr.report_liq_coupon_qr_label2</field>
-            <field name="report_file">grupol7_liquidacion_qr.report_liq_coupon_qr_label2</field>
-            <field name="print_report_name">'Etiqueta_QR_' + (object.name or '')</field>
-        </record>
-
+        <!-- Acción de reporte -->
+        <report
+            id="action_liq_coupon_qr_label2"
+            model="liquidation.coupon"
+            string="Etiquetas de liquidación QR"
+            report_type="qweb-pdf"
+            name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
+            file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
+            print_report_name="'Etiqueta_QR_%s' % (object.name or '')"
+        />
     </data>
 </odoo>
