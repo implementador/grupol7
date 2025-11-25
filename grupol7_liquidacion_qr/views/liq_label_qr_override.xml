@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- Override directo del template que usa el reporte:
-       grupol7_liquidacion_qr.report_liq_coupon_qr_label2 -->
+  <!-- Override del template principal del reporte -->
   <template id="liq_label_qr_205x105_double_doc_override"
             inherit_id="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-            name="QR liquidacion doble (override)">
+            name="QR liquidación doble (override)">
 
-    <!-- Reemplazamos TODO el contenido de la plantilla -->
+    <!-- Reemplazamos TODO el contenido -->
     <xpath expr="." position="replace">
-      <!-- Odoo necesita un <main> para generar el PDF -->
+      <!-- Odoo necesita un <main> para el PDF -->
       <main class="o_report_layout_clean">
         <t t-foreach="docs" t-as="o">
           <t t-set="code_text" t-value="(o.name or '').strip()"/>
           <t t-set="price_text"
              t-value="'$ %0.2f' % (o.public_clearance_price or 0.0)"/>
 
-          <!-- Página de 205mm x 105mm con DOS etiquetas (una debajo de otra) -->
+          <!-- Página con dos etiquetas una debajo de la otra -->
           <div class="page"
                style="width:205mm;height:105mm;box-sizing:border-box;
                       padding:6mm;display:flex;flex-direction:column;
@@ -26,20 +25,23 @@
                         align-items:flex-start;text-align:left;
                         max-width:160mm;">
 
-              <!-- QR: solo el código del cupón -->
-              <img t-att-src="'/report/barcode/QR/' + code_text + '?width=420&amp;height=420'"
-                   style="width:45mm;height:45mm;margin-bottom:3mm;"/>
+              <!-- QR usando widget de código de barras -->
+              <span t-field="o.name"
+                    widget="barcode"
+                    options="{'type': 'QR', 'width': 420, 'height': 420}"
+                    style="display:inline-block;width:45mm;height:45mm;margin-bottom:3mm;"/>
 
               <!-- Código del cupón -->
-              <div style="font-size:18pt;margin-bottom:2mm;" t-esc="code_text"/>
+              <div style="font-size:18pt;margin-bottom:2mm;"
+                   t-esc="code_text"/>
 
               <!-- Producto -->
               <div style="font-size:14pt;margin-bottom:2mm;"
                    t-esc="o.product_id.display_name or ''"/>
 
-              <!-- Precio al publico (texto sin acento para evitar problemas de codificación) -->
+              <!-- Precio al público (con acento) -->
               <div style="font-size:18pt;margin-bottom:2mm;">
-                <b t-esc="price_text"/> <span>precio al publico</span>
+                <b t-esc="price_text"/> <span>precio al público</span>
               </div>
 
               <!-- Fecha y usuario que creó el cupón -->
@@ -58,16 +60,19 @@
                         align-items:flex-start;text-align:left;
                         max-width:160mm;">
 
-              <img t-att-src="'/report/barcode/QR/' + code_text + '?width=420&amp;height=420'"
-                   style="width:45mm;height:45mm;margin-bottom:3mm;"/>
+              <span t-field="o.name"
+                    widget="barcode"
+                    options="{'type': 'QR', 'width': 420, 'height': 420}"
+                    style="display:inline-block;width:45mm;height:45mm;margin-bottom:3mm;"/>
 
-              <div style="font-size:18pt;margin-bottom:2mm;" t-esc="code_text"/>
+              <div style="font-size:18pt;margin-bottom:2mm;"
+                   t-esc="code_text"/>
 
               <div style="font-size:14pt;margin-bottom:2mm;"
                    t-esc="o.product_id.display_name or ''"/>
 
               <div style="font-size:18pt;margin-bottom:2mm;">
-                <b t-esc="price_text"/> <span>precio al publico</span>
+                <b t-esc="price_text"/> <span>precio al público</span>
               </div>
 
               <div style="font-size:10pt;margin-top:1mm;"
