@@ -1,82 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- Override de la plantilla de etiqueta QR de liquidación -->
+  <!-- Override directo del template principal del reporte:
+       grupol7_liquidacion_qr.report_liq_coupon_qr_label2 -->
   <template id="liq_label_qr_205x105_double_doc_override"
-            inherit_id="grupol7_liquidacion_qr.liq_label_qr_205x105_double_doc"
+            inherit_id="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
             name="QR liquidación doble (override)">
-    <!-- Reemplazamos COMPLETO el contenido de la plantilla original -->
+
+    <!-- Reemplazamos TODO el contenido de la plantilla -->
     <xpath expr="." position="replace">
-      <t t-name="grupol7_liquidacion_qr.liq_label_qr_205x105_double_doc">
-        <t t-foreach="docs" t-as="o">
+      <t t-foreach="docs" t-as="o">
+        <t t-set="code_text" t-value="(o.name or '').strip()"/>
+        <t t-set="price_text"
+           t-value="'$ %0.2f' % (o.public_clearance_price or 0.0)"/>
 
-          <!-- Página de 205mm x 105mm, dos etiquetas una debajo de la otra -->
-          <div class="page"
-               style="width:205mm;height:105mm;box-sizing:border-box;
-                      padding:6mm;display:flex;flex-direction:column;
-                      align-items:flex-start;justify-content:center;">
+        <!-- Página de 205mm x 105mm con DOS etiquetas (una debajo de otra) -->
+        <div class="page"
+             style="width:205mm;height:105mm;box-sizing:border-box;
+                    padding:6mm;display:flex;flex-direction:column;
+                    align-items:flex-start;justify-content:center;">
 
-            <t t-set="code_text" t-value="(o.name or '').strip()"/>
-            <t t-set="price_text"
-               t-value="'$ %0.2f' % (o.public_clearance_price or 0.0)"/>
+          <!-- ===== Etiqueta 1 ===== -->
+          <div style="display:flex;flex-direction:column;
+                      align-items:flex-start;text-align:left;
+                      max-width:160mm;">
 
-            <!-- ===== Etiqueta 1 ===== -->
-            <div style="display:flex;flex-direction:column;
-                        align-items:flex-start;text-align:left;
-                        max-width:160mm;">
+            <!-- QR: solo el código del cupón -->
+            <img t-att-src="'/report/barcode/QR/' + code_text + '?width=420&amp;height=420'"
+                 style="width:45mm;height:45mm;margin-bottom:3mm;"/>
 
-              <!-- QR: solo el código del cupón -->
-              <img t-att-src="'/report/barcode/QR/' + code_text + '?width=420&amp;height=420'"
-                   style="width:45mm;height:45mm;margin-bottom:3mm;"/>
+            <!-- Código del cupón -->
+            <div style="font-size:18pt;margin-bottom:2mm;" t-esc="code_text"/>
 
-              <!-- Código del cupón -->
-              <div style="font-size:18pt;margin-bottom:2mm;" t-esc="code_text"/>
+            <!-- Producto -->
+            <div style="font-size:14pt;margin-bottom:2mm;"
+                 t-esc="o.product_id.display_name or ''"/>
 
-              <!-- Producto -->
-              <div style="font-size:14pt;margin-bottom:2mm;"
-                   t-esc="o.product_id.display_name or ''"/>
-
-              <!-- Precio al público -->
-              <div style="font-size:18pt;margin-bottom:2mm;">
-                <b t-esc="price_text"/> <span>precio al público</span>
-              </div>
-
-              <!-- Fecha y usuario que creó el cupón -->
-              <div style="font-size:10pt;margin-top:1mm;"
-                   t-esc="'Creado: %s por %s' % (
-                     (o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''),
-                     (o.create_uid and o.create_uid.name or '')
-                   )"/>
+            <!-- Precio al público (precio con IVA) -->
+            <div style="font-size:18pt;margin-bottom:2mm;">
+              <b t-esc="price_text"/> <span>precio al público</span>
             </div>
 
-            <!-- Separación ~1cm entre etiquetas -->
-            <div style="height:10mm;"></div>
-
-            <!-- ===== Etiqueta 2 (idéntica) ===== -->
-            <div style="display:flex;flex-direction:column;
-                        align-items:flex-start;text-align:left;
-                        max-width:160mm;">
-
-              <img t-att-src="'/report/barcode/QR/' + code_text + '?width=420&amp;height=420'"
-                   style="width:45mm;height:45mm;margin-bottom:3mm;"/>
-
-              <div style="font-size:18pt;margin-bottom:2mm;" t-esc="code_text"/>
-
-              <div style="font-size:14pt;margin-bottom:2mm;"
-                   t-esc="o.product_id.display_name or ''"/>
-
-              <div style="font-size:18pt;margin-bottom:2mm;">
-                <b t-esc="price_text"/> <span>precio al público</span>
-              </div>
-
-              <div style="font-size:10pt;margin-top:1mm;"
-                   t-esc="'Creado: %s por %s' % (
-                     (o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''),
-                     (o.create_uid and o.create_uid.name or '')
-                   )"/>
-            </div>
-
+            <!-- Fecha y usuario que creó el cupón -->
+            <div style="font-size:10pt;margin-top:1mm;"
+                 t-esc="'Creado: %s por %s' % (
+                   (o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''),
+                   (o.create_uid and o.create_uid.name or '')
+                 )"/>
           </div>
-        </t>
+
+          <!-- Separación ~1 cm entre etiquetas -->
+          <div style="height:10mm;"></div>
+
+          <!-- ===== Etiqueta 2 (idéntica) ===== -->
+          <div style="display:flex;flex-direction:column;
+                      align-items:flex-start;text-align:left;
+                      max-width:160mm;">
+
+            <img t-att-src="'/report/barcode/QR/' + code_text + '?width=420&amp;height=420'"
+                 style="width:45mm;height:45mm;margin-bottom:3mm;"/>
+
+            <div style="font-size:18pt;margin-bottom:2mm;" t-esc="code_text"/>
+
+            <div style="font-size:14pt;margin-bottom:2mm;"
+                 t-esc="o.product_id.display_name or ''"/>
+
+            <div style="font-size:18pt;margin-bottom:2mm;">
+              <b t-esc="price_text"/> <span>precio al público</span>
+            </div>
+
+            <div style="font-size:10pt;margin-top:1mm;"
+                 t-esc="'Creado: %s por %s' % (
+                   (o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''),
+                   (o.create_uid and o.create_uid.name or '')
+                 )"/>
+          </div>
+
+        </div>
       </t>
     </xpath>
   </template>
