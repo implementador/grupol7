@@ -11,3 +11,5 @@ from . import liq_coupon_pos_api
 from . import coupon_location
 from . import liq_coupon_public_price
 from . import liq_coupon_qr_report
+from . import coupon_state
+from . import pos_order_coupon
