@@ -1,148 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <data>
+    <data>
 
-    <!-- Acción del reporte -->
-    <report
-        id="action_liq_coupon_qr_label2"
-        model="liquidation.coupon"
-        string="Etiquetas QR cupones"
-        name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-        report_type="qweb-pdf"
-        file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-        print_report_name="'Etiqueta_QR_%s' % (object.name or '')"
-    />
+        <!-- Solo estilos del reporte -->
+        <template id="report_liq_coupons_labels_styles">
+            <t>
+                <style type="text/css">
+                    .g7-sheet {
+                        width: 18cm;
+                        margin: 0 auto;
+                        font-family: "Helvetica", "Arial", sans-serif;
+                    }
+                    .g7-label {
+                        width: 18cm;
+                        height: 9cm;
+                        border: 1px solid #000;
+                        box-sizing: border-box;
+                        padding: 0.7cm 0.9cm;
+                        margin-bottom: 0.7cm;
+                    }
+                    .g7-label-inner {
+                        display: flex;
+                        flex-direction: row;
+                    }
+                    .g7-qr-box {
+                        width: 6cm;
+                        text-align: center;
+                        font-size: 10pt;
+                    }
+                    .g7-qr-img {
+                        border: 1px solid #000;
+                        width: 5cm;
+                        height: 5cm;
+                        margin: 0.2cm auto 0.2cm auto;
+                    }
+                    .g7-qr-code {
+                        font-size: 9pt;
+                    }
+                    .g7-info {
+                        flex: 1;
+                        padding-left: 0.7cm;
+                    }
+                    .g7-prod-name {
+                        font-size: 16pt;
+                        font-weight: bold;
+                        line-height: 1.15;
+                        margin-bottom: 0.8cm;
+                    }
+                    .g7-price-row {
+                        margin-top: 0.5cm;
+                        font-size: 14pt;
+                        font-weight: bold;
+                    }
+                    .g7-price-row span.g7-legend {
+                        font-weight: normal;
+                        font-size: 11pt;
+                        margin-left: 0.2cm;
+                    }
+                    .g7-meta {
+                        margin-top: 0.5cm;
+                        font-size: 9pt;
+                    }
+                    .g7-meta span {
+                        white-space: nowrap;
+                    }
+                </style>
+            </t>
+        </template>
 
-    <!-- Plantilla “dummy” para quitar el xpath viejo problemático -->
-    <template id="report_liq_coupons_labels_styles">
-      <t t-raw="0"/>
-    </template>
-
-    <!-- Plantilla principal: por cada cupón, 2 etiquetas 10x20 cm en una página -->
-    <template id="report_liq_coupon_qr_label2">
-      <t t-call="web.external_layout">
-        <main class="liq-qr-main">
-          <style>
-            .liq-qr-main {
-              font-family: "Helvetica", "Arial", sans-serif;
-            }
-            .liq-page {
-              page-break-after: always;
-              width: 21cm;
-              height: 29.7cm;
-            }
-            .liq-label {
-              width: 20cm;
-              height: 10cm;
-              border: 1px solid #000;
-              margin: 0.5cm auto;
-              padding: 0.7cm 0.7cm 0.5cm 0.7cm;
-              box-sizing: border-box;
-            }
-            .liq-label-inner {
-              display: flex;
-              flex-direction: row;
-            }
-            .liq-qr-box {
-              width: 6cm;
-              text-align: center;
-            }
-            .liq-qr-img {
-              width: 5cm;
-              height: 5cm;
-              border: 1px solid #000;
-            }
-            .liq-code {
-              font-size: 11pt;
-              margin-top: 0.1cm;
-            }
-            .liq-right {
-              flex: 1;
-              padding-left: 0.5cm;
-            }
-            .liq-product {
-              font-size: 16pt;
-              font-weight: bold;
-              line-height: 1.2;
-            }
-            .liq-price {
-              margin-top: 0.8cm;
-              font-size: 18pt;
-              font-weight: bold;
-            }
-            .liq-price span.text {
-              font-weight: normal;
-              font-size: 12pt;
-              margin-left: 0.2cm;
-            }
-            .liq-meta {
-              margin-top: 0.8cm;
-              font-size: 10pt;
-            }
-          </style>
-
-          <t t-foreach="docs" t-as="o">
-            <div class="liq-page">
-              <!-- Primera etiqueta -->
-              <div class="liq-label">
-                <div class="liq-label-inner">
-                  <div class="liq-qr-box">
-                    <div>QR</div>
-                    <img
-                      t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=300&amp;height=300' % (o.name or '')"
-                      class="liq-qr-img"
-                    />
-                    <div class="liq-code" t-esc="o.name"/>
-                  </div>
-                  <div class="liq-right">
-                    <div class="liq-product" t-esc="o.product_id.display_name"/>
-                    <div class="liq-price">
-                      <span>$</span>
-                      <span t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/>
-                      <span class="text">precio al público</span>
+        <!-- Una etiqueta completa (se usa dos veces en la misma hoja) -->
+        <template id="liq_coupon_single_label">
+            <t t-call="grupol7_liquidacion_qr.report_liq_coupons_labels_styles"/>
+            <div class="g7-sheet">
+                <!-- Primera etiqueta -->
+                <div class="g7-label">
+                    <div class="g7-label-inner">
+                        <div class="g7-qr-box">
+                            <div>QR</div>
+                            <div class="g7-qr-img">
+                                <img t-att-src="'/report/barcode/QR/%s?width=256&amp;height=256' % (o.name or '')"
+                                     style="width: 100%; height: 100%;"/>
+                            </div>
+                            <div class="g7-qr-code" t-esc="o.name"/>
+                        </div>
+                        <div class="g7-info">
+                            <div class="g7-prod-name" t-esc="o.product_id.display_name"/>
+                            <div class="g7-price-row">
+                                <span>$ <t t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/></span>
+                                <span class="g7-legend">precio al p&amp;uacute;blico</span>
+                            </div>
+                            <div class="g7-meta">
+                                <span t-if="o.create_date">
+                                    Creado: <t t-esc="o.create_date"/> por
+                                    <t t-esc="o.create_uid.name or ''"/>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="liq-meta">
-                      <span>Creado: </span>
-                      <span t-esc="o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''"/>
-                      <span> por </span>
-                      <span t-esc="o.create_uid and o.create_uid.name or ''"/>
-                    </div>
-                  </div>
                 </div>
-              </div>
 
-              <!-- Segunda etiqueta (copia) -->
-              <div class="liq-label">
-                <div class="liq-label-inner">
-                  <div class="liq-qr-box">
-                    <div>QR</div>
-                    <img
-                      t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=300&amp;height=300' % (o.name or '')"
-                      class="liq-qr-img"
-                    />
-                    <div class="liq-code" t-esc="o.name"/>
-                  </div>
-                  <div class="liq-right">
-                    <div class="liq-product" t-esc="o.product_id.display_name"/>
-                    <div class="liq-price">
-                      <span>$</span>
-                      <span t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/>
-                      <span class="text">precio al público</span>
+                <!-- Segunda etiqueta (misma info) -->
+                <div class="g7-label">
+                    <div class="g7-label-inner">
+                        <div class="g7-qr-box">
+                            <div>QR</div>
+                            <div class="g7-qr-img">
+                                <img t-att-src="'/report/barcode/QR/%s?width=256&amp;height=256' % (o.name or '')"
+                                     style="width: 100%; height: 100%;"/>
+                            </div>
+                            <div class="g7-qr-code" t-esc="o.name"/>
+                        </div>
+                        <div class="g7-info">
+                            <div class="g7-prod-name" t-esc="o.product_id.display_name"/>
+                            <div class="g7-price-row">
+                                <span>$ <t t-esc="'%0.2f' % (o.public_clearance_price or o.clearance_price or 0.0)"/></span>
+                                <span class="g7-legend">precio al p&amp;uacute;blico</span>
+                            </div>
+                            <div class="g7-meta">
+                                <span t-if="o.create_date">
+                                    Creado: <t t-esc="o.create_date"/> por
+                                    <t t-esc="o.create_uid.name or ''"/>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="liq-meta">
-                      <span>Creado: </span>
-                      <span t-esc="o.create_date and o.create_date.strftime('%d/%m/%Y %H:%M') or ''"/>
-                      <span> por </span>
-                      <span t-esc="o.create_uid and o.create_uid.name or ''"/>
-                    </div>
-                  </div>
                 </div>
-              </div>
             </div>
-          </t>
-        </main>
-      </t>
-    </template>
+        </template>
 
-  </data>
+        <!-- Plantilla principal del reporte (envuelve en <main> sin membrete) -->
+        <template id="report_liq_coupon_qr_label2">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                        <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- Acción del reporte -->
+        <record id="action_liq_coupon_qr_label2" model="ir.actions.report">
+            <field name="name">Etiqueta QR</field>
+            <field name="model">liquidation.coupon</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">grupol7_liquidacion_qr.report_liq_coupon_qr_label2</field>
+            <field name="report_file">grupol7_liquidacion_qr.report_liq_coupon_qr_label2</field>
+            <field name="print_report_name">'Etiqueta_QR_' + (object.name or '')</field>
+        </record>
+
+    </data>
 </odoo>
