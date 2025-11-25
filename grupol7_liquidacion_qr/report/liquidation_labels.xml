@@ -1,108 +1,149 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <data>
 
-    <!-- Formato de papel 10 x 20 cm (CUSTOM) -->
-    <record id="paperformat_liq_coupon_10x20" model="report.paperformat">
-        <field name="name">Cupon 10x20 cm</field>
-        <!-- IMPORTANTE: para usar ancho/alto personalizados -->
-        <field name="format">custom</field>
+        <!-- Formato 10 x 20 cm -->
+        <record id="paperformat_liq_coupon_10x20" model="report.paperformat">
+            <field name="name">Etiqueta liquidación 10x20</field>
+            <field name="format">custom</field>
+            <!-- mm -->
+            <field name="page_width">100</field>
+            <field name="page_height">200</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">5</field>
+            <field name="margin_bottom">5</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
+            <field name="dpi">90</field>
+            <field name="default" eval="False"/>
+        </record>
 
-        <!-- medidas en milímetros -->
-        <field name="page_width">100</field>
-        <field name="page_height">200</field>
-        <field name="orientation">Portrait</field>
+        <!-- Acción del informe -->
+        <report
+            id="action_liq_coupon_qr_label2"
+            model="liquidation.coupon"
+            string="Etiqueta QR cupón de liquidación"
+            report_type="qweb-pdf"
+            name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
+            file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
+            paperformat="grupol7_liquidacion_qr.paperformat_liq_coupon_10x20"
+        />
 
-        <field name="margin_top">5</field>
-        <field name="margin_bottom">5</field>
-        <field name="margin_left">5</field>
-        <field name="margin_right">5</field>
-
-        <field name="header_line" eval="False"/>
-        <field name="header_spacing">0</field>
-        <field name="dpi">90</field>
-    </record>
-
-    <!-- Plantilla: 2 etiquetas por hoja, una debajo de la otra -->
-    <template id="report_liq_coupon_qr_label2">
-        <t t-call="web.basic_layout">
-            <t t-foreach="docs" t-as="o">
-                <!-- CONTENEDOR DE UNA ETIQUETA (10 x 20 cm) -->
-                <div style="
-                    width: 100mm;
-                    height: 200mm;
-                    border: 1px solid #000;
-                    box-sizing: border-box;
-                    padding: 5mm;
-                    margin: 0 auto 10mm auto;
-                    page-break-inside: avoid;
-                ">
-                    <!-- BLOQUE SUPERIOR: QR + texto -->
-                    <div style="display: flex; flex-direction: row;">
-                        <!-- Caja del QR -->
-                        <div style="
-                            width: 40mm;
-                            height: 40mm;
-                            border: 1px solid #000;
-                            text-align: center;
-                            font-size: 8pt;
-                        ">
-                            <div>QR</div>
-                            <!-- QR REAL usando el código del cupón (solo letras/números) -->
-                            <img
-                                t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=400&amp;height=400&amp;humanreadable=0' % (o.name or '')"
-                                style="width: 100%; height: 100%;"
-                            />
-                        </div>
-
-                        <!-- Datos del producto -->
-                        <div style="flex: 1; padding-left: 5mm;">
-                            <!-- Código del cupón -->
-                            <div style="font-size: 10pt; margin-bottom: 2mm;" t-esc="o.name"/>
-                            <!-- Nombre del producto -->
-                            <div style="
-                                font-size: 16pt;
-                                font-weight: bold;
-                                line-height: 1.2;
-                            "
-                                 t-esc="o.product_id.display_name or ''"/>
-                        </div>
-                    </div>
-
-                    <!-- PRECIO AL PUBLICO (con IVA) -->
-                    <div style="
-                        margin-top: 15mm;
-                        font-size: 14pt;
+        <!-- Plantilla principal: recorre cupones, 1 página por cupón -->
+        <template id="report_liq_coupon_qr_label2">
+            <t t-call="web.html_container">
+                <style type="text/css">
+                    .liq-page {
+                        box-sizing: border-box;
+                        width: 100%;
+                        height: 100%;
+                        font-family: "Helvetica", "Arial", sans-serif;
+                    }
+                    .liq-label {
+                        box-sizing: border-box;
+                        border: 1px solid #000;
+                        padding: 6mm 8mm;
+                        margin: 0 4mm;
+                    }
+                    .liq-label + .liq-label {
+                        margin-top: 10mm; /* espacio entre las dos etiquetas */
+                    }
+                    .liq-header {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: flex-start;
+                    }
+                    .liq-qr-container {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        margin-right: 6mm;
+                    }
+                    .liq-qr-title {
+                        font-size: 10pt;
+                        margin-bottom: 1mm;
+                    }
+                    .liq-qr-img {
+                        width: 40mm;
+                        height: 40mm;
+                        border: 1px solid #000;
+                    }
+                    .liq-qr-code {
+                        margin-top: 1mm;
+                        font-size: 9pt;
+                    }
+                    .liq-title {
+                        flex: 1;
+                        font-size: 16pt;
                         font-weight: bold;
-                    ">
-                        <span>$ </span>
-                        <span t-esc="'%0.2f' % (o.public_clearance_price or 0.0)"/>
-                        <span> precio al publico</span>
+                        line-height: 1.2;
+                    }
+                    .liq-price {
+                        margin-top: 8mm;
+                        font-size: 16pt;
+                        font-weight: bold;
+                    }
+                    .liq-price .symbol {
+                        margin-right: 1mm;
+                    }
+                    .liq-price .label {
+                        font-size: 11pt;
+                        font-weight: normal;
+                        margin-left: 3mm;
+                    }
+                    .liq-meta {
+                        margin-top: 6mm;
+                        font-size: 9pt;
+                    }
+                </style>
+
+                <t t-set="user_tz" t-value="env.user.tz or 'UTC'"/>
+
+                <!-- Una página por cupón -->
+                <t t-foreach="docs" t-as="o">
+                    <div class="page liq-page">
+                        <!-- Copia 1 -->
+                        <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
+
+                        <!-- Copia 2 -->
+                        <t t-call="grupol7_liquidacion_qr.liq_coupon_single_label"/>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- Plantilla de UNA etiqueta (reutilizada dos veces por página) -->
+        <template id="liq_coupon_single_label">
+            <div class="liq-label">
+                <div class="liq-header">
+                    <div class="liq-qr-container">
+                        <div class="liq-qr-title">QR</div>
+                        <!-- QR real; solo letras y números del campo name -->
+                        <img t-att-src="'/report/barcode/QR/%s' % o.name"
+                             class="liq-qr-img"/>
+                        <div class="liq-qr-code" t-esc="o.name"/>
                     </div>
 
-                    <!-- FECHA Y USUARIO QUE HIZO EL CUPON -->
-                    <div style="margin-top: 5mm; font-size: 8pt;">
-                        <span t-if="o.create_date">
-                            Creado:
-                            <t t-esc="o.create_date.strftime('%d/%m/%Y %H:%M')"/>
-                        </span>
-                        <span t-if="o.create_uid">
-                            por
-                            <t t-esc="o.create_uid.name"/>
-                        </span>
+                    <div class="liq-title">
+                        <span t-esc="o.product_id.display_name"/>
                     </div>
                 </div>
-            </t>
-        </t>
-    </template>
 
-    <!-- Acción del reporte -->
-    <report
-        id="action_liq_coupon_qr_label2"
-        model="liquidation.coupon"
-        string="Cupones de liquidacion (2 etiquetas)"
-        report_type="qweb-pdf"
-        name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-        file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
-        paperformat="grupol7_liquidacion_qr.paperformat_liq_coupon_10x20"
-    />
+                <div class="liq-price">
+                    <span class="symbol">$</span>
+                    <span class="amount"
+                          t-esc="'%0.2f' % (o.public_clearance_price or 0.0)"/>
+                    <span class="label">precio al publico</span>
+                </div>
+
+                <div class="liq-meta">
+                    <span>Creado: </span>
+                    <span t-esc="format_datetime(o.create_date, tz=env.user.tz or 'UTC')"/>
+                    <span> por </span>
+                    <span t-esc="o.create_uid.name or ''"/>
+                </div>
+            </div>
+        </template>
+
+    </data>
 </odoo>
