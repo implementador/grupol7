@@ -1,8 +1,5 @@
 <odoo>
-    <!--
-      Vista de estilos antigua que hacía xpath //head.
-      La dejamos como plantilla vacía para no romper nada.
-    -->
+    <!-- Plantilla de estilos (vacía, sólo para mantener el id) -->
     <template id="report_liq_coupons_labels_styles">
         <t t-raw="''"/>
     </template>
@@ -30,7 +27,7 @@
                                 width: 100%;
                                 height: 9cm;
                                 box-sizing: border-box;
-                                border: 1px solid #000;
+                                border: 1px solid #000000;
                                 padding: 0.4cm 0.5cm;
                                 display: flex;
                                 flex-direction: row;
@@ -91,10 +88,7 @@
                                     <div class="liq-title">
                                         <span t-esc="o.product_id.display_name or ''"/>
                                     </div>
-                                    <div class="liq-line">
-                                        <strong>Ubicación: </strong>
-                                        <span t-esc="o.liq_location_id.display_name if o.liq_location_id else ''"/>
-                                    </div>
+                                    <!-- Línea de ubicación eliminada porque el campo no existe -->
                                     <div class="liq-price">
                                         <span>$</span>
                                         <!-- Precio al público con IVA -->
@@ -116,10 +110,7 @@
                                     <div class="liq-title">
                                         <span t-esc="o.product_id.display_name or ''"/>
                                     </div>
-                                    <div class="liq-line">
-                                        <strong>Ubicación: </strong>
-                                        <span t-esc="o.liq_location_id.display_name if o.liq_location_id else ''"/>
-                                    </div>
+                                    <!-- Línea de ubicación eliminada porque el campo no existe -->
                                     <div class="liq-price">
                                         <span>$</span>
                                         <span t-esc="'%0.2f' % (o.public_clearance_price or 0.0)"/>
