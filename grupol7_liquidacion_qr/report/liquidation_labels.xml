@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <!-- Formato de papel 10 x 20 cm -->
+    <!-- Formato de papel 10 x 20 cm (CUSTOM) -->
     <record id="paperformat_liq_coupon_10x20" model="report.paperformat">
-        <field name="name">Cupón 10x20 cm</field>
+        <field name="name">Cupon 10x20 cm</field>
+        <!-- IMPORTANTE: para usar ancho/alto personalizados -->
+        <field name="format">custom</field>
+
         <!-- medidas en milímetros -->
         <field name="page_width">100</field>
         <field name="page_height">200</field>
         <field name="orientation">Portrait</field>
+
         <field name="margin_top">5</field>
         <field name="margin_bottom">5</field>
         <field name="margin_left">5</field>
         <field name="margin_right">5</field>
+
         <field name="header_line" eval="False"/>
         <field name="header_spacing">0</field>
         <field name="dpi">90</field>
@@ -74,7 +79,7 @@
                         <span> precio al publico</span>
                     </div>
 
-                    <!-- FECHA Y USUARIO QUE HIZO EL CUPÓN -->
+                    <!-- FECHA Y USUARIO QUE HIZO EL CUPON -->
                     <div style="margin-top: 5mm; font-size: 8pt;">
                         <span t-if="o.create_date">
                             Creado:
@@ -94,7 +99,7 @@
     <report
         id="action_liq_coupon_qr_label2"
         model="liquidation.coupon"
-        string="Cupones de liquidación (2 etiquetas)"
+        string="Cupones de liquidacion (2 etiquetas)"
         report_type="qweb-pdf"
         name="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
         file="grupol7_liquidacion_qr.report_liq_coupon_qr_label2"
