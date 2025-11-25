@@ -56,7 +56,7 @@
 
   <!-- Reporte: 2 etiquetas por cupón, una debajo de otra -->
   <template id="report_liq_coupon_qr_label2">
-    <!-- IMPORTANTE: usamos web.external_layout para que exista <main> y wkhtmltopdf sea feliz -->
+    <!-- Usamos external_layout para que exista <main> y wkhtmltopdf funcione bien -->
     <t t-call="web.external_layout">
       <t t-foreach="docs" t-as="o">
         <div class="g7_coupon_page">
@@ -64,8 +64,8 @@
           <!-- Etiqueta 1 -->
           <div class="g7_coupon_label">
             <div class="g7_coupon_qr">
-              <!-- QR: solo el código del cupón (letras y números) -->
-              <img t-att-src="'/report/barcode/?type=QR&value=%s&width=256&height=256' % (o.name or '')"/>
+              <!-- QR: solo el código del cupón (name) -->
+              <img t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=256&amp;height=256' % (o.name or '')"/>
             </div>
             <div class="g7_coupon_info">
               <div class="g7_coupon_code">
@@ -84,7 +84,7 @@
           <!-- Etiqueta 2 (idéntica, debajo) -->
           <div class="g7_coupon_label">
             <div class="g7_coupon_qr">
-              <img t-att-src="'/report/barcode/?type=QR&value=%s&width=256&height=256' % (o.name or '')"/>
+              <img t-att-src="'/report/barcode/?type=QR&amp;value=%s&amp;width=256&amp;height=256' % (o.name or '')"/>
             </div>
             <div class="g7_coupon_info">
               <div class="g7_coupon_code">
