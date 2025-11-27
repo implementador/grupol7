@@ -15,3 +15,4 @@ from . import coupon_state
 from . import pos_order_coupon
 from . import liq_coupon_pos_link
 from . import liq_pos_link
+from . import pos_order_liq_coupon
