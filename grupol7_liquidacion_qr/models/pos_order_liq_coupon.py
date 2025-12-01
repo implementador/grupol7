@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+from odoo import models, api
 import logging
-from odoo import api, models
 
 _logger = logging.getLogger(__name__)
 
@@ -10,62 +10,73 @@ class PosOrder(models.Model):
 
     @api.model
     def create_from_ui(self, orders, draft=False):
-        """Después de crear los pedidos de POS, marcar los cupones como usados
-        según el lot_name capturado en el POS.
-        """
-        # Llamamos al comportamiento estándar
-        res = super().create_from_ui(orders, draft=draft)
-
-        # Normalizar el resultado de create_from_ui:
-        # a veces es lista de ids, a veces lista de dicts con 'id'
-        order_ids = []
-        if isinstance(res, list):
-            for item in res:
-                if isinstance(item, dict):
-                    oid = item.get("id")
-                    if oid:
-                        order_ids.append(oid)
-                else:
-                    order_ids.append(item)
+        # 1) Comportamiento estándar: crea los pedidos de POS
+        order_ids = super().create_from_ui(orders, draft=draft)
 
         if not order_ids:
-            return res
+            return order_ids
+        if not isinstance(order_ids, (list, tuple)):
+            order_ids = [order_ids]
 
-        orders_rs = self.browse(order_ids)
-        Coupon = self.env["liquidation.coupon"]
+        _logger.info("[G7][POS-Coupon] create_from_ui: %s orders -> %s", len(orders), order_ids)
 
-        for order in orders_rs:
-            _logger.info(
-                "[G7][POS-Coupon][PY] Procesando POS %s (%s)", order.name, order.id
-            )
-            for line in order.lines:
-                # pack_lot_ids = lotes / QR capturados en la línea del POS
-                for pack_lot in line.pack_lot_ids:
-                    code = (pack_lot.lot_name or "").strip()
-                    if not code:
-                        continue
+        # 2) Recorremos cada pedido creado junto con su JSON original
+        for data, oid in zip(orders, order_ids):
+            order = self.browse(oid)
+            if not order:
+                continue
 
-                    coupon = Coupon.search([("name", "=", code)], limit=1)
-                    if not coupon:
-                        _logger.info(
-                            "[G7][POS-Coupon][PY] No se encontró cupón con código %s",
-                            code,
-                        )
-                        continue
+            codes = set()
 
-                    vals = {
-                        "pos_order_id": order.id,
-                        "pos_order_line_id": line.id,
-                    }
-                    # Solo cambiar a usado si está nuevo
-                    if coupon.state == "new":
-                        vals["state"] = "used"
+            # 2.1 Leer códigos desde el JSON (pack_lot_ids enviados desde el POS)
+            data_lines = data.get("data", {}).get("lines", [])
+            for line in data_lines:
+                vals = line[2] if len(line) > 2 else {}
+                for pl in vals.get("pack_lot_ids", []):
+                    # pl normalmente es [0, 0, {lot_name: 'CODIGO_CUPON'}]
+                    if isinstance(pl, (list, tuple)) and len(pl) >= 3:
+                        lot_vals = pl[2] or {}
+                        lot_name = lot_vals.get("lot_name") or lot_vals.get("name")
+                        if lot_name:
+                            codes.add(lot_name)
 
-                    _logger.info(
-                        "[G7][POS-Coupon][PY] Actualizando cupón %s -> vals=%s",
-                        coupon.name,
-                        vals,
-                    )
-                    coupon.write(vals)
+            # 2.2 Fallback: por si acaso, leer de las líneas ya creadas en la BD
+            if not codes:
+                for line in order.lines:
+                    for pack in line.pack_lot_ids:
+                        if pack.lot_name:
+                            codes.add(pack.lot_name)
 
-        return res
+            _logger.info("[G7][POS-Coupon] order %s codes detectados: %s", order.pos_reference, list(codes))
+
+            # 3) Actualizar cada cupón detectado
+            for code in codes:
+                coupon = self.env["liquidation.coupon"].search([("name", "=", code)], limit=1)
+                if not coupon:
+                    _logger.warning("[G7][POS-Coupon] cupón %s no encontrado", code)
+                    continue
+
+                # Intentar asociar la línea de POS con el mismo producto del cupón
+                line = order.lines.filtered(lambda l: l.product_id == coupon.product_id)[:1]
+                if not line:
+                    line = order.lines[:1]
+
+                vals = {
+                    "pos_order_id": order.id,
+                    "pos_order_line_id": line.id if line else False,
+                }
+                # Solo pasamos a usado si estaba en nuevo
+                if coupon.state == "new":
+                    vals["state"] = "used"
+
+                coupon.write(vals)
+                _logger.info(
+                    "[G7][POS-Coupon] Cupón %s (%s) marcado como %s en order %s, línea %s",
+                    coupon.id,
+                    coupon.name,
+                    coupon.state,
+                    order.pos_reference,
+                    line.id if line else "N/A",
+                )
+
+        return order_ids
