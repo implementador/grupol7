@@ -1,153 +1,115 @@
 # -*- coding: utf-8 -*-
-
-from odoo import models, fields, api
 import logging
+from odoo import api, models
 
 _logger = logging.getLogger(__name__)
 
 
 class PosOrder(models.Model):
-    _inherit = 'pos.order'
+    _inherit = "pos.order"
 
     @api.model
     def create_from_ui(self, orders, draft=False):
         """
-        Después de crear las órdenes desde el POS,
-        marcamos los cupones de liquidación como usados
-        y generamos la trazabilidad basándonos en los lotes (QR/serie).
+        Cuando se valida un pedido del POS, marcar los cupones de liquidación
+        como usados y llenar la trazabilidad (Pos Order / Pos Order Line).
+
+        Estrategia:
+        - Llamamos al super para crear los pedidos (res).
+        - Recorremos en paralelo:
+            * orders  -> datos originales que llegaron del POS
+            * res     -> info de los pedidos creados ({'id', 'pos_reference', ...})
+        - Por cada línea, revisamos pack_lot_ids del JSON (ahí va el código
+          del cupón en 'lot_name').
+        - Buscamos el liquidation.coupon correspondiente y:
+            * ligamos pos_order_id / pos_order_line_id
+            * si está en estado 'new', lo pasamos a 'used'
         """
         res = super().create_from_ui(orders, draft=draft)
-        try:
-            self._liq_mark_coupons_from_orders(orders_response=res)
-        except Exception:
-            _logger.exception("Error marcando cupones de liquidación desde POS")
-        return res
 
-    def _liq_mark_coupons_from_orders(self, orders_response):
-        if not orders_response:
-            return
+        # Si algo raro pasa, no rompemos create_from_ui
+        if not isinstance(res, list):
+            _logger.warning(
+                "[G7][POS-Coupon][BACK] Resultado inesperado de create_from_ui: %s",
+                res,
+            )
+            return res
 
-        # orders_response = [{'id': 42, 'name': 'Order 00042', ...}, ...]
-        order_ids = []
-        for entry in orders_response:
-            if isinstance(entry, dict):
-                oid = entry.get('id')
-                if isinstance(oid, int):
-                    order_ids.append(oid)
+        Coupon = self.env["liquidation.coupon"]
 
-        if not order_ids:
-            return
-
-        pos_orders = self.browse(order_ids)
-        if not pos_orders:
-            return
-
-        Coupon = self.env['liquidation.coupon']
-
-        # Detectar dinámicamente el modelo de trazas (por si se llama liq.trace o liquidation.trace)
-        TraceModel = None
-        for model_name in ('liq.trace', 'liquidation.trace'):
-            if model_name in self.env:
-                TraceModel = self.env[model_name]
-                break
-
-        # Buscar el campo many2one hacia liquidation.coupon
-        coupon_m2o_field = None
-        if TraceModel:
-            for fname, field in TraceModel._fields.items():
-                if getattr(field, 'type', None) == 'many2one' and getattr(field, 'comodel_name', None) == 'liquidation.coupon':
-                    coupon_m2o_field = fname
-                    break
-
-        # Campo de estado del cupón (para ponerlo en usado/usado)
-        coupon_state_field = Coupon._fields.get('liq_state')
-
-        for order in pos_orders:
-            # Sólo cuando la orden está realmente confirmada / cobrada
-            if order.state not in ('paid', 'done', 'invoiced'):
+        for ui_order, result in zip(orders, res):
+            if not isinstance(result, dict):
                 continue
 
-            # Obtener los códigos (nombres de lote/QR) de las líneas del POS
-            coupon_codes = set()
-            for line in order.lines:
-                pack_lots = getattr(line, 'pack_lot_ids', False)
-                for lot in (pack_lots or []):
-                    name = getattr(lot, 'lot_name', False)
-                    if name:
-                        coupon_codes.add(name.strip())
-
-            if not coupon_codes:
+            order_id = result.get("id")
+            if not order_id:
                 continue
 
-            coupons = Coupon.search([('name', 'in', list(coupon_codes))])
-            if not coupons:
-                _logger.info(
-                    "[POS Coupon] No se encontraron cupones para códigos %s en pedido %s",
-                    coupon_codes, order.name or order.pos_reference
-                )
+            order = self.browse(order_id)
+            if not order:
                 continue
+
+            data = ui_order.get("data") or {}
+            ui_lines = [line[2] for line in data.get("lines", []) if len(line) >= 3]
+
+            # Normalmente order.lines está en el mismo orden que ui_lines.
+            # Filtramos por si hubiera líneas de sección/notas.
+            db_lines = order.lines.filtered(lambda l: not l.display_type)
 
             _logger.info(
-                "[POS Coupon] Pedido %s (%s) → códigos %s → cupones %s",
-                order.id, order.name or order.pos_reference, coupon_codes, coupons.ids
+                "[G7][POS-Coupon][BACK] Procesando POS order %s (%s) con %s líneas",
+                order.id,
+                order.pos_reference,
+                len(db_lines),
             )
 
-            for coupon in coupons:
-                vals = {}
+            for idx, ui_line in enumerate(ui_lines):
+                if idx >= len(db_lines):
+                    break
 
-                # Poner estado en 'used' / 'usado' si existe en la selección
-                if coupon_state_field and getattr(coupon_state_field, 'type', None) == 'selection':
-                    selection_items = coupon_state_field.selection or []
-                    selection_keys = {key for key, _ in selection_items}
-                    state_key = None
-                    if 'used' in selection_keys:
-                        state_key = 'used'
-                    elif 'usado' in selection_keys:
-                        state_key = 'usado'
-                    if state_key:
-                        vals[coupon_state_field.name] = state_key
+                db_line = db_lines[idx]
+                pack_lots = ui_line.get("pack_lot_ids") or []
 
-                # Campos “típicos” si existen en el modelo
-                if 'pos_order_id' in coupon._fields:
-                    vals['pos_order_id'] = order.id
-                if 'last_order_name' in coupon._fields:
-                    vals['last_order_name'] = order.name or order.pos_reference
-                if 'last_sale_date' in coupon._fields:
-                    vals['last_sale_date'] = fields.Datetime.now()
-                if 'last_user_id' in coupon._fields:
-                    vals['last_user_id'] = order.user_id.id or self.env.user.id
+                for cmd in pack_lots:
+                    # Formato típico: [0, 0, {'lot_name': 'CODIGO'}]
+                    if not (isinstance(cmd, (list, tuple)) and len(cmd) >= 3):
+                        continue
+                    values = cmd[2] or {}
+                    lot_name = values.get("lot_name")
+                    if not lot_name:
+                        continue
 
-                if vals:
+                    # Buscar cupón por código y producto
+                    coupon = Coupon.search(
+                        [
+                            ("name", "=", lot_name),
+                            ("product_id", "=", db_line.product_id.id),
+                        ],
+                        limit=1,
+                    )
+                    if not coupon:
+                        _logger.info(
+                            "[G7][POS-Coupon][BACK] No se encontró cupón para código %s y producto %s",
+                            lot_name,
+                            db_line.product_id.id,
+                        )
+                        continue
+
+                    vals = {
+                        "pos_order_id": order.id,
+                        "pos_order_line_id": db_line.id,
+                    }
+
+                    # Sólo pasamos a 'used' si aún está en 'new'
+                    if coupon.state == "new":
+                        vals["state"] = "used"
+
+                    _logger.info(
+                        "[G7][POS-Coupon][BACK] Cupón %s marcado usado en POS order %s, línea %s",
+                        coupon.id,
+                        order.id,
+                        db_line.id,
+                    )
                     coupon.write(vals)
 
-                # Crear traza de forma genérica para que dispare la trazabilidad
-                if TraceModel and coupon_m2o_field:
-                    trace_vals = {coupon_m2o_field: coupon.id}
-
-                    # Rellenar campos requeridos de forma genérica
-                    for fname, field in TraceModel._fields.items():
-                        if fname in trace_vals or not getattr(field, 'required', False):
-                            continue
-                        ftype = getattr(field, 'type', None)
-                        if ftype == 'char':
-                            trace_vals[fname] = "Venta POS %s" % (order.name or order.pos_reference)
-                        elif ftype == 'float':
-                            trace_vals[fname] = 0.0
-                        elif ftype == 'integer':
-                            trace_vals[fname] = 1
-                        elif ftype == 'datetime':
-                            trace_vals[fname] = fields.Datetime.now()
-                        elif ftype == 'many2one':
-                            comodel = getattr(field, 'comodel_name', '')
-                            if comodel == 'pos.order':
-                                trace_vals[fname] = order.id
-                            elif comodel == 'res.users':
-                                trace_vals[fname] = order.user_id.id or self.env.user.id
-                            elif comodel == 'res.partner':
-                                trace_vals[fname] = order.partner_id.id or False
-                            elif comodel == 'stock.picking' and order.picking_ids:
-                                trace_vals[fname] = order.picking_ids[0].id
-
-                    TraceModel.create(trace_vals)
-
-        return
+        return res
