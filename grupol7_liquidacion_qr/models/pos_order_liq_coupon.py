@@ -16,19 +16,17 @@ class PosOrder(models.Model):
 
         Estrategia:
         - Llamamos al super para crear los pedidos (res).
-        - Recorremos en paralelo:
-            * orders  -> datos originales que llegaron del POS
-            * res     -> info de los pedidos creados ({'id', 'pos_reference', ...})
-        - Por cada línea, revisamos pack_lot_ids del JSON (ahí va el código
-          del cupón en 'lot_name').
+        - Por cada pedido creado, recorremos sus líneas (pos.order.line).
+        - En cada línea, revisamos pack_lot_ids:
+            * cada registro tiene lot_name (el código del cupón).
         - Buscamos el liquidation.coupon correspondiente y:
             * ligamos pos_order_id / pos_order_line_id
-            * si está en estado 'new', lo pasamos a 'used'
+            * si está en estado 'new', lo pasamos a 'used'.
         """
         res = super().create_from_ui(orders, draft=draft)
 
-        # Si algo raro pasa, no rompemos create_from_ui
         if not isinstance(res, list):
+            # Algo raro: no rompemos el flujo normal del POS
             _logger.warning(
                 "[G7][POS-Coupon][BACK] Resultado inesperado de create_from_ui: %s",
                 res,
@@ -37,10 +35,9 @@ class PosOrder(models.Model):
 
         Coupon = self.env["liquidation.coupon"]
 
-        for ui_order, result in zip(orders, res):
+        for result in res:
             if not isinstance(result, dict):
                 continue
-
             order_id = result.get("id")
             if not order_id:
                 continue
@@ -49,55 +46,39 @@ class PosOrder(models.Model):
             if not order:
                 continue
 
-            data = ui_order.get("data") or {}
-            ui_lines = [line[2] for line in data.get("lines", []) if len(line) >= 3]
-
-            # Normalmente order.lines está en el mismo orden que ui_lines.
-            # Filtramos por si hubiera líneas de sección/notas.
-            db_lines = order.lines.filtered(lambda l: not l.display_type)
-
             _logger.info(
                 "[G7][POS-Coupon][BACK] Procesando POS order %s (%s) con %s líneas",
                 order.id,
                 order.pos_reference,
-                len(db_lines),
+                len(order.lines),
             )
 
-            for idx, ui_line in enumerate(ui_lines):
-                if idx >= len(db_lines):
-                    break
-
-                db_line = db_lines[idx]
-                pack_lots = ui_line.get("pack_lot_ids") or []
-
-                for cmd in pack_lots:
-                    # Formato típico: [0, 0, {'lot_name': 'CODIGO'}]
-                    if not (isinstance(cmd, (list, tuple)) and len(cmd) >= 3):
-                        continue
-                    values = cmd[2] or {}
-                    lot_name = values.get("lot_name")
-                    if not lot_name:
+            for line in order.lines:
+                # Cada pack_lot representa un código capturado en el POS
+                for pack_lot in line.pack_lot_ids:
+                    code = pack_lot.lot_name
+                    if not code:
                         continue
 
                     # Buscar cupón por código y producto
                     coupon = Coupon.search(
                         [
-                            ("name", "=", lot_name),
-                            ("product_id", "=", db_line.product_id.id),
+                            ("name", "=", code),
+                            ("product_id", "=", line.product_id.id),
                         ],
                         limit=1,
                     )
                     if not coupon:
                         _logger.info(
                             "[G7][POS-Coupon][BACK] No se encontró cupón para código %s y producto %s",
-                            lot_name,
-                            db_line.product_id.id,
+                            code,
+                            line.product_id.id,
                         )
                         continue
 
                     vals = {
                         "pos_order_id": order.id,
-                        "pos_order_line_id": db_line.id,
+                        "pos_order_line_id": line.id,
                     }
 
                     # Sólo pasamos a 'used' si aún está en 'new'
@@ -108,7 +89,7 @@ class PosOrder(models.Model):
                         "[G7][POS-Coupon][BACK] Cupón %s marcado usado en POS order %s, línea %s",
                         coupon.id,
                         order.id,
-                        db_line.id,
+                        line.id,
                     )
                     coupon.write(vals)
 
