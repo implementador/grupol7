@@ -13,10 +13,11 @@ class PosOrder(models.Model):
         """Después de crear los pedidos de POS, marcar los cupones como usados
         según el lot_name capturado en el POS.
         """
+        # Llamamos al comportamiento estándar
         res = super().create_from_ui(orders, draft=draft)
 
         # Normalizar el resultado de create_from_ui:
-        # en algunos casos es lista de ids, en otros lista de dicts con 'id'
+        # a veces es lista de ids, a veces lista de dicts con 'id'
         order_ids = []
         if isinstance(res, list):
             for item in res:
@@ -25,7 +26,6 @@ class PosOrder(models.Model):
                     if oid:
                         order_ids.append(oid)
                 else:
-                    # asumir que es un entero (id directo)
                     order_ids.append(item)
 
         if not order_ids:
@@ -39,7 +39,7 @@ class PosOrder(models.Model):
                 "[G7][POS-Coupon][PY] Procesando POS %s (%s)", order.name, order.id
             )
             for line in order.lines:
-                # pack_lot_ids = lotes/QR capturados en la línea de POS
+                # pack_lot_ids = lotes / QR capturados en la línea del POS
                 for pack_lot in line.pack_lot_ids:
                     code = (pack_lot.lot_name or "").strip()
                     if not code:
