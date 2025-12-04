@@ -11,29 +11,24 @@ class PosOrder(models.Model):
     @api.model
     def create_from_ui(self, orders, draft=False):
         """
-        Cuando se valida un pedido del POS, marcar los cupones de liquidación
-        como usados y llenar la trazabilidad (Pos Order / Pos Order Line).
+        Después de crear los pedidos del PdV, localizar los cupones de liquidación
+        usados en esas líneas y actualizar su trazabilidad:
 
-        Estrategia:
-        - Llamamos al super para crear los pedidos (res).
-        - Por cada pedido creado, recorremos sus líneas (pos.order.line).
-        - En cada línea, revisamos pack_lot_ids:
-            * cada registro tiene lot_name (el código del cupón).
-        - Buscamos el liquidation.coupon correspondiente y:
-            * ligamos pos_order_id / pos_order_line_id
-            * si está en estado 'new', lo pasamos a 'used'.
+        - pos_order_id
+        - pos_order_line_id
+        - picking_id (si existe)
+        - state: 'new' -> 'used'
         """
         res = super().create_from_ui(orders, draft=draft)
 
+        # Normalmente res es una lista de dicts: [{'id': 12, 'name': '...', ...}, ...]
         if not isinstance(res, list):
-            # Algo raro: no rompemos el flujo normal del POS
             _logger.warning(
-                "[G7][POS-Coupon][BACK] Resultado inesperado de create_from_ui: %s",
-                res,
+                "[G7][POS-Coupon] Resultado inesperado de create_from_ui: %s", res
             )
             return res
 
-        Coupon = self.env["liquidation.coupon"]
+        Coupon = self.env["liquidation.coupon"].sudo()
 
         for result in res:
             if not isinstance(result, dict):
@@ -47,50 +42,70 @@ class PosOrder(models.Model):
                 continue
 
             _logger.info(
-                "[G7][POS-Coupon][BACK] Procesando POS order %s (%s) con %s líneas",
+                "[G7][POS-Coupon] Procesando POS order %s (%s) con %s líneas",
                 order.id,
                 order.pos_reference,
                 len(order.lines),
             )
 
             for line in order.lines:
-                # Cada pack_lot representa un código capturado en el POS
-                for pack_lot in line.pack_lot_ids:
-                    code = pack_lot.lot_name
-                    if not code:
-                        continue
+                code = None
 
-                    # Buscar cupón por código y producto
-                    coupon = Coupon.search(
-                        [
-                            ("name", "=", code),
-                            ("product_id", "=", line.product_id.id),
-                        ],
-                        limit=1,
-                    )
-                    if not coupon:
-                        _logger.info(
-                            "[G7][POS-Coupon][BACK] No se encontró cupón para código %s y producto %s",
-                            code,
-                            line.product_id.id,
-                        )
-                        continue
+                # 1) Campo técnico x_liq_code si existe
+                if "x_liq_code" in line._fields and line.x_liq_code:
+                    code = line.x_liq_code
 
-                    vals = {
-                        "pos_order_id": order.id,
-                        "pos_order_line_id": line.id,
-                    }
+                # 2) Campo studio x_studio_liq_code si existe
+                elif (
+                    "x_studio_liq_code" in line._fields
+                    and line.x_studio_liq_code
+                ):
+                    code = line.x_studio_liq_code
 
-                    # Sólo pasamos a 'used' si aún está en 'new'
-                    if coupon.state == "new":
-                        vals["state"] = "used"
+                else:
+                    # 3) Patrón en el texto de la línea: "LIQ/<codigo> ..."
+                    txt = (line.display_name or line.name or "").strip()
+                    up = txt.upper()
+                    if up.startswith("LIQ/"):
+                        resto = txt[4:]  # lo que sigue después de "LIQ/"
+                        code = resto.split()[0] if resto else None
 
+                if not code:
+                    # Línea sin cupón LIQ
+                    continue
+
+                # Buscar el cupón por código
+                coupon = Coupon.search([("name", "=", code)], limit=1)
+                if not coupon:
                     _logger.info(
-                        "[G7][POS-Coupon][BACK] Cupón %s marcado usado en POS order %s, línea %s",
-                        coupon.id,
-                        order.id,
+                        "[G7][POS-Coupon] No se encontró cupón con código %s para línea %s",
+                        code,
                         line.id,
                     )
-                    coupon.write(vals)
+                    continue
+
+                vals = {
+                    "pos_order_id": order.id,
+                    "pos_order_line_id": line.id,
+                }
+
+                # Sólo cambiamos a 'used' si todavía está en 'new'
+                if coupon.state == "new":
+                    vals["state"] = "used"
+
+                # Si el pedido POS tiene picking, lo ligamos
+                if order.picking_id:
+                    vals["picking_id"] = order.picking_id.id
+
+                _logger.info(
+                    "[G7][POS-Coupon] Cupón %s (%s) ligado a POS order %s, línea %s, vals=%s",
+                    coupon.id,
+                    coupon.name,
+                    order.id,
+                    line.id,
+                    vals,
+                )
+
+                coupon.write(vals)
 
         return res
