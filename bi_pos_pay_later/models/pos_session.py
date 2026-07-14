@@ -29,13 +29,29 @@ class PosSessionInherit(models.Model):
 		return result
 
 	def _loader_params_pos_order(self):
-		return {
-			'search_params': {
-				'fields': [
-					'is_partial','amount_due',
-				],
-			}
-		}
+	    self.ensure_one()
+	    return {
+	        'search_params': {
+	            'domain': [
+	                (
+	                    'company_id',
+	                    '=',
+	                    self.company_id.id,
+	                ),
+	                (
+	                    'is_partial',
+	                    '=',
+	                    True,
+	                ),
+	            ],
+	            'fields': [
+	                'is_partial',
+	                'amount_due',
+	            ],
+	            'order': 'id desc',
+	        }
+	    }
+
 
 	def _get_pos_ui_pos_order(self, params):
 		return self.env['pos.order'].search_read(**params['search_params'])
