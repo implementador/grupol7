@@ -157,15 +157,37 @@ class PosOrderInherit(models.Model):
 	is_partial = fields.Boolean('Is Partial Payment')
 	amount_due = fields.Float("Amount Due",compute="get_amount_due")
 
-	@api.depends('amount_total','amount_paid')
+	@api.depends(
+	    'amount_total',
+	    'amount_paid',
+	    'currency_id',
+	)
 	def get_amount_due(self):
-		for order in self :
-			if order.amount_paid - order.amount_total >= 0:
-				order.amount_due = 0
-				order.is_partial = False
-			else:
-				order.amount_due = order.amount_total - order.amount_paid
-				
+	    for order in self:
+	        rounding = (
+	            order.currency_id.rounding
+	            or 0.01
+	        )
+
+	        due = (
+	            order._get_rounded_amount(
+	                order.amount_total
+	            )
+	            - order.amount_paid
+	        )
+
+	        if float_is_zero(
+	            due,
+	            precision_rounding=rounding,
+	        ):
+	            due = 0.0
+
+	        order.amount_due = max(
+	            due,
+	            0.0,
+	        )
+
+
 	def write(self, vals):
 		for order in self:
 			if order.name == '/' and order.is_partial :
@@ -181,7 +203,10 @@ class PosOrderInherit(models.Model):
 			return super(PosOrderInherit, self).action_pos_order_paid()
 		if self.is_partial:
 			if self._is_pos_order_paid():
-				self.write({'state': 'paid'})
+				self.write({
+				    'state': 'paid',
+				    'is_partial': False,
+				})
 				if self.picking_ids:
 					return True
 				else :
