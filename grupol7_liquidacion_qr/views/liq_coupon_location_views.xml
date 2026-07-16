@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Inserta ubicación POS y existencia calculada en el formulario del cupón -->
+  <record id="view_liquidation_coupon_form_inherit_loc" model="ir.ui.view">
+    <field name="name">liquidation.coupon.form.loc</field>
+    <field name="model">liquidation.coupon</field>
+    <!-- Debe coincidir con el ID del form base del cupón dentro de ESTE módulo -->
+    <field name="inherit_id" ref="view_liq_coupon_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//form/sheet/group" position="inside">
+        <group string="STOCK">
+          <field name="location_id"/>
+          <field name="qty_at_location" readonly="1"/>
+        </group>
+      </xpath>
+    </field>
+  </record>
+</odoo>

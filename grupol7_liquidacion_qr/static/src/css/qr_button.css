@@ -1,0 +1,7 @@
+.pos .control-buttons .g7-coupon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+}
+.pos .control-buttons .g7-coupon .label { display: inline !important; white-space: nowrap; }

@@ -1,0 +1,105 @@
+<odoo>
+
+  <!-- LISTA -->
+  <record id="view_liq_coupon_tree" model="ir.ui.view">
+    <field name="name">liquidation.coupon.tree</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="product_id"/>
+        <field name="damage_grade"/>
+        <field name="clearance_price"/>
+        <field name="state"/>
+        <field name="pos_order_id"/>
+        <field name="sale_order_id"/>
+        <field name="expiration_date"/>
+        <!-- contador visible también en lista -->
+        <field name="reprint_count"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- FORMULARIO -->
+  <record id="view_liq_coupon_form" model="ir.ui.view">
+    <field name="name">liquidation.coupon.form</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="arch" type="xml">
+      <form string="Cupón de liquidación">
+        <header>
+          <!-- Imprime vía método Python -->
+          <button name="action_print_qr"
+                  string="Imprimir QR"
+                  type="object"
+                  class="btn-primary"/>
+        </header>
+
+        <sheet>
+          <group>
+            <group>
+              <field name="name" readonly="1"/>
+              <field name="product_id"/>
+              <field name="lot_id"/>
+              <field name="damage_grade"/>
+            </group>
+            <group>
+              <field name="clearance_price"/>
+              <field name="expiration_date"/>
+              <field name="state"/>
+              <field name="company_id"/>
+            </group>
+          </group>
+
+          <group>
+            <field name="pos_allowed_ids" widget="many2many_tags"/>
+            <field name="notes"/>
+          </group>
+
+          <group string="Impresiones">
+            <field name="reprint_count" readonly="1"/>
+            <field name="last_printed_at" readonly="1"/>
+            <field name="last_printed_by_id" readonly="1"/>
+          </group>
+
+          <notebook>
+            <page string="Trazabilidad">
+              <group>
+                <field name="pos_order_id" readonly="1"/>
+                <field name="pos_order_line_id" readonly="1"/>
+                <field name="sale_order_id" readonly="1"/>
+                <field name="sale_order_line_id" readonly="1"/>
+              </group>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- Acción de ventana principal -->
+  <record id="action_liq_coupon" model="ir.actions.act_window">
+    <field name="name">Cupones de liquidación</field>
+    <field name="res_model">liquidation.coupon</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <!-- Menú -->
+  <menuitem id="menu_liq_root" name="Liquidación" parent="stock.menu_stock_root" sequence="80"/>
+  <menuitem id="menu_liq_coupon" name="Cupones" parent="menu_liq_root" action="action_liq_coupon" sequence="10"/>
+
+  <!-- Wizard: Generar cupones -->
+
+
+  <!-- Campo precio liquidación con IVA debajo de clearance_price -->
+  <record id="view_liq_coupon_form_public_price" model="ir.ui.view">
+    <field name="name">liquidation.coupon.form.public_price</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="inherit_id" ref="grupol7_liquidacion_qr.view_liq_coupon_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='clearance_price']" position="after">
+        <field name="public_clearance_price" readonly="1"/>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

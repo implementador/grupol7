@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!-- Override vacio: solo existe para que el manifest no falle -->
+  </data>
+</odoo>
