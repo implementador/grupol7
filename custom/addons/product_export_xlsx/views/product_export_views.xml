@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_product_export_xlsx_tree" model="ir.ui.view">
+        <field name="name">product.export.xlsx.tree</field>
+        <field name="model">product.export.xlsx</field>
+        <field name="arch" type="xml">
+            <tree create="false" delete="false">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="requested_by"/>
+                <field name="requested_at"/>
+                <field name="product_count"/>
+                <field name="user_column_count"/>
+                <field name="technical_column_count"/>
+                <field name="missing_count"/>
+                <field name="file_size_mb"/>
+                <field name="finished_at"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_product_export_xlsx_form" model="ir.ui.view">
+        <field name="name">product.export.xlsx.form</field>
+        <field name="model">product.export.xlsx</field>
+        <field name="arch" type="xml">
+
+            <form create="false" edit="false" delete="false">
+
+                <header>
+
+                    <button
+                        name="action_download"
+                        string="Descargar Excel"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'done')]}"
+                    />
+
+                    <button
+                        name="action_retry"
+                        string="Reintentar"
+                        type="object"
+                        attrs="{'invisible': [('state', '!=', 'error')]}"
+                    />
+
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="pending,processing,done,error"
+                    />
+
+                </header>
+
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+
+                        <group string="Generacion">
+                            <field name="requested_by"/>
+                            <field name="requested_at"/>
+                            <field name="started_at"/>
+                            <field name="finished_at"/>
+                            <field name="progress_message"/>
+                        </group>
+
+                        <group string="Resultado">
+                            <field name="product_count"/>
+                            <field name="user_column_count"/>
+                            <field name="technical_column_count"/>
+                            <field name="studio_product_count"/>
+                            <field name="studio_template_count"/>
+                            <field name="missing_count"/>
+                            <field name="file_size_mb"/>
+                            <field name="attachment_id"/>
+                        </group>
+
+                    </group>
+
+                    <group
+                        string="Error"
+                        attrs="{'invisible': [('state', '!=', 'error')]}"
+                    >
+                        <field
+                            name="error_message"
+                            nolabel="1"
+                        />
+                    </group>
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="action_product_export_xlsx" model="ir.actions.act_window">
+        <field name="name">Historial de exportaciones</field>
+        <field name="res_model">product.export.xlsx</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
