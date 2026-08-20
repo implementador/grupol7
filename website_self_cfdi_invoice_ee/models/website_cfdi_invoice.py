@@ -79,9 +79,19 @@ class website_self_invoice_web(models.Model):
         result = super(website_self_invoice_web, self).write(values)
         return result
 
-    @api.model
-    def create(self, values):
-        result = super(website_self_invoice_web, self).create(values)
+    @api.model_create_multi
+    def create(self, vals_list):
+        results = super(
+            website_self_invoice_web,
+            self,
+        ).create(vals_list)
+
+        for result in results:
+            self._process_created_invoice_request(result)
+
+        return results
+
+    def _process_created_invoice_request(self, result):
         ### Validacion de Campos Obligatorios ###
         if not result.rfc_partner or not result.order_number or not result.monto_total:  # or not result.mail_to:
             result.write({

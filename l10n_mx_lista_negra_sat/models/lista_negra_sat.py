@@ -8,6 +8,7 @@ import io
 
 class ListaNegraSat(models.Model):
     _name = "lista.negra.sat"
+    _description = "Lista Negra SAT"
     
     vat=fields.Char(string='RFC')
     name = fields.Char(string='Nombre del Contribuyente')
