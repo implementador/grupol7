@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="group_product_export_xlsx" model="res.groups">
+        <field name="name">Exportación de productos</field>
+        <field
+            name="category_id"
+            ref="base.module_category_usability"
+        />
+    </record>
+
+</odoo>

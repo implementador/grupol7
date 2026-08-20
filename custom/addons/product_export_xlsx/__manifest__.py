@@ -1,7 +1,7 @@
 {
     "name": "Product XLSX Export",
     "summary": "Generacion y descarga del catalogo completo de productos",
-    "version": "16.0.1.4.0",
+    "version": "16.0.1.5.0",
     "category": "Inventory/Inventory",
     "author": "Grupo Linea 7",
     "license": "LGPL-3",
@@ -14,6 +14,7 @@
         "python": ["xlsxwriter"],
     },
     "data": [
+        "security/product_export_security.xml",
         "security/ir.model.access.csv",
         "views/product_export_views.xml",
         "views/product_export_wizard_views.xml",
