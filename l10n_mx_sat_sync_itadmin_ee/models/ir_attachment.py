@@ -73,43 +73,92 @@ class IrAttachment(models.Model):
                                                                          'rfc_tercero', 'cfdi_uuid', 'cfdi_type',
                                                                          'cfdi_total']
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         ctx = self._context.copy()
+
         if ctx.get('is_fiel_attachment'):
-            datas = vals.get('datas')
-            if datas:
+            for vals in vals_list:
+                datas = vals.get('datas')
+
+                if not datas:
+                    continue
+
                 xml_content = base64.b64decode(datas)
+
                 if b'xmlns:schemaLocation' in xml_content:
-                    xml_content = xml_content.replace(b'xmlns:schemaLocation', b'xsi:schemaLocation')
+                    xml_content = xml_content.replace(
+                        b'xmlns:schemaLocation',
+                        b'xsi:schemaLocation',
+                    )
+
                 try:
                     tree = etree.fromstring(xml_content)
                 except Exception as e:
                     _logger.error('error : ' + str(e))
                     raise
+
                 try:
                     ns = tree.nsmap
-                    ns.update({'re': 'http://exslt.org/regular-expressions'})
+                    ns.update({
+                        're': 'http://exslt.org/regular-expressions'
+                    })
                 except Exception:
-                    ns = {'re': 'http://exslt.org/regular-expressions'}
+                    ns = {
+                        're': 'http://exslt.org/regular-expressions'
+                    }
 
-                tfd_namespace = {'tfd': 'http://www.sat.gob.mx/TimbreFiscalDigital'}
-                tfd_elements = tree.xpath("//tfd:TimbreFiscalDigital", namespaces=tfd_namespace)
-                tfd_uuid = tfd_elements and tfd_elements[0].get('UUID')
-                cfdi_type = vals.get('cfdi_type', 'I')
+                tfd_namespace = {
+                    'tfd':
+                    'http://www.sat.gob.mx/TimbreFiscalDigital'
+                }
 
-                if cfdi_type in ['I', 'E', 'P', 'N', 'T']:
+                tfd_elements = tree.xpath(
+                    "//tfd:TimbreFiscalDigital",
+                    namespaces=tfd_namespace,
+                )
+
+                tfd_uuid = (
+                    tfd_elements
+                    and tfd_elements[0].get('UUID')
+                )
+
+                cfdi_type = vals.get(
+                    'cfdi_type',
+                    'I',
+                )
+
+                if cfdi_type in [
+                    'I',
+                    'E',
+                    'P',
+                    'N',
+                    'T',
+                ]:
                     element_tag = 'Receptor'
                 else:
                     element_tag = 'Emisor'
+
                 try:
-                    elements = tree.xpath("//*[re:test(local-name(), '%s','i')]" % (element_tag), namespaces=ns)
+                    elements = tree.xpath(
+                        "//*[re:test(local-name(), '%s','i')]"
+                        % element_tag,
+                        namespaces=ns,
+                    )
                 except Exception:
-                    _logger.info("No encontró al Emisor/Receptor")
+                    _logger.info(
+                        "No encontró al Emisor/Receptor"
+                    )
                     elements = None
-                client_rfc, client_name = '', ''
+
+                client_rfc = ''
+                client_name = ''
+
                 if elements:
-                    attrib_dict = CaselessDictionary(dict(elements[0].attrib))
+                    attrib_dict = CaselessDictionary(
+                        dict(elements[0].attrib)
+                    )
+
                     client_rfc = attrib_dict.get('rfc')
                     client_name = attrib_dict.get('nombre')
 
@@ -117,11 +166,21 @@ class IrAttachment(models.Model):
                     'cfdi_uuid': tfd_uuid,
                     'rfc_tercero': client_rfc,
                     'nombre_tercero': client_name,
-                    'cfdi_total': tree.get('Total', tree.get('total')),
-                    'date_cfdi': tree.get('Fecha', tree.get('fecha')),
-                    'serie_folio': tree.get('Folio', tree.get('folio'))
+                    'cfdi_total': tree.get(
+                        'Total',
+                        tree.get('total'),
+                    ),
+                    'date_cfdi': tree.get(
+                        'Fecha',
+                        tree.get('fecha'),
+                    ),
+                    'serie_folio': tree.get(
+                        'Folio',
+                        tree.get('folio'),
+                    ),
                 })
-        return super(IrAttachment, self).create(vals)
+
+        return super(IrAttachment, self).create(vals_list)
 
     def action_view_payments(self):
         payments = self.mapped('payment_ids')

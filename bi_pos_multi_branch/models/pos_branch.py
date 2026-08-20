@@ -11,14 +11,22 @@ from odoo.tools import float_is_zero
 class pos_session(models.Model):
     _inherit = 'pos.session'
 
-    @api.model
-    def create(self, vals):
-        res = super(pos_session, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(pos_session, self).create(vals_list)
+
         user_pool = self.env['res.users']
-        branch_id = user_pool.browse(self.env.uid).branch_id.id or False
-        if branch_id in res.config_id.pos_branch_ids.ids:
-            res.branch_id = branch_id
-        return res
+        branch_id = (
+            user_pool.browse(self.env.uid).branch_id.id
+            or False
+        )
+
+        if branch_id:
+            for record in records:
+                if branch_id in record.config_id.pos_branch_ids.ids:
+                    record.branch_id = branch_id
+
+        return records
 
     def _loader_params_pos_session(self):
         res = super(pos_session, self)._loader_params_pos_session()
@@ -53,7 +61,9 @@ class pos_config(models.Model):
     _inherit = 'pos.config'
 
     pos_branch_ids = fields.Many2many(
-        'res.branch', id1='user_id', id2='branch_id', string='Branch')
+        'res.branch',
+        string='Branch',
+    )
 
     
 
@@ -122,11 +132,14 @@ class pos_order(models.Model):
         values['branch_id'] = self.branch_id and self.branch_id.id or False
         return values
 
-    @api.model
-    def create(self, vals):
-        res = super(pos_order, self).create(vals)
-        res.branch_id = res.session_id.branch_id.id
-        return res
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(pos_order, self).create(vals_list)
+
+        for record in records:
+            record.branch_id = record.session_id.branch_id.id
+
+        return records
 
     branch_id = fields.Many2one('res.branch', 'Branch')
 

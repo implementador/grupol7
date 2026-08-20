@@ -170,9 +170,9 @@ class ESignatureCertificate(models.Model):
             except Exception:
                 raise ValidationError(_('The certificate key and/or password is/are invalid.'))
 
-    @api.model
-    def create(self, data):
-        res = super(ESignatureCertificate, self).create(data)
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(ESignatureCertificate, self).create(vals_list)
         self.clear_caches()
         return res
 
