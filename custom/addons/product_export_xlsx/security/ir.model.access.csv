@@ -1,3 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_product_export_xlsx_manager,product.export.xlsx manager,model_product_export_xlsx,stock.group_stock_manager,1,1,1,1
-access_product_export_xlsx_wizard_manager,product.export.xlsx.wizard manager,model_product_export_xlsx_wizard,stock.group_stock_manager,1,1,1,1
+access_product_export_xlsx_manager,product.export.xlsx user,model_product_export_xlsx,product_export_xlsx.group_product_export_xlsx,1,1,1,1
+access_product_export_xlsx_wizard_manager,product.export.xlsx.wizard user,model_product_export_xlsx_wizard,product_export_xlsx.group_product_export_xlsx,1,1,1,1
