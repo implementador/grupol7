@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_l7_consignacion_price_report_wizard_form" model="ir.ui.view">
+        <field name="name">l7.consignacion.price.report.wizard.form</field>
+        <field name="model">l7.consignacion.price.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Lista de consignacion">
+                <sheet>
+
+                    <group>
+                        <field name="consignacion_location_id" invisible="1"/>
+
+                        <field
+                            name="pricelist_id"
+                            readonly="1"
+                            options="{'no_create': True, 'no_open': True}"
+                        />
+
+                        <field
+                            name="picking_id"
+                            domain="[('location_dest_id', '=', consignacion_location_id), ('state', '!=', 'cancel')]"
+                            options="{'no_create': True}"
+                        />
+                    </group>
+
+                    <group
+                        string="Datos de la salida"
+                        attrs="{'invisible': [('picking_id', '=', False)]}"
+                    >
+                        <field name="company_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="origin" readonly="1"/>
+                        <field name="state" readonly="1"/>
+                        <field name="scheduled_date" readonly="1"/>
+
+                        <field
+                            name="date_done"
+                            readonly="1"
+                            attrs="{'invisible': [('state', '!=', 'done')]}"
+                        />
+                    </group>
+
+                    <separator string="Precio Empleado = Precio Mayoreo - 3%"/>
+
+                    <div class="alert alert-info" role="alert">
+                        <strong>Cantidad utilizada:</strong>
+                        si la salida esta realizada se toma la cantidad
+                        realmente entregada. Si esta pendiente se toma
+                        la cantidad programada.
+                    </div>
+
+                    <div class="alert alert-secondary" role="alert">
+                        <strong>Precios:</strong>
+                        se utiliza la lista PRECIO MAYOREO vigente
+                        al momento de generar el archivo.
+                    </div>
+
+                </sheet>
+
+                <footer>
+                    <button
+                        name="action_generate_xlsx"
+                        type="object"
+                        string="Descargar Excel"
+                        class="btn-primary"
+                    />
+
+                    <button
+                        string="Cancelar"
+                        class="btn-secondary"
+                        special="cancel"
+                    />
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l7_consignacion_price_report_wizard" model="ir.actions.act_window">
+        <field name="name">Lista de consignacion</field>
+        <field name="res_model">l7.consignacion.price.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_l7_consignacion_price_report"
+        name="Lista de consignacion"
+        parent="stock.menu_warehouse_report"
+        action="action_l7_consignacion_price_report_wizard"
+        sequence="90"
+        groups="l7_consignacion_price_report.group_consignacion_price_report"
+    />
+
+</odoo>

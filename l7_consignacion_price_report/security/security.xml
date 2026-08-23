@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="module_category_l7_reports" model="ir.module.category">
+        <field name="name">Reportes Grupo L7</field>
+        <field name="description">Permisos especiales para reportes internos de Grupo L7</field>
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="group_consignacion_price_report" model="res.groups">
+        <field name="name">Lista de consignacion</field>
+        <field name="category_id" ref="module_category_l7_reports"/>
+        <field name="comment">Permite consultar y exportar salidas a consignacion con precio mayoreo y precio empleado.</field>
+    </record>
+
+</odoo>
