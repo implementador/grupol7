@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="group_l7_insumos_report" model="res.groups">
+        <field name="name">Reporte gasto de insumos</field>
+        <field name="category_id" ref="base.module_category_usability"/>
+    </record>
+
+</odoo>

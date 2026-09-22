@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Regla POS para cupones LIQ: acepta LIQ/xxxxxxxx o solo xxxxxxxx -->
+  <record id="barcode_rule_liq_coupon_pos" model="barcode.rule">
+    <field name="name">L7: Cupón LIQ (POS)</field>
+    <!-- En Odoo 16, 'client' = enviar al POS/JS (no busca producto) -->
+    <field name="type">client</field>
+    <field name="encoding">any</field>
+    <field name="pattern">^(?:LIQ/)?([A-Za-z0-9]+)$</field>
+    <field name="alias">LIQCOUPON</field>
+    <field name="sequence">1</field>
+    <!-- Usa la nomenclatura por defecto; si tu PdV usa otra, abajo copio la regla -->
+    <field name="barcode_nomenclature_id" ref="barcodes.default_barcode_nomenclature"/>
+  </record>
+</odoo>
