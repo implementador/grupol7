@@ -224,38 +224,54 @@ class L7StockApiImageController(http.Controller):
         # inventario del cliente.
         # ---------------------------------------------------------------------
 
+        quant_domain = [
+            (
+                "company_id",
+                "=",
+                client.company_id.id,
+            ),
+            (
+                "location_id.usage",
+                "=",
+                "internal",
+            ),
+        ]
+
+        if client.warehouse_id:
+            quant_domain.append(
+                (
+                    "location_id",
+                    "child_of",
+                    client.warehouse_id.lot_stock_id.id,
+                )
+            )
+
+        quant_domain.extend(
+            [
+                (
+                    "product_id",
+                    "=",
+                    product.id,
+                ),
+                "|",
+                (
+                    "quantity",
+                    "!=",
+                    0,
+                ),
+                (
+                    "reserved_quantity",
+                    "!=",
+                    0,
+                ),
+            ]
+        )
+
         quant_exists = (
             request.env["stock.quant"]
             .sudo()
             .search_count(
-                [
-                    (
-                        "company_id",
-                        "=",
-                        client.company_id.id,
-                    ),
-                    (
-                        "location_id.usage",
-                        "=",
-                        "internal",
-                    ),
-                    (
-                        "product_id",
-                        "=",
-                        product.id,
-                    ),
-                    "|",
-                    (
-                        "quantity",
-                        "!=",
-                        0,
-                    ),
-                    (
-                        "reserved_quantity",
-                        "!=",
-                        0,
-                    ),
-                ]
+                quant_domain
             )
         )
 

@@ -1,7 +1,7 @@
 {
     "name": "L7 Stock API",
-    "version": "16.0.1.3.1",
-    "summary": "API externa de existencias de solo lectura por empresa",
+    "version": "16.0.1.4.0",
+    "summary": "API externa de existencias de solo lectura por empresa y almacen",
     "description": """
 L7 Stock API
 ============
@@ -11,6 +11,7 @@ API dedicada de solo lectura para consultar existencias.
 Caracteristicas:
 - Token independiente por proveedor.
 - Empresa fija por token.
+- Almacen opcional fijo por token.
 - Solo endpoints HTTP GET.
 - No expone ORM generico de Odoo.
 - No permite POST, PUT, PATCH o DELETE.

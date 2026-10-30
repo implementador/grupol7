@@ -8,7 +8,7 @@ from odoo import fields, http
 from odoo.http import request
 
 
-API_VERSION = "1.3"
+API_VERSION = "1.4"
 MAX_PAGE_SIZE = 1000
 
 
@@ -321,6 +321,59 @@ class L7StockApiSummaryController(http.Controller):
         return result
 
     # -------------------------------------------------------------------------
+    # STOCK SCOPE
+    # -------------------------------------------------------------------------
+
+    def _stock_scope_domain(
+        self,
+        client,
+    ):
+        domain = [
+            (
+                "company_id",
+                "=",
+                client.company_id.id,
+            ),
+            (
+                "location_id.usage",
+                "=",
+                "internal",
+            ),
+        ]
+
+        if client.warehouse_id:
+            domain.append(
+                (
+                    "location_id",
+                    "child_of",
+                    client.warehouse_id.lot_stock_id.id,
+                )
+            )
+
+        return domain
+
+    def _warehouse_payload(
+        self,
+        client,
+    ):
+        warehouse = client.warehouse_id
+
+        if not warehouse:
+            return None
+
+        return {
+            "id": warehouse.id,
+            "name": warehouse.name,
+            "code": warehouse.code,
+            "stock_location_id": (
+                warehouse.lot_stock_id.id
+            ),
+            "stock_location": (
+                warehouse.lot_stock_id.complete_name
+            ),
+        }
+
+    # -------------------------------------------------------------------------
     # SIGNED IMAGE URL
     # -------------------------------------------------------------------------
 
@@ -459,34 +512,29 @@ class L7StockApiSummaryController(http.Controller):
         # Solo productos con cantidad o reserva distinta de cero.
         # ---------------------------------------------------------------------
 
-        domain = [
-            (
-                "company_id",
-                "=",
-                company.id,
-            ),
-            (
-                "location_id.usage",
-                "=",
-                "internal",
-            ),
-            (
-                "product_id.default_code",
-                "!=",
-                False,
-            ),
-            "|",
-            (
-                "quantity",
-                "!=",
-                0,
-            ),
-            (
-                "reserved_quantity",
-                "!=",
-                0,
-            ),
-        ]
+        domain = (
+            self._stock_scope_domain(
+                client
+            )
+            + [
+                (
+                    "product_id.default_code",
+                    "!=",
+                    False,
+                ),
+                "|",
+                (
+                    "quantity",
+                    "!=",
+                    0,
+                ),
+                (
+                    "reserved_quantity",
+                    "!=",
+                    0,
+                ),
+            ]
+        )
 
         grouped = (
             request.env["stock.quant"]
@@ -729,6 +777,9 @@ class L7StockApiSummaryController(http.Controller):
                 "id": company.id,
                 "name": company.name,
             },
+            "warehouse": self._warehouse_payload(
+                client
+            ),
             "generated_at": (
                 datetime.utcnow()
                 .replace(

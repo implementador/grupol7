@@ -8,7 +8,7 @@ from odoo.http import request
 from odoo.osv import expression
 
 
-API_VERSION = "1.3"
+API_VERSION = "1.4"
 MAX_MULTI_VALUES = 100
 
 
@@ -337,17 +337,72 @@ class L7StockApiController(http.Controller):
         return matches[-1]
 
     # -------------------------------------------------------------------------
+    # STOCK SCOPE
+    # -------------------------------------------------------------------------
+
+    def _stock_scope_domain(
+        self,
+        client,
+    ):
+        domain = [
+            (
+                "company_id",
+                "=",
+                client.company_id.id,
+            ),
+            (
+                "location_id.usage",
+                "=",
+                "internal",
+            ),
+        ]
+
+        if client.warehouse_id:
+            domain.append(
+                (
+                    "location_id",
+                    "child_of",
+                    client.warehouse_id.lot_stock_id.id,
+                )
+            )
+
+        return domain
+
+    def _warehouse_payload(
+        self,
+        client,
+    ):
+        warehouse = client.warehouse_id
+
+        if not warehouse:
+            return None
+
+        return {
+            "id": warehouse.id,
+            "name": warehouse.name,
+            "code": warehouse.code,
+            "stock_location_id": (
+                warehouse.lot_stock_id.id
+            ),
+            "stock_location": (
+                warehouse.lot_stock_id.complete_name
+            ),
+        }
+
+    # -------------------------------------------------------------------------
     # REQUESTED ITEM SUMMARY
     # -------------------------------------------------------------------------
 
     def _requested_product_summary(
         self,
-        company,
+        client,
         field_name,
         requested_values,
     ):
         if not requested_values:
             return []
+
+        company = client.company_id
 
         Product = (
             request.env["product.product"]
@@ -395,12 +450,19 @@ class L7StockApiController(http.Controller):
         qty_by_product = {}
 
         if product_ids:
-            summary_domain = [
-                ("company_id", "=", company.id),
-                ("location_id.usage", "=", "internal"),
-                ("quantity", ">", 0),
-                ("product_id", "in", product_ids),
-            ]
+            summary_domain = (
+                self._stock_scope_domain(
+                    client
+                )
+                + [
+                    ("quantity", ">", 0),
+                    (
+                        "product_id",
+                        "in",
+                        product_ids,
+                    ),
+                ]
+            )
 
             grouped = (
                 request.env["stock.quant"]
@@ -548,6 +610,9 @@ class L7StockApiController(http.Controller):
                 "id": client.company_id.id,
                 "name": client.company_id.name,
             },
+            "warehouse": self._warehouse_payload(
+                client
+            ),
             "capabilities": {
                 "single_sku": True,
                 "multiple_skus": True,
@@ -739,11 +804,14 @@ class L7StockApiController(http.Controller):
         # Siempre procede del token.
         # ---------------------------------------------------------------------
 
-        domain = [
-            ("company_id", "=", company.id),
-            ("location_id.usage", "=", "internal"),
-            ("quantity", ">", 0),
-        ]
+        domain = (
+            self._stock_scope_domain(
+                client
+            )
+            + [
+                ("quantity", ">", 0),
+            ]
+        )
 
         # ---------------------------------------------------------------------
         # SKU individual: compatibilidad V1.0
@@ -1012,7 +1080,7 @@ class L7StockApiController(http.Controller):
 
         requested_sku_summary = (
             self._requested_product_summary(
-                company,
+                client,
                 "default_code",
                 skus,
             )
@@ -1022,7 +1090,7 @@ class L7StockApiController(http.Controller):
 
         requested_barcode_summary = (
             self._requested_product_summary(
-                company,
+                client,
                 "barcode",
                 barcodes,
             )
@@ -1037,6 +1105,9 @@ class L7StockApiController(http.Controller):
                 "id": company.id,
                 "name": company.name,
             },
+            "warehouse": self._warehouse_payload(
+                client
+            ),
             "generated_at": (
                 datetime.utcnow()
                 .replace(microsecond=0)
