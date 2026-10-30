@@ -1,7 +1,8 @@
 import hashlib
 import secrets
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class L7StockApiClient(models.Model):
@@ -30,6 +31,18 @@ class L7StockApiClient(models.Model):
             "La API solamente devolvera existencias correspondientes "
             "a esta empresa. El consumidor no puede cambiarla mediante "
             "parametros de la peticion."
+        ),
+    )
+
+    warehouse_id = fields.Many2one(
+        "stock.warehouse",
+        string="Almacen autorizado",
+        ondelete="restrict",
+        help=(
+            "Si se especifica un almacen, la API solamente devolvera "
+            "existencias de la ubicacion de Existencias de ese almacen "
+            "y sus sububicaciones internas. Si se deja vacio, conserva "
+            "el alcance completo de la empresa."
         ),
     )
 
@@ -69,6 +82,24 @@ class L7StockApiClient(models.Model):
     notes = fields.Text(
         string="Notas",
     )
+
+    @api.constrains(
+        "company_id",
+        "warehouse_id",
+    )
+    def _check_warehouse_company(self):
+        for record in self:
+            if (
+                record.warehouse_id
+                and record.warehouse_id.company_id
+                != record.company_id
+            ):
+                raise ValidationError(
+                    _(
+                        "El almacen autorizado debe pertenecer "
+                        "a la misma empresa del cliente API."
+                    )
+                )
 
     _sql_constraints = [
         (
