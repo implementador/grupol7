@@ -1,6 +1,6 @@
 {
     "name": "L7 Stock API",
-    "version": "16.0.1.4.0",
+    "version": "16.0.1.5.0",
     "summary": "API externa de existencias de solo lectura por empresa y almacen",
     "description": """
 L7 Stock API
@@ -36,6 +36,8 @@ Caracteristicas:
     "data": [
         "security/ir.model.access.csv",
         "views/api_client_views.xml",
+        "views/clubclap_webhook_views.xml",
+        "data/clubclap_webhook_cron.xml",
     ],
     "installable": True,
     "application": False,
