@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_l7_stock_api_client_webhook_form" model="ir.ui.view">
+        <field name="name">l7.stock.api.client.webhook.form</field>
+        <field name="model">l7.stock.api.client</field>
+        <field
+            name="inherit_id"
+            ref="l7_stock_api.view_l7_stock_api_client_form"
+        />
+
+        <field name="arch" type="xml">
+
+            <xpath
+                expr="//field[@name='max_page_size']/parent::group"
+                position="after"
+            >
+                <group string="Webhook ClubClap">
+
+                    <field name="webhook_enabled"/>
+
+                    <field
+                        name="sold_location_id"
+                        domain="[
+                            ('company_id', '=', company_id),
+                            ('usage', '=', 'internal')
+                        ]"
+                        options="{
+                            'no_create': True,
+                            'no_create_edit': True
+                        }"
+                    />
+
+                    <field
+                        name="webhook_token_last4"
+                        readonly="1"
+                    />
+
+                    <field
+                        name="webhook_token_hash"
+                        invisible="1"
+                    />
+
+                    <field name="webhook_confirmed_statuses"/>
+                    <field name="webhook_paid_statuses"/>
+
+                    <div
+                        colspan="2"
+                        class="alert alert-warning"
+                        role="alert"
+                    >
+                        El token del webhook es independiente
+                        del token utilizado para consultar
+                        existencias. La autenticación definitiva
+                        se ajustará a la documentación de ClubClap.
+                    </div>
+
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <record id="view_l7_clubclap_event_tree" model="ir.ui.view">
+        <field name="name">l7.clubclap.webhook.event.tree</field>
+        <field name="model">l7.clubclap.webhook.event</field>
+
+        <field name="arch" type="xml">
+            <tree
+                string="Webhooks ClubClap"
+                create="false"
+                edit="false"
+            >
+                <field name="received_at"/>
+                <field name="event_id"/>
+                <field name="order_id"/>
+                <field name="order_status"/>
+                <field name="payment_status"/>
+                <field name="state"/>
+                <field name="attempt_count"/>
+                <field name="picking_id"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="view_l7_clubclap_event_form" model="ir.ui.view">
+        <field name="name">l7.clubclap.webhook.event.form</field>
+        <field name="model">l7.clubclap.webhook.event</field>
+
+        <field name="arch" type="xml">
+            <form
+                string="Webhook ClubClap"
+                create="false"
+                edit="false"
+            >
+                <sheet>
+
+                    <group>
+                        <group>
+                            <field name="received_at"/>
+                            <field name="client_id"/>
+                            <field name="event_id"/>
+                            <field name="event_type"/>
+                            <field name="order_id"/>
+                        </group>
+
+                        <group>
+                            <field name="order_status"/>
+                            <field name="payment_status"/>
+                            <field name="state"/>
+                            <field name="attempt_count"/>
+                            <field name="processed_at"/>
+                            <field name="picking_id"/>
+                        </group>
+                    </group>
+
+                    <group string="Detalle">
+                        <field name="error_message"/>
+                    </group>
+
+                    <group string="Payload original">
+                        <field
+                            name="payload_json"
+                            nolabel="1"
+                        />
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_l7_clubclap_event" model="ir.actions.act_window">
+        <field name="name">Webhooks ClubClap</field>
+        <field name="res_model">l7.clubclap.webhook.event</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <record id="view_l7_clubclap_order_line_tree" model="ir.ui.view">
+        <field name="name">l7.clubclap.order.line.tree</field>
+        <field name="model">l7.clubclap.order.line</field>
+
+        <field name="arch" type="xml">
+            <tree
+                string="Pedidos ClubClap"
+                create="false"
+                edit="false"
+            >
+                <field name="order_id"/>
+                <field name="sku"/>
+                <field name="product_id"/>
+                <field name="ordered_qty"/>
+                <field name="moved_qty"/>
+                <field name="last_event_id"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_l7_clubclap_order_line" model="ir.actions.act_window">
+        <field name="name">Pedidos ClubClap</field>
+        <field name="res_model">l7.clubclap.order.line</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+
+    <menuitem
+        id="menu_l7_clubclap_webhooks"
+        name="Webhooks ClubClap"
+        parent="l7_stock_api.menu_l7_stock_api_root"
+        action="action_l7_clubclap_event"
+        sequence="30"
+        groups="base.group_system"
+    />
+
+    <menuitem
+        id="menu_l7_clubclap_orders"
+        name="Pedidos ClubClap"
+        parent="l7_stock_api.menu_l7_stock_api_root"
+        action="action_l7_clubclap_order_line"
+        sequence="40"
+        groups="base.group_system"
+    />
+
+</odoo>
