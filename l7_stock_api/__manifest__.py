@@ -1,6 +1,6 @@
 {
     "name": "L7 Stock API",
-    "version": "16.0.1.5.0",
+    "version": "16.0.1.6.0",
     "summary": "API externa de existencias de solo lectura por empresa y almacen",
     "description": """
 L7 Stock API
@@ -29,10 +29,7 @@ Caracteristicas:
 """,
     "author": "Grupo L7",
     "license": "LGPL-3",
-    "depends": [
-        "base",
-        "stock",
-    ],
+    "depends": ['base', 'stock', 'sale_stock'],
     "data": [
         "security/ir.model.access.csv",
         "views/api_client_views.xml",
