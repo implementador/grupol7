@@ -822,6 +822,7 @@ class L7ClubClapMovement(models.Model):
         )
 
         picking = False
+        sale_order = False
 
         if evaluated["executable"]:
 
@@ -882,6 +883,13 @@ class L7ClubClapMovement(models.Model):
                 evaluated["executable"],
             )
 
+            sale_order = self._clubclap_apply_quote(
+                client,
+                payload,
+                evaluated["executable"],
+                event,
+            )
+
             for item in evaluated["executable"]:
 
                 index = item["result_index"]
@@ -908,6 +916,8 @@ class L7ClubClapMovement(models.Model):
             "event_id": payload["event_id"],
             "odoo_reference":
                 picking.name if picking else None,
+            "quotation_reference":
+                sale_order.name if sale_order else None,
             "lines": evaluated["results"],
         }
 
