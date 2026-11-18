@@ -1,5 +1,14 @@
+from datetime import datetime, timezone
+
+import pytz
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+
+
+CLUBCLAP_TZ = pytz.timezone(
+    "America/Mexico_City"
+)
 
 
 class L7ClubClapWebhookEventQuote(models.Model):
@@ -13,6 +22,10 @@ class L7ClubClapWebhookEventQuote(models.Model):
         index=True,
         ondelete="set null",
     )
+
+    # ------------------------------------------------------------------
+    # CONTEXTO COMERCIAL
+    # ------------------------------------------------------------------
 
     @api.model
     def _clubclap_quote_context(self, client):
@@ -89,6 +102,10 @@ class L7ClubClapWebhookEventQuote(models.Model):
             "pricelist": pricelist,
         }
 
+    # ------------------------------------------------------------------
+    # RUTA VentasCC -> CLIENTES
+    # ------------------------------------------------------------------
+
     @api.model
     def _clubclap_quote_route(self, client):
         Route = self.env["stock.route"].sudo()
@@ -148,6 +165,156 @@ class L7ClubClapWebhookEventQuote(models.Model):
 
         return route
 
+    # ------------------------------------------------------------------
+    # FECHA CLUBCLAP
+    # ------------------------------------------------------------------
+
+    @api.model
+    def _clubclap_day(self, payload):
+        raw = str(
+            payload.get("occurred_at")
+            or ""
+        ).strip()
+
+        if raw:
+            try:
+                normalized = raw
+
+                if normalized.endswith("Z"):
+                    normalized = (
+                        normalized[:-1]
+                        + "+00:00"
+                    )
+
+                dt = datetime.fromisoformat(
+                    normalized
+                )
+
+                if dt.tzinfo is None:
+                    dt = CLUBCLAP_TZ.localize(
+                        dt
+                    )
+                else:
+                    dt = dt.astimezone(
+                        CLUBCLAP_TZ
+                    )
+
+                return dt.date()
+
+            except (
+                TypeError,
+                ValueError,
+            ):
+                raise ValidationError(
+                    _(
+                        "occurred_at inválido para "
+                        "agrupar la venta ClubClap: %s"
+                    )
+                    % raw
+                )
+
+        now = datetime.now(
+            timezone.utc
+        ).astimezone(
+            CLUBCLAP_TZ
+        )
+
+        return now.date()
+
+    @api.model
+    def _clubclap_daily_base_ref(
+        self,
+        payload,
+    ):
+        day = self._clubclap_day(
+            payload
+        )
+
+        return "CLUBCLAP-%s" % (
+            day.isoformat()
+        )
+
+    # ------------------------------------------------------------------
+    # CONCURRENCIA
+    #
+    # Todos los webhooks SALE del mismo cliente/dia se serializan
+    # dentro de PostgreSQL.
+    #
+    # El advisory lock dura hasta COMMIT/ROLLBACK.
+    #
+    # Esto evita:
+    # - dos cotizaciones diarias creadas simultaneamente;
+    # - perdida de cantidades al sumar el mismo SKU.
+    # ------------------------------------------------------------------
+
+    @api.model
+    def _clubclap_daily_lock(
+        self,
+        client,
+        payload,
+    ):
+        daily_ref = (
+            self._clubclap_daily_base_ref(
+                payload
+            )
+        )
+
+        lock_key = (
+            "l7_stock_api:"
+            "clubclap:"
+            "daily_quote:"
+            "%s:%s:%s"
+            % (
+                client.company_id.id,
+                client.id,
+                daily_ref,
+            )
+        )
+
+        self.env.cr.execute(
+            """
+            SELECT pg_advisory_xact_lock(
+                hashtext(%s)::bigint
+            )
+            """,
+            (
+                lock_key,
+            ),
+        )
+
+        return lock_key
+
+    @api.model
+    def _clubclap_lock_sale_order(
+        self,
+        sale_order,
+    ):
+        if not sale_order:
+            return sale_order
+
+        self.env.cr.execute(
+            """
+            SELECT id
+            FROM sale_order
+            WHERE id = %s
+            FOR UPDATE
+            """,
+            (
+                sale_order.id,
+            ),
+        )
+
+        sale_order.invalidate_recordset()
+
+        return sale_order
+
+    # ------------------------------------------------------------------
+    # COTIZACION INDIVIDUAL DE UN PEDIDO
+    #
+    # Se conserva para CANCEL:
+    # busca el sale_order_id asociado al pedido externo individual.
+    # ------------------------------------------------------------------
+
     @api.model
     def _clubclap_existing_quote(
         self,
@@ -166,30 +333,194 @@ class L7ClubClapWebhookEventQuote(models.Model):
             else self.env["sale.order"]
         )
 
+    # ------------------------------------------------------------------
+    # COTIZACION DIARIA ABIERTA
+    # ------------------------------------------------------------------
+
+    @api.model
+    def _clubclap_open_daily_quote(
+        self,
+        client,
+        payload,
+        context,
+    ):
+        SaleOrder = self.env[
+            "sale.order"
+        ].sudo().with_company(
+            client.company_id
+        )
+
+        base_ref = (
+            self._clubclap_daily_base_ref(
+                payload
+            )
+        )
+
+        domain = [
+            (
+                "company_id",
+                "=",
+                client.company_id.id,
+            ),
+            (
+                "warehouse_id",
+                "=",
+                client.warehouse_id.id,
+            ),
+            (
+                "partner_id",
+                "=",
+                context["customer"].id,
+            ),
+            (
+                "partner_shipping_id",
+                "=",
+                context["shipping"].id,
+            ),
+            (
+                "pricelist_id",
+                "=",
+                context["pricelist"].id,
+            ),
+            (
+                "state",
+                "in",
+                ("draft", "sent"),
+            ),
+            "|",
+            (
+                "client_order_ref",
+                "=",
+                base_ref,
+            ),
+            (
+                "client_order_ref",
+                "=like",
+                base_ref + "-%",
+            ),
+        ]
+
+        return SaleOrder.search(
+            domain,
+            order="id desc",
+            limit=1,
+        )
+
+    @api.model
+    def _clubclap_next_daily_ref(
+        self,
+        client,
+        payload,
+    ):
+        SaleOrder = self.env[
+            "sale.order"
+        ].sudo().with_company(
+            client.company_id
+        )
+
+        base_ref = (
+            self._clubclap_daily_base_ref(
+                payload
+            )
+        )
+
+        orders = SaleOrder.search([
+            (
+                "company_id",
+                "=",
+                client.company_id.id,
+            ),
+            (
+                "warehouse_id",
+                "=",
+                client.warehouse_id.id,
+            ),
+            "|",
+            (
+                "client_order_ref",
+                "=",
+                base_ref,
+            ),
+            (
+                "client_order_ref",
+                "=like",
+                base_ref + "-%",
+            ),
+        ])
+
+        used = set()
+
+        for order in orders:
+            ref = (
+                order.client_order_ref
+                or ""
+            )
+
+            if ref == base_ref:
+                used.add(1)
+                continue
+
+            prefix = base_ref + "-"
+
+            if not ref.startswith(
+                prefix
+            ):
+                continue
+
+            suffix = ref[
+                len(prefix):
+            ]
+
+            try:
+                number = int(
+                    suffix
+                )
+            except ValueError:
+                continue
+
+            if number >= 2:
+                used.add(
+                    number
+                )
+
+        if not used:
+            return base_ref
+
+        next_number = max(
+            used
+        ) + 1
+
+        if next_number < 2:
+            next_number = 2
+
+        return "%s-%02d" % (
+            base_ref,
+            next_number,
+        )
+
+    # ------------------------------------------------------------------
+    # ORIGEN
+    # ------------------------------------------------------------------
+
     @api.model
     def _clubclap_quote_origin(
         self,
         payload,
     ):
-        order = payload.get("order") or {}
-
-        values = [
-            "ClubClap",
-            str(
-                order.get("channel")
-                or ""
-            ).strip(),
-            str(
-                order.get("shopify_order_name")
-                or ""
-            ).strip(),
-        ]
-
-        return " / ".join(
-            value
-            for value in values
-            if value
+        day = self._clubclap_day(
+            payload
         )
+
+        return (
+            "ClubClap ventas %s"
+            % day.strftime(
+                "%d/%m/%Y"
+            )
+        )
+
+    # ------------------------------------------------------------------
+    # SALE
+    # ------------------------------------------------------------------
 
     @api.model
     def _clubclap_create_quote(
@@ -199,19 +530,23 @@ class L7ClubClapWebhookEventQuote(models.Model):
         executable,
         event,
     ):
-        context = self._clubclap_quote_context(
-            client
-        )
-
-        route = self._clubclap_quote_route(
-            client
-        )
-
-        order_key = self._order_key(payload)
-
-        sale_order = self._clubclap_existing_quote(
+        # Serializar los SALE del mismo dia antes de buscar
+        # o crear la cotizacion diaria.
+        self._clubclap_daily_lock(
             client,
-            order_key,
+            payload,
+        )
+
+        context = (
+            self._clubclap_quote_context(
+                client
+            )
+        )
+
+        route = (
+            self._clubclap_quote_route(
+                client
+            )
         )
 
         SaleOrder = self.env[
@@ -226,58 +561,100 @@ class L7ClubClapWebhookEventQuote(models.Model):
             client.company_id
         )
 
+        sale_order = (
+            self._clubclap_open_daily_quote(
+                client,
+                payload,
+                context,
+            )
+        )
+
         if sale_order:
+            sale_order = (
+                self._clubclap_lock_sale_order(
+                    sale_order
+                )
+            )
+
+            # Si Ventas la confirmo mientras este webhook
+            # esperaba el bloqueo, no la modificamos.
             if sale_order.state not in (
                 "draft",
                 "sent",
             ):
-                raise ValidationError(
-                    _(
-                        "El pedido externo %s ya tiene "
-                        "una cotización/pedido %s en estado %s; "
-                        "no se agregarán nuevas líneas "
-                        "automáticamente."
-                    )
-                    % (
-                        order_key,
-                        sale_order.name,
-                        sale_order.state,
-                    )
+                sale_order = SaleOrder
+
+        if not sale_order:
+            daily_ref = (
+                self._clubclap_next_daily_ref(
+                    client,
+                    payload,
                 )
-        else:
+            )
+
             sale_order = SaleOrder.create({
                 "company_id":
                     client.company_id.id,
+
                 "partner_id":
                     context["customer"].id,
+
                 "partner_invoice_id":
                     context["customer"].id,
+
                 "partner_shipping_id":
                     context["shipping"].id,
+
                 "pricelist_id":
                     context["pricelist"].id,
+
                 "warehouse_id":
                     client.warehouse_id.id,
+
                 "client_order_ref":
-                    order_key,
+                    daily_ref,
+
                 "origin":
                     self._clubclap_quote_origin(
                         payload
                     ),
             })
 
+            sale_order = (
+                self._clubclap_lock_sale_order(
+                    sale_order
+                )
+            )
+
+        if sale_order.state not in (
+            "draft",
+            "sent",
+        ):
+            raise ValidationError(
+                _(
+                    "La cotización diaria ClubClap %s "
+                    "ya no está abierta."
+                )
+                % sale_order.name
+            )
+
         for item in executable:
             product = item["product"]
+
             quantity = float(
                 item["quantity"]
             )
 
-            line = sale_order.order_line.filtered(
-                lambda l:
-                    not l.display_type
-                    and l.product_id == product
-                    and l.route_id == route
-            )[:1]
+            line = (
+                sale_order.order_line.filtered(
+                    lambda l:
+                        not l.display_type
+                        and l.product_id
+                        == product
+                        and l.route_id
+                        == route
+                )[:1]
+            )
 
             if line:
                 line.write({
@@ -288,19 +665,32 @@ class L7ClubClapWebhookEventQuote(models.Model):
                         )
                         + quantity,
                 })
+
             else:
                 SaleLine.create({
-                    "order_id": sale_order.id,
-                    "product_id": product.id,
-                    "product_uom_qty": quantity,
-                    "route_id": route.id,
+                    "order_id":
+                        sale_order.id,
+
+                    "product_id":
+                        product.id,
+
+                    "product_uom_qty":
+                        quantity,
+
+                    "route_id":
+                        route.id,
                 })
 
         event.write({
-            "sale_order_id": sale_order.id,
+            "sale_order_id":
+                sale_order.id,
         })
 
         return sale_order
+
+    # ------------------------------------------------------------------
+    # CANCEL
+    # ------------------------------------------------------------------
 
     @api.model
     def _clubclap_cancel_quote(
@@ -310,17 +700,35 @@ class L7ClubClapWebhookEventQuote(models.Model):
         executable,
         event,
     ):
-        order_key = self._order_key(payload)
-
-        sale_order = self._clubclap_existing_quote(
-            client,
-            order_key,
+        order_key = self._order_key(
+            payload
         )
 
-        # Ventas anteriores a v1.6 no tienen cotización
-        # enlazada. Conservamos compatibilidad con ellas.
+        # Importante:
+        # aquí NO buscamos por fecha.
+        # Buscamos el sale_order_id que quedó ligado
+        # al pedido externo individual.
+        sale_order = (
+            self._clubclap_existing_quote(
+                client,
+                order_key,
+            )
+        )
+
+        # Compatibilidad con movimientos históricos
+        # anteriores a la creación de cotizaciones.
         if not sale_order:
-            return self.env["sale.order"]
+            return self.env[
+                "sale.order"
+            ]
+
+        # Una cancelacion puede coincidir con otro webhook
+        # modificando la misma cotizacion.
+        sale_order = (
+            self._clubclap_lock_sale_order(
+                sale_order
+            )
+        )
 
         if sale_order.state not in (
             "draft",
@@ -342,15 +750,20 @@ class L7ClubClapWebhookEventQuote(models.Model):
 
         for item in executable:
             product = item["product"]
+
             quantity = float(
                 item["quantity"]
             )
 
-            lines = sale_order.order_line.filtered(
-                lambda l:
-                    not l.display_type
-                    and l.product_id == product
-                    and l.product_uom_qty > 0
+            lines = (
+                sale_order.order_line.filtered(
+                    lambda l:
+                        not l.display_type
+                        and l.product_id
+                        == product
+                        and l.product_uom_qty
+                        > 0
+                )
             )
 
             remaining = quantity
@@ -369,7 +782,11 @@ class L7ClubClapWebhookEventQuote(models.Model):
                     remaining,
                 )
 
-                new_qty = current - take
+                new_qty = (
+                    current
+                    - take
+                )
+
                 remaining -= take
 
                 if new_qty <= 0:
@@ -398,7 +815,8 @@ class L7ClubClapWebhookEventQuote(models.Model):
                 lambda l:
                     not l.display_type
                     and l.product_id
-                    and l.product_uom_qty > 0
+                    and l.product_uom_qty
+                    > 0
             )
         )
 
@@ -406,10 +824,15 @@ class L7ClubClapWebhookEventQuote(models.Model):
             sale_order.action_cancel()
 
         event.write({
-            "sale_order_id": sale_order.id,
+            "sale_order_id":
+                sale_order.id,
         })
 
         return sale_order
+
+    # ------------------------------------------------------------------
+    # ROUTER
+    # ------------------------------------------------------------------
 
     @api.model
     def _clubclap_apply_quote(
@@ -420,22 +843,30 @@ class L7ClubClapWebhookEventQuote(models.Model):
         event,
     ):
         if not executable:
-            return self.env["sale.order"]
+            return self.env[
+                "sale.order"
+            ]
 
         if payload["event"] == "sale":
-            return self._clubclap_create_quote(
-                client,
-                payload,
-                executable,
-                event,
+            return (
+                self._clubclap_create_quote(
+                    client,
+                    payload,
+                    executable,
+                    event,
+                )
             )
 
         if payload["event"] == "cancel":
-            return self._clubclap_cancel_quote(
-                client,
-                payload,
-                executable,
-                event,
+            return (
+                self._clubclap_cancel_quote(
+                    client,
+                    payload,
+                    executable,
+                    event,
+                )
             )
 
-        return self.env["sale.order"]
+        return self.env[
+            "sale.order"
+        ]

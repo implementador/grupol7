@@ -1,6 +1,6 @@
 {
     "name": "L7 Stock API",
-    "version": "16.0.1.6.0",
+    "version": "16.0.1.7.0",
     "summary": "API externa de existencias de solo lectura por empresa y almacen",
     "description": """
 L7 Stock API
