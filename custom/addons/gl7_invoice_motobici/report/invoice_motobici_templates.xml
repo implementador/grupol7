@@ -1,0 +1,78 @@
+<odoo>
+  <template id="report_invoice_motobici">
+    <t t-call="web.external_layout">
+      <t t-set="o" t-value="doc"/>
+
+      <style type="text/css">
+        .watermark{
+          position: fixed; top: 40%; left: 50%;
+          transform: translate(-50%,-50%) rotate(-20deg);
+          opacity: 0.06; width: 75%;
+        }
+        .signature-line{ border-top:1px solid #000; width:60%; margin:60px auto 6px; }
+        .legend{ font-weight:700; margin:8px 0 12px; }
+        .table-details th, .table-details td { font-size: 12px; }
+      </style>
+
+      <!-- Marca de agua (reemplaza este PNG por tu logo cuando gustes) -->
+      <img class="watermark" t-att-src="'/gl7_invoice_motobici/static/img/watermark.png'"/>
+
+      <div class="page">
+        <!-- Encabezado Propietario -->
+        <div class="row">
+          <div class="col-6">
+            <h3>Propietario</h3>
+            <strong t-esc="o.partner_id.name"/>
+            <div t-esc="o.partner_id.contact_address"/>
+            <div t-if="o.partner_id.vat">RFC: <t t-esc="o.partner_id.vat"/></div>
+          </div>
+          <div class="col-6">
+            <h3>Factura</h3>
+            <div>Número: <strong t-esc="o.name"/></div>
+            <div>Fecha: <t t-esc="o.invoice_date"/></div>
+          </div>
+        </div>
+
+        <!-- Leyenda -->
+        <div class="legend">MOTO ELÉCTRICA NUEVA SIN RODAR.</div>
+
+        <!-- Tabla estándar de la factura (líneas y totales) -->
+        <t t-call="account.invoice_document"/>
+
+        <!-- Detalles de la unidad -->
+        <h4 style="margin-top:18px;">Detalles de la unidad</h4>
+        <table class="table table-sm table-bordered o_main_table table-details">
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Motor (W)</th>
+              <th>Año</th>
+              <th>Color</th>
+              <th>No. Pedimento</th>
+              <th>No. de Serie</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="o.invoice_line_ids.filtered(lambda l: not l.display_type)" t-as="l">
+              <td t-esc="l.name"/>
+              <td t-esc="l.x_motor_watts or ''"/>
+              <td t-esc="l.x_model_year or ''"/>
+              <td t-esc="l.x_color_name or ''"/>
+              <td t-esc="l.l10n_mx_edi_customs_number or ''"/>
+              <td>
+                <!-- Recupera series desde albaranes facturados -->
+                <t t-set="lots"
+                   t-value="list(set(l.sale_line_ids.mapped('move_ids').mapped('move_line_ids').mapped('lot_id.name')))"/>
+                <t t-esc="', '.join([x for x in lots if x])"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Firma del propietario -->
+        <div class="signature-line"></div>
+        <div style="text-align:center;">Firma del propietario</div>
+      </div>
+    </t>
+  </template>
+</odoo>

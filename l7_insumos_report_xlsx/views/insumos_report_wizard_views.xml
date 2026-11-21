@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_l7_insumos_report_wizard_form" model="ir.ui.view">
+        <field name="name">l7.insumos.report.wizard.form</field>
+        <field name="model">l7.insumos.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generar reporte de insumos">
+
+                <group>
+                    <group>
+                        <field name="safety_percent"/>
+                    </group>
+                </group>
+
+                <div class="alert alert-info" role="alert">
+                    El reporte descargara automaticamente todo el
+                    historico disponible del almacen CEDIS INSUMOS.
+                    No es necesario seleccionar fechas.
+                </div>
+
+                <footer>
+                    <button
+                        name="action_generate"
+                        string="Generar reporte"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button
+                        string="Cancelar"
+                        special="cancel"
+                        class="btn-secondary"
+                    />
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l7_insumos_report_wizard" model="ir.actions.act_window">
+        <field name="name">Generar reporte de insumos</field>
+        <field name="res_model">l7.insumos.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

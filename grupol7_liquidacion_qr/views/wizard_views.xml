@@ -1,0 +1,27 @@
+<odoo>
+<record id="view_liq_generate_coupons_wizard" model="ir.ui.view">
+<field name="name">liq.generate.coupons.wizard.form</field>
+<field name="model">liq.generate.coupons.wizard</field>
+<field name="arch" type="xml">
+<form string="Generar cupones LIQ">
+<group>
+<group>
+<field name="product_id"/>
+<field name="product_tmpl_id" attrs="{'invisible': [('product_id','!=',False)]}"/>
+<field name="quantity"/>
+</group>
+<group>
+<field name="damage_grade"/>
+<field name="clearance_price"/>
+<field name="expiration_date"/>
+<field name="pos_allowed_ids" widget="many2many_tags"/>
+</group>
+</group>
+<footer>
+<button string="Cancelar" class="btn-secondary" special="cancel"/>
+<button string="Generar" type="object" name="action_generate" class="btn-primary"/>
+</footer>
+</form>
+</field>
+</record>
+</odoo>

@@ -1,0 +1,14 @@
+<odoo>
+  <record id="view_liq_coupon_form_trace_extend" model="ir.ui.view">
+    <field name="name">liquidation.coupon.form.trace.extend</field>
+    <field name="model">liquidation.coupon</field>
+    <field name="inherit_id" ref="grupol7_liquidacion_qr.view_liq_coupon_form"/>
+    <field name="arch" type="xml">
+      <!-- Insertar después del campo sale_order_line_id dentro de la pestaña de Trazabilidad -->
+      <xpath expr="//field[@name='sale_order_line_id']" position="after">
+        <field name="picking_id" readonly="1"/>
+        <field name="move_id" readonly="1"/>
+      </xpath>
+    </field>
+  </record>
+</odoo>

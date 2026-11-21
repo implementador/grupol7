@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="l7_pos_ticket_cliente_tarifa.OrderReceipt"
+       t-inherit="point_of_sale.OrderReceipt"
+       t-inherit-mode="extension" owl="1">
+
+        <xpath expr="//div[contains(concat(' ', normalize-space(@class), ' '), ' pos-receipt-contact ')]"
+               position="inside">
+
+            <div class="l7-receipt-client">
+                Cliente:
+                <t t-esc="receipt.partner ? receipt.partner.name : 'SIN CLIENTE'"/>
+            </div>
+
+            <div class="l7-receipt-pricelist">
+                Lista de precios:
+                <t t-esc="props.order.pricelist ? props.order.pricelist.name : 'SIN LISTA REGISTRADA'"/>
+            </div>
+
+        </xpath>
+    </t>
+
+    <t t-name="l7_pos_ticket_cliente_tarifa.OrderReprintReceipt"
+       t-inherit="bi_pos_reprint_reorder.OrderReprintReceipt"
+       t-inherit-mode="extension" owl="1">
+
+        <xpath expr="//div[contains(concat(' ', normalize-space(@class), ' '), ' pos-receipt-contact ')]"
+               position="inside">
+
+            <div class="l7-receipt-client">
+                Cliente:
+                <t t-esc="props.order.partner_id ? props.order.partner_id[1] : 'SIN CLIENTE'"/>
+            </div>
+
+            <div class="l7-receipt-pricelist">
+                Lista de precios:
+                <t t-esc="props.order.pricelist_id ? props.order.pricelist_id[1] : 'SIN LISTA REGISTRADA'"/>
+            </div>
+
+        </xpath>
+    </t>
+
+</templates>
