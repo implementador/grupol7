@@ -22,7 +22,7 @@
     </t>
 
     <t t-name="l7_pos_ticket_cliente_tarifa.OrderReprintReceipt"
-       t-inherit="OrderReprintReceipt"
+       t-inherit="bi_pos_reprint_reorder.OrderReprintReceipt"
        t-inherit-mode="extension" owl="1">
 
         <xpath expr="//div[contains(concat(' ', normalize-space(@class), ' '), ' pos-receipt-contact ')]"
